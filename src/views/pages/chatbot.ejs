@@ -1,0 +1,104 @@
+<%- include('../partials/header', { 
+    extraHead: `<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>` 
+}) %>
+
+<!-- KHU VỰC NỘI DUNG CHÍNH -->
+<div id="main-wrapper" class="transition-all duration-300 w-full h-screen flex flex-col items-center relative overflow-hidden pt-20 pb-28">
+    
+    <main class="w-full max-w-3xl flex-1 overflow-y-auto px-4 sm:px-6 py-6 space-y-6" id="chat-messages-container">
+        <!-- WELCOME SCREEN -->
+        <div id="welcome-screen" class="w-full flex flex-col items-center justify-center min-h-[62vh] text-center my-auto">
+            <div class="relative w-44 h-44 mb-3 flex items-center justify-center cursor-grab active:cursor-grabbing">
+                <div id="compass-canvas-container" class="w-full h-full absolute inset-0"></div>
+            </div>
+            <h3 class="text-3xl sm:text-4xl font-black text-navy tracking-tight mb-2 select-none">
+                Chào bạn! Mình là <span class="brand-welcome-text cursor-pointer font-black text-navy hover:text-cyan transition-colors duration-200">la bàn<span class="text-cyan">.ai</span></span>
+            </h3>
+            <p class="text-sm text-muted max-w-md mx-auto mb-8 leading-relaxed">Bạn đang băn khoăn về ngành học, khối thi hay xu hướng nghề nghiệp tương lai? Hãy chia sẻ cùng mình nhé!</p>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3.5 w-full text-left">
+                <div onclick="sendSuggestedPrompt(this)" class="p-4 rounded-2xl glass-card bg-white/80 hover:border-cyan hover:shadow-md cursor-pointer transition-all border border-navy/5 group">
+                    <div class="flex items-center gap-2 text-xs font-bold text-cyan mb-1"><i data-lucide="sparkles" class="w-3.5 h-3.5"></i> Định hướng môn học</div>
+                    <div class="text-xs font-semibold text-navy group-hover:text-cyan transition-colors">"Em học giỏi Toán, Lý thì nên chọn ngành gì?"</div>
+                </div>
+                <div onclick="sendSuggestedPrompt(this)" class="p-4 rounded-2xl glass-card bg-white/80 hover:border-cyan hover:shadow-md cursor-pointer transition-all border border-navy/5 group">
+                    <div class="flex items-center gap-2 text-xs font-bold text-violet mb-1"><i data-lucide="scale" class="w-3.5 h-3.5"></i> So sánh chuyên ngành</div>
+                    <div class="text-xs font-semibold text-navy group-hover:text-violet transition-colors">"So sánh ngành Công nghệ thông tin và Khoa học dữ liệu."</div>
+                </div>
+                <div onclick="sendSuggestedPrompt(this)" class="p-4 rounded-2xl glass-card bg-white/80 hover:border-cyan hover:shadow-md cursor-pointer transition-all border border-navy/5 group">
+                    <div class="flex items-center gap-2 text-xs font-bold text-emerald mb-1"><i data-lucide="briefcase" class="w-3.5 h-3.5"></i> Cơ hội việc làm</div>
+                    <div class="text-xs font-semibold text-navy group-hover:text-emerald transition-colors">"Ngành Marketing sau này ra trường làm gì?"</div>
+                </div>
+                <div onclick="sendSuggestedPrompt(this)" class="p-4 rounded-2xl glass-card bg-white/80 hover:border-cyan hover:shadow-md cursor-pointer transition-all border border-navy/5 group">
+                    <div class="flex items-center gap-2 text-xs font-bold text-amber-500 mb-1"><i data-lucide="brain" class="w-3.5 h-3.5"></i> Tính cách Holland</div>
+                    <div class="text-xs font-semibold text-navy group-hover:text-amber-500 transition-colors">"Đánh giá tính cách của em phù hợp với ngành nào?"</div>
+                </div>
+            </div>
+        </div>
+
+        <div id="messages-list" class="w-full space-y-6 hidden"></div>
+
+        <div id="typing-indicator" class="flex items-start gap-3 hidden">
+            <div class="w-8 h-8 rounded-xl bg-gradient-to-b from-[#00B4D8] to-[#7B2CBF] text-white flex items-center justify-center shrink-0 shadow-sm mt-1">
+                <i data-lucide="compass" class="w-4 h-4 stroke-[2.2]"></i>
+            </div>
+            <div class="glass-card bg-white/95 px-4 py-3 rounded-2xl border border-navy/5 flex items-center gap-1.5 shadow-sm">
+                <span class="w-2 h-2 rounded-full bg-cyan animate-bounce"></span>
+                <span class="w-2 h-2 rounded-full bg-violet animate-bounce [animation-delay:0.2s]"></span>
+                <span class="w-2 h-2 rounded-full bg-emerald animate-bounce [animation-delay:0.4s]"></span>
+            </div>
+        </div>
+    </main>
+
+    <!-- INPUT CHAT (Đã kèm fix trượt Sidebar: ID chat-bottom-bar và transition) -->
+    <div id="chat-bottom-bar" class="fixed bottom-0 right-0 left-0 transition-all duration-300 z-40 bg-gradient-to-t from-background via-background/90 to-transparent pt-3 pb-4 px-4 pointer-events-none">
+        <div class="max-w-3xl mx-auto pointer-events-auto flex flex-col gap-1.5">
+            <div class="glass-card bg-white/95 backdrop-blur-2xl rounded-2xl sm:rounded-full p-2 border border-slate-200 shadow-[0_10px_35px_-5px_rgba(15,23,42,0.1)] flex items-center gap-1.5 sm:gap-2 transition-all duration-200 hover:border-cyan/40">
+                <div class="relative group shrink-0">
+                    <button onclick="startNewChatSession()" class="w-9 h-9 rounded-full bg-slate-100 hover:bg-cyan/10 hover:text-cyan text-slate-600 flex items-center justify-center transition-all duration-200 shadow-sm active:scale-90" title="Cuộc trò chuyện mới"><i data-lucide="plus" class="w-4 h-4 stroke-[2.2] group-hover:rotate-90 transition-transform duration-200"></i></button>
+                    <div class="absolute -top-9 left-1/2 -translate-x-1/2 px-2.5 py-1 bg-navy text-white text-[11px] font-medium rounded-lg whitespace-nowrap opacity-0 pointer-events-none group-hover:opacity-100 transition-opacity duration-200 shadow-lg z-50">Cuộc trò chuyện mới</div>
+                </div>
+                <div class="relative group shrink-0">
+                    <button onclick="toggleHistoryDrawer()" class="w-9 h-9 rounded-full bg-slate-100 hover:bg-cyan/10 hover:text-cyan text-slate-600 flex items-center justify-center transition-all duration-200 shadow-sm active:scale-90" title="Lịch sử trò chuyện"><i data-lucide="history" class="w-4 h-4 text-slate-600 group-hover:text-cyan transition-colors"></i></button>
+                    <div class="absolute -top-9 left-1/2 -translate-x-1/2 px-2.5 py-1 bg-navy text-white text-[11px] font-medium rounded-lg whitespace-nowrap opacity-0 pointer-events-none group-hover:opacity-100 transition-opacity duration-200 shadow-lg z-50">Lịch sử trò chuyện</div>
+                </div>
+                <div class="relative group shrink-0">
+                    <button onclick="toggleModeMenu(event)" id="btn-mode-toggle" class="h-9 px-2.5 rounded-full bg-slate-100 hover:bg-cyan/10 hover:text-cyan text-slate-600 flex items-center gap-1 text-xs font-bold transition-all duration-200 shadow-sm active:scale-95"><i data-lucide="chevron-up" class="w-3.5 h-3.5 text-cyan group-hover:text-cyan transition-colors"></i></button>
+                    <div class="absolute -top-9 left-1/2 -translate-x-1/2 px-2.5 py-1 bg-navy text-white text-[11px] font-medium rounded-lg whitespace-nowrap opacity-0 pointer-events-none group-hover:opacity-100 transition-opacity duration-200 shadow-lg z-50">Chế độ tư vấn</div>
+                    <div id="mode-popup-menu" class="hidden absolute bottom-12 left-0 w-64 glass-card bg-white/95 backdrop-blur-2xl rounded-2xl p-2 shadow-2xl border border-cyan/20 flex-col gap-1 z-50 text-left animate-fade-in">
+                        <div class="px-2.5 py-1 text-[10px] font-bold text-muted uppercase tracking-wider">Chế độ AI tư vấn</div>
+                        <button onclick="selectConsultantMode('general', 'Tư vấn tổng quan')" class="mode-item w-full px-3 py-2 rounded-xl text-xs font-bold text-navy hover:bg-cyan/10 hover:text-cyan flex items-center gap-2.5 transition-colors"><span class="w-2 h-2 rounded-full bg-cyan"></span><span>Tư vấn tổng quan</span></button>
+                        <button onclick="selectConsultantMode('score', 'Phân tích điểm chuẩn & tổ hợp')" class="mode-item w-full px-3 py-2 rounded-xl text-xs font-bold text-navy hover:bg-cyan/10 hover:text-cyan flex items-center gap-2.5 transition-colors"><span class="w-2 h-2 rounded-full bg-violet"></span><span>Phân tích điểm chuẩn & tổ hợp</span></button>
+                        <button onclick="selectConsultantMode('holland', 'Định hướng tính cách Holland')" class="mode-item w-full px-3 py-2 rounded-xl text-xs font-bold text-navy hover:bg-cyan/10 hover:text-cyan flex items-center gap-2.5 transition-colors"><span class="w-2 h-2 rounded-full bg-emerald"></span><span>Định hướng tính cách Holland</span></button>
+                    </div>
+                </div>
+                <textarea id="chat-input" rows="1" placeholder="Nhập câu hỏi về ngành học, trường ĐH hoặc khối thi..." class="flex-1 bg-transparent resize-none outline-none text-sm text-navy max-h-32 py-1.5 px-2 leading-relaxed placeholder:text-slate-400" oninput="autoResizeTextarea(this)" onkeydown="handleInputKeydown(event)"></textarea>
+                <button onclick="toggleVoiceInput()" id="btn-voice" class="w-9 h-9 rounded-full hover:bg-navy/5 text-slate-500 hover:text-cyan flex items-center justify-center shrink-0 transition-colors" title="Nhập bằng giọng nói"><i data-lucide="mic" class="w-4 h-4"></i></button>
+                <button onclick="handleSendMessage()" id="btn-send" class="w-9 h-9 rounded-full btn-gradient text-white shadow-md hover-glow flex items-center justify-center shrink-0 active:scale-90 transition-all" title="Gửi câu hỏi (Enter)"><i data-lucide="arrow-up" class="w-4 h-4 stroke-[2.5]"></i></button>
+            </div>
+            <div class="flex justify-between items-center px-4 text-[10px] text-muted">
+                <span id="current-chat-title" class="truncate font-semibold text-navy max-w-[240px]">Hội thoại mới</span><span>Shift + Enter để xuống dòng</span>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- LỊCH SỬ CHAT -->
+<div id="history-drawer-backdrop" class="fixed inset-0 bg-navy/60 backdrop-blur-sm z-50 hidden transition-opacity duration-300 opacity-0" onclick="toggleHistoryDrawer()"></div>
+<div id="history-drawer" class="fixed bottom-0 left-0 right-0 max-w-2xl mx-auto z-50 glass-card bg-white/95 backdrop-blur-2xl rounded-t-[32px] border-t border-cyan/20 shadow-2xl p-6 transform translate-y-full transition-transform duration-300 ease-out flex flex-col max-h-[75vh]">
+    <div class="w-12 h-1.5 bg-gray-300 rounded-full mx-auto mb-4 cursor-pointer" onclick="toggleHistoryDrawer()"></div>
+    <div class="flex justify-between items-center pb-4 border-b border-gray-100">
+        <div>
+            <h4 class="font-black text-lg text-navy flex items-center gap-2"><i data-lucide="history" class="w-5 h-5 text-cyan"></i> Lịch Sử Tư Vấn ChatBot AI</h4>
+            <p class="text-xs text-muted mt-0.5">Chọn một cuộc trò chuyện trước để tiếp tục trao đổi</p>
+        </div>
+        <button onclick="toggleHistoryDrawer()" class="p-2 rounded-full hover:bg-gray-100 text-muted hover:text-navy transition-colors"><i data-lucide="x" class="w-5 h-5"></i></button>
+    </div>
+    <div class="flex-1 overflow-y-auto py-4 space-y-2.5" id="drawer-sessions-list"></div>
+    <div class="pt-3 border-t border-gray-100 flex justify-between items-center text-xs">
+        <button onclick="startNewChatSession(); toggleHistoryDrawer();" class="text-cyan font-bold flex items-center gap-1.5 hover:underline"><i data-lucide="plus-circle" class="w-4 h-4"></i> Cuộc trò chuyện mới</button>
+        <button onclick="clearAllChatSessions()" class="text-red-500 font-bold hover:underline flex items-center gap-1"><i data-lucide="trash-2" class="w-3.5 h-3.5"></i> Xóa tất cả</button>
+    </div>
+</div>
+
+<%- include('../partials/footer', { extraScripts: `<script src="/js/chatbot.js"></script>` }) %>

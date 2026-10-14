@@ -1,0 +1,12 @@
+# Thư mục thư viện (bắt buộc chặn)
+node_modules/
+
+# Môi trường và biến ẩn (chứa API Key, mật khẩu DB)
+.env
+.env.local
+
+# Log và cache
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.DS_Store

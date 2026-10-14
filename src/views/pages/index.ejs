@@ -1,0 +1,63 @@
+<%- include('../partials/header', { hideFlowerBlob: true }) %>
+
+<div id="main-wrapper" class="transition-all duration-300 relative w-full min-h-screen">
+    <main class="relative pt-32 pb-20 lg:pt-44 lg:pb-24 overflow-hidden flex items-center min-h-[90vh]">
+        <!-- Các ngọn hải đăng -->
+        <div class="absolute top-[15%] left-[8%] animate-float-slow opacity-10 -z-10"><i data-lucide="tower-control" class="w-20 h-10 text-cyan"></i></div>
+        <div class="absolute bottom-[5%] right-[40%] animate-float opacity-10 -z-10"><i data-lucide="tower-control" class="w-24 h-10 text-violet"></i></div>
+        <div class="absolute top-[10%] right-[10%] animate-float-slow opacity-10 -z-10"><i data-lucide="tower-control" class="w-8 h-10 text-emerald"></i></div>
+        <div class="absolute bottom-[0%] left-[22%] animate-float opacity-10 -z-10"><i data-lucide="tower-control" class="w-12 h-10 text-navy"></i></div>
+        <div class="absolute top-[45%] right-[15%] animate-float-slow opacity-10 -z-10"><i data-lucide="tower-control" class="w-14 h-10 text-cyan"></i></div>
+
+        <!-- Các la bàn -->
+        <div class="absolute top-[30%] left-[25%] animate-float opacity-10 -z-10"><i data-lucide="compass" class="w-10 h-10 text-cyan"></i></div>
+        <div class="absolute bottom-[20%] left-[1%] animate-float-slow opacity-10 -z-10"><i data-lucide="compass" class="w-8 h-10 text-violet"></i></div>
+        <div class="absolute top-[25%] right-[28%] animate-float opacity-10 -z-10"><i data-lucide="compass" class="w-8 h-10 text-emerald"></i></div>
+        <div class="absolute bottom-[22%] right-[15%] animate-float-slow opacity-10 -z-10"><i data-lucide="compass" class="w-10 h-10 text-cyan"></i></div>
+        <div class="absolute top-[40%] left-[40%] animate-float opacity-10 -z-10"><i data-lucide="compass" class="w-12 h-10 text-navy"></i></div>
+
+        <!-- Các ngôi sao -->
+        <div class="absolute top-[10%] left-[50%] animate-float opacity-10 -z-10"><i data-lucide="star" class="w-8 h-10 text-cyan"></i></div>
+        <div class="absolute bottom-[20%] left-[35%] animate-float-slow opacity-15 -z-10"><i data-lucide="star" class="w-10 h-10 text-emerald"></i></div>
+        <div class="absolute top-[60%] right-[3%] animate-float opacity-15 -z-10"><i data-lucide="star" class="w-10 h-10 text-violet"></i></div>
+        <div class="absolute top-[50%] left-[3%] animate-float-slow opacity-10 -z-10"><i data-lucide="star" class="w-12 h-10 text-navy"></i></div>
+        <div class="absolute bottom-[0%] right-[25%] animate-float opacity-10 -z-10"><i data-lucide="star" class="w-8 h-8 text-cyan"></i></div>
+
+        <!-- Ngôi sao 4 góc -->
+        <div class="absolute top-[5%] left-[30%] animate-float opacity-10 -z-10"><i data-lucide="star" class="w-10 h-10 text-violet"></i></div>
+        <div class="absolute top-[30%] right-[0%] animate-float-slow opacity-10 -z-10"><i data-lucide="star" class="w-12 h-10 text-cyan"></i></div>
+        <div class="absolute bottom-[0%] left-[3%] animate-float-slow opacity-10 -z-10"><i data-lucide="star" class="w-8 h-10 text-emerald"></i></div>
+        <div class="absolute bottom-[0%] right-[3%] animate-float opacity-30 -z-10"><i data-lucide="star" class="w-10 h-10 text-violet"></i></div>
+        <div class="absolute bottom-[2%] left-[45%] animate-float opacity-15 -z-10"><i data-lucide="star" class="w-6 h-10 text-navy"></i></div>
+
+        <div class="container mx-auto px-6 grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+            <div class="space-y-8 relative z-10">
+                <div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full glass-effect border border-cyan/20 text-cyan text-sm font-semibold mb-2">
+                    <span class="relative flex h-3 w-3"><span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-cyan opacity-75"></span><span class="relative inline-flex rounded-full h-3 w-3 bg-cyan"></span></span>
+                    Sẵn sàng định hướng
+                </div>
+                <h1 class="text-5xl lg:text-6xl font-bold leading-tight text-navy">
+                    Định vị tương lai, <br><span class="text-transparent bg-clip-text bg-gradient-to-r from-cyan to-violet">chọn đúng ngành học.</span>
+                </h1>
+                <p class="text-lg text-muted max-w-lg leading-relaxed">Hệ thống AI phân tích năng lực, sở thích và điểm số của bạn để đưa ra lộ trình trúng tuyển tối ưu nhất.</p>
+                
+                <div class="flex flex-col sm:flex-row gap-4 pt-4">
+                    <button onclick="handleStartAction()" class="btn-gradient px-8 py-4 rounded-2xl text-white font-semibold flex items-center justify-center gap-2 shadow-[0_8px_25px_rgba(0,180,216,0.3)] hover-glow transition-all hover:-translate-y-1">
+                        <i data-lucide="target" class="w-5 h-5"></i> Bắt đầu ngay
+                    </button>
+                </div>
+            </div>
+
+            <div class="relative h-[400px] lg:h-[550px] w-full flex items-center justify-center">
+                <div id="canvas-container" class="w-full h-full absolute inset-0 cursor-grab active:cursor-grabbing"></div>
+            </div>
+        </div>
+    </main>
+</div>
+
+<%- include('../partials/footer', { 
+    extraScripts: `
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+        <script src="/js/app.js"></script>
+    ` 
+}) %>
