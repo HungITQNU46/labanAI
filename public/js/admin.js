@@ -1,11 +1,3 @@
-// Đăng xuất khỏi tài khoản quản trị và xóa trạng thái phiên làm việc của admin.
-function logoutAdminSession() {
-    localStorage.removeItem('isLoggedIn');
-    localStorage.removeItem('userRole');
-    localStorage.removeItem('sidebarCollapsed');
-    window.location.href = '/';
-}
-
 function downloadCsv(rows, fileName) {
     const escapeCsvCell = (value) => {
         let cell = String(value);

@@ -1,35 +1,30 @@
-// Kiểm tra xem người dùng hiện tại đã đăng nhập hay chưa.
-function checkLoginState() { return localStorage.getItem('isLoggedIn') === 'true'; }
+// Đọc trạng thái đăng nhập từ phiên máy chủ đã được EJS cung cấp.
+function checkLoginState() { return Boolean(window.AUTH_USER); }
 
-// Xác định vai trò người dùng dựa trên email hoặc tên tài khoản để điều hướng đúng trang.
+// Đọc vai trò do máy chủ xác thực, không suy đoán từ email hoặc localStorage.
 function getCurrentUserRole() {
-    const storedRole = localStorage.getItem('userRole');
-    return storedRole || 'user';
+    return window.AUTH_USER?.role || 'user';
 }
 
-// Mô phỏng đăng nhập hệ thống, tự nhận dạng admin/user và chuyển hướng đúng trang sau khi đăng nhập.
-function mockLogin(email = '') {
-    const normalizedEmail = String(email || '').trim().toLowerCase();
-    const isAdminAccount = normalizedEmail.includes('admin') || normalizedEmail.includes('quantri') || normalizedEmail.includes('administrator');
-    const role = isAdminAccount ? 'admin' : 'user';
-
-    localStorage.setItem('isLoggedIn', 'true');
-    localStorage.setItem('userRole', role);
-
-    if (role === 'admin') {
-        window.location.href = '/admin';
-    } else {
+// Đăng xuất an toàn bằng cách hủy phiên trên máy chủ.
+async function logoutUser() {
+    if (!window.confirm('Bạn có chắc chắn muốn đăng xuất?')) return;
+    try {
+        const response = await fetch('/auth/logout', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' }
+        });
+        const result = await response.json();
+        if (!response.ok) throw new Error(result.message || 'Không thể đăng xuất.');
+        localStorage.removeItem('sidebarCollapsed');
         window.location.href = '/';
+    } catch (error) {
+        window.alert(error.message || 'Không thể đăng xuất. Vui lòng thử lại.');
     }
 }
 
-// Đăng xuất khỏi hệ thống, xóa trạng thái phiên làm việc và quay về trang chủ.
-function handleLogout() {
-    localStorage.removeItem('isLoggedIn');
-    localStorage.removeItem('userRole');
-    localStorage.removeItem('sidebarCollapsed');
-    window.location.href = '/';
-}
+// Giữ tên hàm cũ để các nút đăng xuất hiện có tiếp tục hoạt động.
+function handleLogout() { return logoutUser(); }
 
 let isSidebarCollapsed = localStorage.getItem('sidebarCollapsed') === 'true';
 
@@ -97,6 +92,10 @@ function renderLayout(activeMenuId) {
                             <a href="/about" class="${activeMenuId === 'nav-about' ? 'text-cyan font-bold' : 'hover:text-cyan transition-colors'}">Về chúng tôi</a>
                             
                         </nav>
+                        <div class="flex items-center gap-2">
+                            <button type="button" onclick="openAuthModal('login')" class="rounded-xl px-3 py-2 text-sm font-bold text-cyan hover:bg-cyan/10 transition-colors">Đăng nhập</button>
+                            <button type="button" onclick="openAuthModal('register')" class="btn-gradient rounded-xl px-4 py-2 text-sm font-bold text-white">Đăng ký</button>
+                        </div>
                     </div>
                 </div>
             </header>
@@ -169,18 +168,19 @@ const authModalHTML = `
                     <h3 class="text-2xl font-black text-navy tracking-tight" id="auth-title">Chào mừng trở lại!</h3>
                     <p class="text-xs text-muted mt-1" id="auth-subtitle">Đăng nhập để xem lịch sử và đánh giá hướng nghiệp.</p>
                 </div>
-                <form id="form-login" onsubmit="event.preventDefault(); const emailInput = event.target.querySelector('input[type=email]'); mockLogin(emailInput ? emailInput.value : '');" class="space-y-4">
-                    <div><label class="block text-[11px] font-bold text-muted uppercase tracking-wider mb-1">Email của bạn</label><input type="email" required placeholder="name@example.com" class="w-full px-4 py-3 rounded-xl bg-gray-50 border border-gray-200 text-sm outline-none focus:border-cyan focus:bg-white transition-all text-navy placeholder:text-gray-400"></div>
+                <p id="auth-message" class="hidden rounded-xl px-4 py-3 text-sm" role="alert" aria-live="polite"></p>
+                <form id="form-login" onsubmit="loginUser(event)" class="space-y-4">
+                    <div><label class="block text-[11px] font-bold text-muted uppercase tracking-wider mb-1">Email hoặc số điện thoại</label><input name="identifier" type="text" required autocomplete="username" placeholder="name@example.com hoặc 0912345678" class="w-full px-4 py-3 rounded-xl bg-gray-50 border border-gray-200 text-sm outline-none focus:border-cyan focus:bg-white transition-all text-navy placeholder:text-gray-400"></div>
                     <div>
                         <div class="flex justify-between items-center mb-1"><label class="text-[11px] font-bold text-muted uppercase tracking-wider">Mật khẩu</label><a href="#" class="text-[11px] font-bold text-cyan hover:underline">Quên mật khẩu?</a></div>
-                        <input type="password" required placeholder="••••••••" class="w-full px-4 py-3 rounded-xl bg-gray-50 border border-gray-200 text-sm outline-none focus:border-cyan focus:bg-white transition-all text-navy placeholder:text-gray-400">
+                        <input name="password" type="password" required autocomplete="current-password" placeholder="••••••••" class="w-full px-4 py-3 rounded-xl bg-gray-50 border border-gray-200 text-sm outline-none focus:border-cyan focus:bg-white transition-all text-navy placeholder:text-gray-400">
                     </div>
                     <button type="submit" class="btn-gradient w-full py-3.5 mt-2 rounded-xl text-white font-bold shadow-md hover-glow transition-all active:scale-95 flex items-center justify-center gap-2">Đăng nhập hệ thống <i data-lucide="arrow-right" class="w-4 h-4"></i></button>
                 </form>
-                <form id="form-register" onsubmit="event.preventDefault(); const emailInput = event.target.querySelector('input[type=email]'); mockLogin(emailInput ? emailInput.value : '');" class="space-y-4 hidden">
-                    <div><label class="block text-[11px] font-bold text-muted uppercase tracking-wider mb-1">Họ và tên</label><input type="text" required placeholder="Nguyễn Văn A" class="w-full px-4 py-3 rounded-xl bg-gray-50 border border-gray-200 text-sm outline-none focus:border-cyan focus:bg-white transition-all text-navy placeholder:text-gray-400"></div>
-                    <div><label class="block text-[11px] font-bold text-muted uppercase tracking-wider mb-1">Email</label><input type="email" required placeholder="name@example.com" class="w-full px-4 py-3 rounded-xl bg-gray-50 border border-gray-200 text-sm outline-none focus:border-cyan focus:bg-white transition-all text-navy placeholder:text-gray-400"></div>
-                    <div><label class="block text-[11px] font-bold text-muted uppercase tracking-wider mb-1">Mật khẩu</label><input type="password" required placeholder="Tạo mật khẩu (> 8 ký tự)" class="w-full px-4 py-3 rounded-xl bg-gray-50 border border-gray-200 text-sm outline-none focus:border-cyan focus:bg-white transition-all text-navy placeholder:text-gray-400"></div>
+                <form id="form-register" onsubmit="registerUser(event)" class="space-y-4 hidden">
+                    <div><label class="block text-[11px] font-bold text-muted uppercase tracking-wider mb-1">Họ và tên</label><input name="name" type="text" required minlength="2" maxlength="80" autocomplete="name" placeholder="Nguyễn Văn A" class="w-full px-4 py-3 rounded-xl bg-gray-50 border border-gray-200 text-sm outline-none focus:border-cyan focus:bg-white transition-all text-navy placeholder:text-gray-400"></div>
+                    <div><label class="block text-[11px] font-bold text-muted uppercase tracking-wider mb-1">Email hoặc số điện thoại</label><input name="identifier" type="text" required autocomplete="username" placeholder="name@example.com hoặc 0912345678" class="w-full px-4 py-3 rounded-xl bg-gray-50 border border-gray-200 text-sm outline-none focus:border-cyan focus:bg-white transition-all text-navy placeholder:text-gray-400"></div>
+                    <div><label class="block text-[11px] font-bold text-muted uppercase tracking-wider mb-1">Mật khẩu</label><input name="password" type="password" required minlength="8" autocomplete="new-password" placeholder="Nhập mật khẩu" class="w-full px-4 py-3 rounded-xl bg-gray-50 border border-gray-200 text-sm outline-none focus:border-cyan focus:bg-white transition-all text-navy placeholder:text-gray-400"><p class="mt-1 text-[11px] text-muted">Ít nhất 8 ký tự, gồm chữ thường, chữ hoa, số và ký tự đặc biệt.</p></div>
                     <button type="submit" class="btn-gradient w-full py-3.5 mt-2 rounded-xl text-white font-bold shadow-md hover-glow transition-all active:scale-95 flex items-center justify-center gap-2">Đăng ký<i data-lucide="user-plus" class="w-4 h-4"></i></button>
                 </form>
             </div>
@@ -196,9 +196,9 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 // Hiển thị popup đăng nhập/đăng ký trên giao diện người dùng.
-function openAuthModal() {
+function openAuthModal(tab = 'login') {
     const modal = document.getElementById('auth-modal');
-    if (modal) { modal.classList.remove('hidden'); modal.classList.add('flex'); switchAuthTab('login'); }
+    if (modal) { modal.classList.remove('hidden'); modal.classList.add('flex'); switchAuthTab(tab); }
 }
 // Ẩn popup đăng nhập/đăng ký khi người dùng đóng hoặc hoàn tất thao tác.
 function closeAuthModal() {
@@ -211,6 +211,9 @@ function switchAuthTab(tab) {
     const loginForm = document.getElementById('form-login'), registerForm = document.getElementById('form-register');
     const tabLogin = document.getElementById('tab-login'), tabRegister = document.getElementById('tab-register');
     const title = document.getElementById('auth-title'), subtitle = document.getElementById('auth-subtitle');
+    const message = document.getElementById('auth-message');
+    message.classList.add('hidden');
+    message.textContent = '';
 
     if (tab === 'login') {
         loginForm.classList.remove('hidden'); registerForm.classList.add('hidden');
@@ -223,4 +226,70 @@ function switchAuthTab(tab) {
         tabLogin.className = "flex-1 py-4 text-sm font-bold text-muted border-b-2 border-transparent hover:text-navy transition-all";
         title.innerText = "Tạo tài khoản mới"; subtitle.innerText = "Tham gia cùng hàng ngàn học sinh định hướng tương lai.";
     }
+}
+
+function showAuthMessage(message, isError = true) {
+    const messageElement = document.getElementById('auth-message');
+    messageElement.textContent = message;
+    messageElement.className = `rounded-xl px-4 py-3 text-sm ${isError ? 'bg-red-50 text-red-700' : 'bg-emerald-50 text-emerald-700'}`;
+}
+
+async function submitAuthForm(endpoint, form) {
+    const submitButton = form.querySelector('button[type="submit"]');
+    submitButton.disabled = true;
+    try {
+        const response = await fetch(endpoint, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(Object.fromEntries(new FormData(form)))
+        });
+        const result = await response.json();
+        if (!response.ok) throw new Error(result.message || 'Không thể hoàn tất yêu cầu.');
+        return result;
+    } finally {
+        submitButton.disabled = false;
+    }
+}
+
+// Gửi thông tin đăng nhập và điều hướng theo quyền do máy chủ trả về.
+async function loginUser(event) {
+    event.preventDefault();
+    try {
+        const result = await submitAuthForm('/auth/login', event.currentTarget);
+        window.location.href = result.user.role === 'admin' ? '/admin' : '/';
+    } catch (error) {
+        showAuthMessage(error.message || 'Không thể đăng nhập. Vui lòng thử lại.');
+    }
+}
+
+// Tạo tài khoản mới; sau khi thành công chuyển sang tab đăng nhập.
+async function registerUser(event) {
+    event.preventDefault();
+    const form = event.currentTarget;
+    const password = form.elements.password.value;
+    if (
+        password.length < 8
+        || new TextEncoder().encode(password).length > 72
+        || !/\p{Ll}/u.test(password)
+        || !/\p{Lu}/u.test(password)
+        || !/\p{N}/u.test(password)
+        || !/[^\p{L}\p{N}\s]/u.test(password)
+    ) {
+        showAuthMessage('Mật khẩu cần ít nhất 8 ký tự, gồm chữ thường, chữ hoa, chữ số và ký tự đặc biệt; tối đa 72 byte.');
+        return;
+    }
+    try {
+        const result = await submitAuthForm('/auth/register', form);
+        const identifier = form.elements.identifier.value;
+        form.reset();
+        switchAuthTab('login');
+        document.querySelector('#form-login [name="identifier"]').value = identifier;
+        showAuthMessage(result.message, false);
+    } catch (error) {
+        showAuthMessage(error.message || 'Không thể đăng ký. Vui lòng thử lại.');
+    }
+}
+
+if (new URLSearchParams(window.location.search).get('auth') === 'login') {
+    document.addEventListener('DOMContentLoaded', () => openAuthModal('login'));
 }
