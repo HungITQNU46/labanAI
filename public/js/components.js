@@ -179,7 +179,9 @@ const authModalHTML = `
                 </form>
                 <form id="form-register" onsubmit="registerUser(event)" class="space-y-4 hidden">
                     <div><label class="block text-[11px] font-bold text-muted uppercase tracking-wider mb-1">Họ và tên</label><input name="name" type="text" required minlength="2" maxlength="80" autocomplete="name" placeholder="Nguyễn Văn A" class="w-full px-4 py-3 rounded-xl bg-gray-50 border border-gray-200 text-sm outline-none focus:border-cyan focus:bg-white transition-all text-navy placeholder:text-gray-400"></div>
-                    <div><label class="block text-[11px] font-bold text-muted uppercase tracking-wider mb-1">Email hoặc số điện thoại</label><input name="identifier" type="text" required autocomplete="username" placeholder="name@example.com hoặc 0912345678" class="w-full px-4 py-3 rounded-xl bg-gray-50 border border-gray-200 text-sm outline-none focus:border-cyan focus:bg-white transition-all text-navy placeholder:text-gray-400"></div>
+                    <div><label class="block text-[11px] font-bold text-muted uppercase tracking-wider mb-1">Giới tính</label><select name="gender" required class="w-full px-4 py-3 rounded-xl bg-gray-50 border border-gray-200 text-sm outline-none focus:border-cyan focus:bg-white transition-all text-navy"><option value="" disabled selected>Chọn giới tính</option><option value="Nam">Nam</option><option value="Nữ">Nữ</option><option value="Khác">Khác</option></select></div>
+                    <div><label class="block text-[11px] font-bold text-muted uppercase tracking-wider mb-1">Email</label><input name="email" type="email" required autocomplete="email" placeholder="name@example.com" class="w-full px-4 py-3 rounded-xl bg-gray-50 border border-gray-200 text-sm outline-none focus:border-cyan focus:bg-white transition-all text-navy placeholder:text-gray-400"></div>
+                    <div><label class="block text-[11px] font-bold text-muted uppercase tracking-wider mb-1">Số điện thoại (không bắt buộc)</label><input name="phone" type="tel" autocomplete="tel" placeholder="0912345678" class="w-full px-4 py-3 rounded-xl bg-gray-50 border border-gray-200 text-sm outline-none focus:border-cyan focus:bg-white transition-all text-navy placeholder:text-gray-400"></div>
                     <div><label class="block text-[11px] font-bold text-muted uppercase tracking-wider mb-1">Mật khẩu</label><input name="password" type="password" required minlength="8" autocomplete="new-password" placeholder="Nhập mật khẩu" class="w-full px-4 py-3 rounded-xl bg-gray-50 border border-gray-200 text-sm outline-none focus:border-cyan focus:bg-white transition-all text-navy placeholder:text-gray-400"><p class="mt-1 text-[11px] text-muted">Ít nhất 8 ký tự, gồm chữ thường, chữ hoa, số và ký tự đặc biệt.</p></div>
                     <button type="submit" class="btn-gradient w-full py-3.5 mt-2 rounded-xl text-white font-bold shadow-md hover-glow transition-all active:scale-95 flex items-center justify-center gap-2">Đăng ký<i data-lucide="user-plus" class="w-4 h-4"></i></button>
                 </form>
@@ -280,10 +282,10 @@ async function registerUser(event) {
     }
     try {
         const result = await submitAuthForm('/auth/register', form);
-        const identifier = form.elements.identifier.value;
+        const email = form.elements.email.value;
         form.reset();
         switchAuthTab('login');
-        document.querySelector('#form-login [name="identifier"]').value = identifier;
+        document.querySelector('#form-login [name="identifier"]').value = email;
         showAuthMessage(result.message, false);
     } catch (error) {
         showAuthMessage(error.message || 'Không thể đăng ký. Vui lòng thử lại.');

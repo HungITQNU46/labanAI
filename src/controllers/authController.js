@@ -10,6 +10,10 @@ const HAS_SPECIAL_CHARACTER = /[^\p{L}\p{N}\s]/u;
 
 const normalizeIdentifier = (value) => String(value || '').trim();
 
+const normalizePhone = (value) => String(value || '').replace(/[\s().-]/g, '');
+
+const isValidPhone = (phone) => !phone || PHONE_PATTERN.test(phone);
+
 const hasStrongPassword = (password) => (
     password.length >= 8
     && Buffer.byteLength(password, 'utf8') <= 72
@@ -39,7 +43,7 @@ const setAuthenticatedSession = (req, user) => new Promise((resolve, reject) => 
         if (error) return reject(error);
         req.session.user = {
             id: user.id,
-            name: user.name,
+            name: user.hoTen,
             role: user.role,
             email: user.email || null,
             phone: user.phone || null
@@ -51,17 +55,25 @@ const setAuthenticatedSession = (req, user) => new Promise((resolve, reject) => 
     });
 });
 
-// Đăng ký tài khoản mới bằng email hoặc số điện thoại.
+// Đăng ký tài khoản bằng email bắt buộc và số điện thoại tùy chọn.
 const registerUser = async (req, res) => {
     const name = String(req.body?.name || '').trim();
-    const identifierFields = getIdentifierFields(normalizeIdentifier(req.body?.identifier));
+    const email = normalizeIdentifier(req.body?.email).toLowerCase();
+    const phone = normalizePhone(req.body?.phone);
+    const gender = String(req.body?.gender || '');
     const password = String(req.body?.password || '');
 
     if (name.length < 2 || name.length > 80) {
         return res.status(400).json({ message: 'Họ tên phải có từ 2 đến 80 ký tự.' });
     }
-    if (!identifierFields) {
-        return res.status(400).json({ message: 'Vui lòng nhập email hợp lệ hoặc số điện thoại gồm 8–15 chữ số.' });
+    if (!EMAIL_PATTERN.test(email)) {
+        return res.status(400).json({ message: 'Vui lòng nhập địa chỉ email hợp lệ.' });
+    }
+    if (!isValidPhone(phone)) {
+        return res.status(400).json({ message: 'Số điện thoại cần có từ 8 đến 15 chữ số.' });
+    }
+    if (!['Nam', 'Nữ', 'Khác'].includes(gender)) {
+        return res.status(400).json({ message: 'Vui lòng chọn giới tính hợp lệ.' });
     }
     if (!hasStrongPassword(password)) {
         return res.status(400).json({
@@ -70,16 +82,20 @@ const registerUser = async (req, res) => {
     }
 
     try {
-        const existingUser = await User.findOne(identifierFields).select('_id');
+        const duplicateFilter = phone ? { $or: [{ email }, { phone }] } : { email };
+        const existingUser = await User.findOne(duplicateFilter).select('_id');
         if (existingUser) {
             return res.status(409).json({ message: 'Email hoặc số điện thoại này đã được đăng ký.' });
         }
 
         const passwordHash = await bcrypt.hash(password, 12);
         await User.create({
-            ...identifierFields,
-            name,
-            passwordHash,
+            hoTen: name,
+            gioiTinh: gender,
+            email,
+            ...(phone ? { phone } : {}),
+            trangThai: true,
+            matKhau: passwordHash,
             role: 'user',
             profile: {}
         });
@@ -97,7 +113,8 @@ const registerUser = async (req, res) => {
 
 // Xác thực thông tin đăng nhập và tạo phiên làm việc mới trên máy chủ.
 const loginUser = async (req, res) => {
-    const identifierFields = getIdentifierFields(normalizeIdentifier(req.body?.identifier));
+    const identifier = normalizeIdentifier(req.body?.identifier);
+    const identifierFields = getIdentifierFields(identifier);
     const password = String(req.body?.password || '');
 
     if (!identifierFields || !password) {
@@ -105,8 +122,11 @@ const loginUser = async (req, res) => {
     }
 
     try {
-        const user = await User.findOne(identifierFields).select('+passwordHash');
-        if (!user || !(await bcrypt.compare(password, user.passwordHash))) {
+        const user = await User.findOne({
+            ...identifierFields,
+            trangThai: true
+        }).select('+matKhau');
+        if (!user || !(await bcrypt.compare(password, user.matKhau))) {
             return res.status(401).json({ message: 'Thông tin đăng nhập không chính xác.' });
         }
 
@@ -116,9 +136,9 @@ const loginUser = async (req, res) => {
         return res.json({
             message: 'Đăng nhập thành công.',
             user: {
-                name: user.name,
+                name: user.hoTen,
                 role,
-                email: user.email || null,
+                email: user.email,
                 phone: user.phone || null
             }
         });

@@ -1,27 +1,38 @@
 const mongoose = require('mongoose');
 
 const userSchema = new mongoose.Schema({
-    name: {
+    hoTen: {
         type: String,
         required: true,
         trim: true,
         minlength: 2,
         maxlength: 80
     },
+    gioiTinh: {
+        type: String,
+        required: true,
+        enum: ['Nam', 'Nữ', 'Khác']
+    },
     email: {
         type: String,
+        required: true,
         trim: true,
         lowercase: true,
-        unique: true,
-        sparse: true
+        unique: true
     },
     phone: {
         type: String,
         trim: true,
         unique: true,
-        sparse: true
+        sparse: true,
+        default: undefined
     },
-    passwordHash: {
+    trangThai: {
+        type: Boolean,
+        required: true,
+        default: true
+    },
+    matKhau: {
         type: String,
         required: true,
         select: false
@@ -36,11 +47,21 @@ const userSchema = new mongoose.Schema({
         type: mongoose.Schema.Types.Mixed,
         default: () => ({})
     }
-}, { timestamps: true });
-
-userSchema.pre('validate', function validateIdentifier() {
-    if (!this.email && !this.phone) {
-        this.invalidate('email', 'Tài khoản cần có email hoặc số điện thoại.');
+}, {
+    timestamps: true,
+    toJSON: {
+        virtuals: true,
+        transform(_document, result) {
+            delete result.matKhau;
+            return result;
+        }
+    },
+    toObject: {
+        virtuals: true,
+        transform(_document, result) {
+            delete result.matKhau;
+            return result;
+        }
     }
 });
 
