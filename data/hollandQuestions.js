@@ -1,4 +1,4 @@
-// src/models/hollandModel.js
+// data/hollandQuestions.js
 
 const hollandQuestions = [
     // Nhóm R – Realistic (Thực tế / Kỹ thuật)

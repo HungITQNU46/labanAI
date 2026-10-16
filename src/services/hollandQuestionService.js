@@ -1,6 +1,6 @@
 const fs = require('fs/promises');
 const path = require('path');
-const { hollandQuestions: defaultQuestions } = require('./hollandModel');
+const { hollandQuestions: defaultQuestions } = require('../../data/hollandQuestions');
 
 const questionsFile = path.join(__dirname, '..', '..', 'data', 'holland-questions.json');
 

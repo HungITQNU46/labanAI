@@ -1,17 +1,15 @@
 const mongoose = require('mongoose');
 
-const userSchema = new mongoose.Schema({
+const taiKhoanSchema = new mongoose.Schema({
     hoTen: {
         type: String,
         required: true,
-        trim: true,
-        minlength: 2,
-        maxlength: 80
+        trim: true
     },
     gioiTinh: {
         type: String,
         required: true,
-        enum: ['Nam', 'Nữ', 'Khác']
+        trim: true
     },
     email: {
         type: String,
@@ -49,6 +47,7 @@ const userSchema = new mongoose.Schema({
     }
 }, {
     timestamps: true,
+    id: false,
     toJSON: {
         virtuals: true,
         transform(_document, result) {
@@ -65,4 +64,4 @@ const userSchema = new mongoose.Schema({
     }
 });
 
-module.exports = mongoose.models.User || mongoose.model('User', userSchema);
+module.exports = mongoose.models.User || mongoose.model('User', taiKhoanSchema);

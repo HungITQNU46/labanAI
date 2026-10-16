@@ -4,6 +4,8 @@ const mongoose = require('mongoose');
 const session = require('express-session');
 const { MongoStore } = require('connect-mongo');
 const crypto = require('crypto');
+const Admission = require('./src/models/admModel');
+const admissionSeedData = require('./data/admissionSeedData');
 require('dotenv').config();
 
 const app = express();
@@ -51,12 +53,66 @@ app.use((req, res, next) => {
 // Sử dụng định tuyến
 app.use('/', webRoutes);
 
-// Kết nối MongoDB
-mongoose.connect(process.env.MONGO_URI)
-  .then(() => console.log(' Kết nối MongoDB Atlas thành công!'))
-  .catch((err) => console.error(' Lỗi kết nối MongoDB:', err));
-
 const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => {
-  console.log(`🚀 Server La Bàn AI đang chạy tại: http://localhost:${PORT}`);
+
+async function startServer() {
+  await mongoose.connect(process.env.MONGO_URI);
+  await Admission.bulkWrite(admissionSeedData.map(({ _id, ...admission }) => ({
+    updateOne: {
+      filter: { _id },
+      update: { $setOnInsert: { _id, ...admission } },
+      upsert: true
+    }
+  })));
+  await Admission.collection.updateMany(
+    {
+      $or: [
+        { schoolName: { $exists: true } },
+        { schoolCode: { $exists: true } },
+        { region: { $exists: true } },
+        { majorName: { $exists: true } },
+        { majorCode: { $exists: true } },
+        { majorGroup: { $exists: true } },
+        { group: { $exists: true } },
+        { method: { $exists: true } },
+        { type: { $exists: true } },
+        { cutoff2023: { $exists: true } },
+        { cutoff2024: { $exists: true } },
+        { cutoff2025: { $exists: true } },
+        { predictedCutoff: { $exists: true } },
+        { probability: { $exists: true } },
+        { risk: { $exists: true } },
+        { avatarBg: { $exists: true } }
+      ]
+    },
+    {
+      $rename: {
+        schoolName: 'tenTruong',
+        schoolCode: 'maTruong',
+        region: 'khuVuc',
+        majorName: 'tenNganh',
+        majorCode: 'maNganh',
+        majorGroup: 'nhomNganh',
+        group: 'toHop',
+        method: 'phuongThuc',
+        type: 'loaiTruong',
+        cutoff2023: 'diemChuan2023',
+        cutoff2024: 'diemChuan2024',
+        cutoff2025: 'diemChuan2025',
+        predictedCutoff: 'diemChuanDuKien',
+        probability: 'xacSuat',
+        risk: 'mucDoRuiRo',
+        avatarBg: 'mauNenAnh'
+      }
+    }
+  );
+  console.log(' Kết nối MongoDB Atlas thành công!');
+  app.listen(PORT, () => {
+    console.log(`🚀 Server La Bàn AI đang chạy tại: http://localhost:${PORT}`);
+  });
+}
+
+startServer().catch((err) => {
+  console.error(' Lỗi khởi động server hoặc khởi tạo dữ liệu tuyển sinh:', err);
+  process.exitCode = 1;
 });

@@ -3,6 +3,16 @@ if (!checkLoginState()) window.location.href = '/';
 
 let userScores = { toan: 8.5, van: 7.0, anh: 9.0, ly: 8.0, hoa: 7.5, sinh: 6.5, su: 7.0, dia: 7.5, tin: 9.0 };
 
+function escapeHtml(value) {
+    return String(value).replace(/[&<>"']/g, (character) => ({
+        '&': '&amp;',
+        '<': '&lt;',
+        '>': '&gt;',
+        '"': '&quot;',
+        "'": '&#39;'
+    })[character]);
+}
+
 function calculateBlockScores() {
     return {
         A00: +(userScores.toan + userScores.ly + userScores.hoa).toFixed(2),
@@ -22,15 +32,18 @@ function updateSummaryDisplay() {
     document.getElementById('disp-hoa').innerText = userScores.hoa; document.getElementById('disp-tin').innerText = userScores.tin;
 }
 
-const universitiesData = [
-    { id: 'QNU-CNTT', schoolName: 'Đại học Quy Nhơn (QNU)', schoolCode: 'DQN', region: 'central', majorName: 'Công nghệ thông tin', majorCode: '7480201', majorGroup: 'it', group: 'A01', method: 'thpt', type: 'Công lập', cutoff2023: 21.50, cutoff2024: 22.00, cutoff2025: 22.50, predictedCutoff: 23.00, probability: 92, risk: 'safe', avatarBg: 'bg-blue-600' },
-    { id: 'BKDN-CNTT', schoolName: 'ĐH Bách Khoa - ĐH Đà Nẵng', schoolCode: 'DDK', region: 'central', majorName: 'Kỹ thuật Phần mềm', majorCode: '7480103', majorGroup: 'it', group: 'A01', method: 'thpt', type: 'Công lập', cutoff2023: 25.85, cutoff2024: 26.20, cutoff2025: 26.00, predictedCutoff: 26.15, probability: 58, risk: 'dream', avatarBg: 'bg-red-600' },
-    { id: 'UIT-DS', schoolName: 'ĐH Công nghệ Thông tin - TP.HCM', schoolCode: 'QSC', region: 'south', majorName: 'Khoa học Dữ liệu', majorCode: '7480109', majorGroup: 'it', group: 'A01', method: 'thpt', type: 'Công lập', cutoff2023: 25.20, cutoff2024: 25.50, cutoff2025: 25.40, predictedCutoff: 25.35, probability: 74, risk: 'moderate', avatarBg: 'bg-cyan-600' },
-    { id: 'UEH-MKT', schoolName: 'Đại học Kinh tế TP.HCM (UEH)', schoolCode: 'KSA', region: 'south', majorName: 'Marketing Số (Digital Marketing)', majorCode: '7340115', majorGroup: 'econ', group: 'D01', method: 'thpt', type: 'Công lập', cutoff2023: 26.50, cutoff2024: 26.80, cutoff2025: 26.70, predictedCutoff: 26.75, probability: 48, risk: 'dream', avatarBg: 'bg-amber-600' },
-    { id: 'QNU-KTPM', schoolName: 'Đại học Quy Nhơn (QNU)', schoolCode: 'DQN', region: 'central', majorName: 'Kỹ thuật Điện tử - Viễn thông', majorCode: '7520207', majorGroup: 'eng', group: 'A00', method: 'thpt', type: 'Công lập', cutoff2023: 18.00, cutoff2024: 19.00, cutoff2025: 19.50, predictedCutoff: 20.00, probability: 95, risk: 'safe', avatarBg: 'bg-emerald-600' }
-];
+const admissionsDataElement = document.getElementById('admissions-data');
+let universitiesData = [];
+if (admissionsDataElement && admissionsDataElement.textContent.trim() !== '') {
+    universitiesData = JSON.parse(admissionsDataElement.textContent);
+}
 
-let wishlist = [ { priority: 1, ...universitiesData[1] }, { priority: 2, ...universitiesData[2] }, { priority: 3, ...universitiesData[0] } ];
+let wishlist = ['BKDN-CNTT', 'UIT-DS', 'QNU-CNTT']
+    .map((id, index) => {
+        const admission = universitiesData.find((item) => item.id === id);
+        return admission ? { priority: index + 1, ...admission } : null;
+    })
+    .filter(Boolean);
 
 // 1. ĐỌC DỮ LIỆU JSON TỪ BACKEND (EJS) TRUYỀN SANG
 const hollandDataElement = document.getElementById('holland-data');
@@ -171,20 +184,22 @@ function renderPredictionCards(items) {
     const blockScores = calculateBlockScores();
 
     items.forEach(item => {
-        const yourScore = blockScores[item.group] || 25.50, diff = +(yourScore - item.predictedCutoff).toFixed(2);
+        const yourScore = blockScores[item.toHop] || 25.50, diff = +(yourScore - item.diemChuanDuKien).toFixed(2);
         const card = document.createElement('div');
         card.className = 'glass-card rounded-3xl p-6 hover:border-cyan/50 hover:shadow-xl transition-all duration-300 flex flex-col justify-between group relative bg-white/95';
         card.innerHTML = `
             <div>
-                <div class="flex items-center gap-3 mb-4"><div class="w-11 h-11 rounded-2xl ${item.avatarBg} text-white font-black text-sm flex items-center justify-center">${item.schoolCode}</div><div><span class="text-[10px] font-bold text-muted uppercase tracking-wider">${item.schoolCode} • ${item.type}</span><h4 class="font-bold text-navy text-sm line-clamp-1">${item.schoolName}</h4></div></div>
-                <div class="mb-4"><h3 class="font-black text-navy text-base group-hover:text-cyan">${item.majorName}</h3><div class="text-xs text-muted mt-1">Mã: <b>${item.majorCode}</b> • Khối: <b>${item.group}</b></div></div>
-                <div class="p-4 rounded-2xl bg-gray-50/80 border border-gray-100 mb-4 text-xs"><div class="flex justify-between"><span>Điểm của bạn:</span><span class="font-black text-navy">${yourScore}</span></div><div class="flex justify-between"><span>Điểm chuẩn dự kiến:</span><span class="font-bold text-navy">${item.predictedCutoff}</span></div></div>
+                <div class="flex items-center gap-3 mb-4"><div class="w-11 h-11 rounded-2xl ${escapeHtml(item.mauNenAnh)} text-white font-black text-sm flex items-center justify-center">${escapeHtml(item.maTruong)}</div><div><span class="text-[10px] font-bold text-muted uppercase tracking-wider">${escapeHtml(item.maTruong)} • ${escapeHtml(item.loaiTruong)}</span><h4 class="font-bold text-navy text-sm line-clamp-1">${escapeHtml(item.tenTruong)}</h4></div></div>
+                <div class="mb-4"><h3 class="font-black text-navy text-base group-hover:text-cyan">${escapeHtml(item.tenNganh)}</h3><div class="text-xs text-muted mt-1">Mã: <b>${escapeHtml(item.maNganh)}</b> • Khối: <b>${escapeHtml(item.toHop)}</b></div></div>
+                <div class="p-4 rounded-2xl bg-gray-50/80 border border-gray-100 mb-4 text-xs"><div class="flex justify-between"><span>Điểm của bạn:</span><span class="font-black text-navy">${yourScore}</span></div><div class="flex justify-between"><span>Điểm chuẩn dự kiến:</span><span class="font-bold text-navy">${item.diemChuanDuKien}</span></div></div>
             </div>
             <div class="pt-3 border-t border-gray-100 space-y-3">
-                <div class="flex justify-between items-center"><button onclick="openExplainModal('${item.id}')" class="text-xs font-bold text-cyan hover:underline flex items-center gap-1">Chi tiết AI <i data-lucide="arrow-right" class="w-3.5 h-3.5"></i></button></div>
-                <button onclick="addToWishlist('${item.id}')" class="w-full py-2.5 rounded-xl border border-gray-200 font-bold text-xs text-navy hover:bg-cyan/10 hover:border-cyan hover:text-cyan transition-all flex items-center justify-center gap-2"><i data-lucide="plus" class="w-4 h-4"></i> Thêm vào Nguyện vọng</button>
+                <div class="flex justify-between items-center"><button data-admission-action="explain" class="text-xs font-bold text-cyan hover:underline flex items-center gap-1">Chi tiết AI <i data-lucide="arrow-right" class="w-3.5 h-3.5"></i></button></div>
+                <button data-admission-action="wishlist" class="w-full py-2.5 rounded-xl border border-gray-200 font-bold text-xs text-navy hover:bg-cyan/10 hover:border-cyan hover:text-cyan transition-all flex items-center justify-center gap-2"><i data-lucide="plus" class="w-4 h-4"></i> Thêm vào Nguyện vọng</button>
             </div>
         `;
+        card.querySelector('[data-admission-action="explain"]').addEventListener('click', () => openExplainModal(item.id));
+        card.querySelector('[data-admission-action="wishlist"]').addEventListener('click', () => addToWishlist(item.id));
         container.appendChild(card);
     });
     lucide.createIcons();
@@ -193,8 +208,8 @@ function renderPredictionCards(items) {
 function applyPredictionFilters() {
     const keyword = document.getElementById('pred-filter-search').value.trim().toLowerCase(), region = document.getElementById('pred-filter-region').value, method = document.getElementById('pred-filter-method').value, majorGroup = document.getElementById('pred-filter-group').value, risk = document.getElementById('pred-filter-risk').value;
     let filtered = universitiesData.filter(item => {
-        const matchKeyword = !keyword || item.schoolName.toLowerCase().includes(keyword) || item.majorName.toLowerCase().includes(keyword) || item.majorCode.toLowerCase().includes(keyword);
-        return matchKeyword && (region === 'all' || item.region === region) && (method === 'all' || item.method === method) && (majorGroup === 'all' || item.majorGroup === majorGroup) && (risk === 'all' || item.risk === risk);
+        const matchKeyword = !keyword || item.tenTruong.toLowerCase().includes(keyword) || item.tenNganh.toLowerCase().includes(keyword) || item.maNganh.toLowerCase().includes(keyword);
+        return matchKeyword && (region === 'all' || item.khuVuc === region) && (method === 'all' || item.phuongThuc === method) && (majorGroup === 'all' || item.nhomNganh === majorGroup) && (risk === 'all' || item.mucDoRuiRo === risk);
     });
     renderPredictionCards(filtered);
 }
@@ -202,11 +217,11 @@ function applyPredictionFilters() {
 let trendChart = null, currentExplainItem = null;
 function openExplainModal(id) {
     const item = universitiesData.find(u => u.id === id); if (!item) return; currentExplainItem = item;
-    const yourScore = calculateBlockScores()[item.group] || 25.50;
+    const yourScore = calculateBlockScores()[item.toHop] || 25.50;
     
-    document.getElementById('explain-school-name').innerText = item.schoolName; document.getElementById('explain-major-title').innerText = item.majorName;
-    document.getElementById('explain-major-code').innerText = item.majorCode; document.getElementById('explain-your-score').innerText = yourScore;
-    document.getElementById('explain-cutoff').innerText = item.predictedCutoff; document.getElementById('explain-prob-text').innerText = `${item.probability}%`;
+    document.getElementById('explain-school-name').innerText = item.tenTruong; document.getElementById('explain-major-title').innerText = item.tenNganh;
+    document.getElementById('explain-major-code').innerText = item.maNganh; document.getElementById('explain-your-score').innerText = yourScore;
+    document.getElementById('explain-cutoff').innerText = item.diemChuanDuKien; document.getElementById('explain-prob-text').innerText = `${item.xacSuat}%`;
 
     const modal = document.getElementById('explain-modal'); modal.classList.remove('hidden'); modal.classList.add('flex');
     setTimeout(() => { document.getElementById('explain-modal-box').classList.remove('scale-95', 'opacity-0'); document.getElementById('explain-modal-box').classList.add('scale-100', 'opacity-100'); }, 10);
@@ -221,8 +236,8 @@ function renderScoreTrendChart(item, yourScore) {
     const ctx = document.getElementById('scoreTrendChart').getContext('2d'); if (trendChart) trendChart.destroy();
     trendChart = new Chart(ctx, {
         type: 'line',
-        data: { labels: ['Năm 2023', 'Năm 2024', 'Năm 2025', 'Dự kiến 2026'], datasets: [{ label: 'Điểm chuẩn trường', data: [item.cutoff2023, item.cutoff2024, item.cutoff2025, item.predictedCutoff], borderColor: '#00B4D8', backgroundColor: 'rgba(0, 180, 216, 0.15)', borderWidth: 3, fill: true, tension: 0.3, pointBackgroundColor: '#0077B6', pointRadius: 5 }, { label: 'Điểm của bạn', data: [yourScore, yourScore, yourScore, yourScore], borderColor: '#7B2CBF', borderWidth: 2, borderDash: [6, 6], pointRadius: 0, fill: false }] },
-        options: { responsive: true, maintainAspectRatio: false, scales: { y: { min: Math.floor(Math.min(item.cutoff2023, yourScore) - 2), max: Math.ceil(Math.max(item.predictedCutoff, yourScore) + 2) } } }
+        data: { labels: ['Năm 2023', 'Năm 2024', 'Năm 2025', 'Dự kiến 2026'], datasets: [{ label: 'Điểm chuẩn trường', data: [item.diemChuan2023, item.diemChuan2024, item.diemChuan2025, item.diemChuanDuKien], borderColor: '#00B4D8', backgroundColor: 'rgba(0, 180, 216, 0.15)', borderWidth: 3, fill: true, tension: 0.3, pointBackgroundColor: '#0077B6', pointRadius: 5 }, { label: 'Điểm của bạn', data: [yourScore, yourScore, yourScore, yourScore], borderColor: '#7B2CBF', borderWidth: 2, borderDash: [6, 6], pointRadius: 0, fill: false }] },
+        options: { responsive: true, maintainAspectRatio: false, scales: { y: { min: Math.floor(Math.min(item.diemChuan2023, yourScore) - 2), max: Math.ceil(Math.max(item.diemChuanDuKien, yourScore) + 2) } } }
     });
 }
 
@@ -231,7 +246,7 @@ function renderWishlist() {
     if (wishlist.length === 0) return container.innerHTML = `<div class="p-8 text-center bg-gray-50 rounded-2xl border border-dashed border-gray-300 text-sm text-muted">Bạn chưa thêm nguyện vọng nào.</div>`;
     wishlist.forEach((item, index) => {
         const row = document.createElement('div'); row.className = 'p-4 rounded-2xl bg-white border border-gray-200 shadow-sm flex items-center justify-between gap-4 cursor-grab hover:border-cyan transition-all';
-        row.innerHTML = `<div class="flex items-center gap-4"><div class="text-gray-400 hover:text-navy"><i data-lucide="grip-vertical" class="w-5 h-5"></i></div><div class="w-8 h-8 rounded-xl bg-cyan/10 text-cyan font-black text-sm flex items-center justify-center shrink-0">NV ${index + 1}</div><div><h4 class="font-bold text-navy text-sm">${item.majorName}</h4><p class="text-xs text-muted">${item.schoolName} • Khối ${item.group}</p></div></div><button onclick="removeFromWishlist(${index})" class="text-gray-400 hover:text-red-500 p-1.5 rounded-lg hover:bg-red-50 transition-colors"><i data-lucide="x" class="w-4 h-4"></i></button>`;
+        row.innerHTML = `<div class="flex items-center gap-4"><div class="text-gray-400 hover:text-navy"><i data-lucide="grip-vertical" class="w-5 h-5"></i></div><div class="w-8 h-8 rounded-xl bg-cyan/10 text-cyan font-black text-sm flex items-center justify-center shrink-0">NV ${index + 1}</div><div><h4 class="font-bold text-navy text-sm">${escapeHtml(item.tenNganh)}</h4><p class="text-xs text-muted">${escapeHtml(item.tenTruong)} • Khối ${escapeHtml(item.toHop)}</p></div></div><button onclick="removeFromWishlist(${index})" class="text-gray-400 hover:text-red-500 p-1.5 rounded-lg hover:bg-red-50 transition-colors"><i data-lucide="x" class="w-4 h-4"></i></button>`;
         container.appendChild(row);
     });
     lucide.createIcons();
@@ -239,11 +254,11 @@ function renderWishlist() {
 function addToWishlist(id) {
     const item = universitiesData.find(u => u.id === id); if (!item) return;
     if (wishlist.some(w => w.id === id)) return alert('Ngành học này đã có trong danh sách!');
-    wishlist.push({ ...item }); renderWishlist(); alert(`Đã thêm ${item.majorName} vào danh sách nguyện vọng!`);
+    wishlist.push({ ...item }); renderWishlist(); alert(`Đã thêm ${item.tenNganh} vào danh sách nguyện vọng!`);
 }
 function addCurrentMajorToWishlist() { if (currentExplainItem) { addToWishlist(currentExplainItem.id); closeExplainModal(); } }
 function removeFromWishlist(index) { wishlist.splice(index, 1); renderWishlist(); }
-function autoOptimizeWishlist() { wishlist.sort((a, b) => a.probability - b.probability); renderWishlist(); alert('AI đã tự động tối ưu danh sách theo cơ cấu bậc thang!'); }
+function autoOptimizeWishlist() { wishlist.sort((a, b) => a.xacSuat - b.xacSuat); renderWishlist(); alert('AI đã tự động tối ưu danh sách theo cơ cấu bậc thang!'); }
 
 function openEditScoreModal() {
     document.getElementById('edit-toan').value = userScores.toan; document.getElementById('edit-van').value = userScores.van; document.getElementById('edit-anh').value = userScores.anh;
