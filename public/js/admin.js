@@ -182,11 +182,6 @@ function toggleNewsVisibility(button) {
 }
 
 document.addEventListener('DOMContentLoaded', () => {
-    if (!checkLoginState() || getCurrentUserRole() !== 'admin') {
-        window.location.href = '/';
-        return;
-    }
-
     const savedSidebarState = localStorage.getItem('sidebarCollapsed');
     const initiallyCollapsed = savedSidebarState === null
         ? window.matchMedia('(max-width: 767px)').matches

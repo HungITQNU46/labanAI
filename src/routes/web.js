@@ -12,6 +12,9 @@ const { requireAuth, requireAdmin } = require('../middleware/authMiddleware');
 router.post('/auth/register', authController.registerUser);
 router.post('/auth/login', authController.loginUser);
 router.post('/auth/logout', authController.logoutUser);
+router.post('/auth/forgot-password', authController.requestPasswordReset);
+router.post('/auth/verify-reset-code', authController.verifyPasswordResetCode);
+router.post('/auth/reset-password', authController.resetPassword);
 
 // Các trang tĩnh & Thông tin
 router.get('/', homeController.getIndex);
