@@ -6,7 +6,12 @@ const { MongoStore } = require('connect-mongo');
 const crypto = require('crypto');
 const Admission = require('./src/models/admModel');
 const admissionSeedData = require('./data/admissionSeedData');
-require('dotenv').config();
+require('dotenv').config({ path: path.join(__dirname, '.env') });
+
+const mongoUri = process.env.MONGO_URI?.trim();
+if (!mongoUri) {
+  throw new Error('MONGO_URI chưa được cấu hình. Hãy tạo file .env từ .env.example và điền URI MongoDB.');
+}
 
 const app = express();
 const webRoutes = require('./src/routes/web');
@@ -32,7 +37,7 @@ app.use(session({
   name: 'connect.sid',
   secret: sessionSecret,
   store: MongoStore.create({
-    mongoUrl: process.env.MONGO_URI,
+    mongoUrl: mongoUri,
     collectionName: 'sessions',
     ttl: 60 * 60 * 24 * 7
   }),
@@ -56,7 +61,7 @@ app.use('/', webRoutes);
 const PORT = process.env.PORT || 3000;
 
 async function startServer() {
-  await mongoose.connect(process.env.MONGO_URI);
+  await mongoose.connect(mongoUri);
   await Admission.bulkWrite(admissionSeedData.map(({ _id, ...admission }) => ({
     updateOne: {
       filter: { _id },
