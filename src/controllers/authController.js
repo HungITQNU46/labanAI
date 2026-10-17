@@ -1,27 +1,15 @@
 const bcrypt = require('bcryptjs');
 const User = require('../models/accModel');
+const { hasStrongPassword } = require('../utils/passwordPolicy');
 
 const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const PHONE_PATTERN = /^\+?\d{8,15}$/;
-const HAS_LOWERCASE = /\p{Ll}/u;
-const HAS_UPPERCASE = /\p{Lu}/u;
-const HAS_NUMBER = /\p{N}/u;
-const HAS_SPECIAL_CHARACTER = /[^\p{L}\p{N}\s]/u;
 
 const normalizeIdentifier = (value) => String(value || '').trim();
 
 const normalizePhone = (value) => String(value || '').replace(/[\s().-]/g, '');
 
 const isValidPhone = (phone) => !phone || PHONE_PATTERN.test(phone);
-
-const hasStrongPassword = (password) => (
-    password.length >= 8
-    && Buffer.byteLength(password, 'utf8') <= 72
-    && HAS_LOWERCASE.test(password)
-    && HAS_UPPERCASE.test(password)
-    && HAS_NUMBER.test(password)
-    && HAS_SPECIAL_CHARACTER.test(password)
-);
 
 const getIdentifierFields = (identifier) => {
     if (identifier.includes('@')) {
@@ -111,7 +99,7 @@ const registerUser = async (req, res) => {
     }
 };
 
-// Xác thực thông tin đăng nhập và tạo phiên làm việc mới trên máy chủ.
+// Xác thực tài khoản người dùng hoặc quản trị viên qua cùng biểu mẫu và tạo phiên mới trên máy chủ.
 const loginUser = async (req, res) => {
     const identifier = normalizeIdentifier(req.body?.identifier);
     const identifierFields = getIdentifierFields(identifier);
