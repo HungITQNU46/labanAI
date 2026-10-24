@@ -27,8 +27,18 @@ router.get('/chatbot', requireAuth, chatbotController.getChatbot);
 
 // Phân hệ Đánh giá năng lực & Dự đoán
 router.get('/evaluation', requireAuth, evaluationController.getEvaluation);
+router.post('/api/evaluation/submit', requireAuth, evaluationController.submitEvaluation);
 
 // Phân hệ Quản trị viên
 router.get('/admin', requireAdmin, adminController.getAdminDashboard);
+router.get('/api/admin/consultation-stats', requireAdmin, adminController.getConsultationStatsAPI);
+router.get('/api/admin/major-detail/:majorName', requireAdmin, adminController.getMajorDetailAPI);
+router.get('/api/admin/all-recommended-majors', adminController.getAllRecommendedMajorsAPI);
+router.get('/api/admin/realtime-metrics', requireAdmin, adminController.getRealtimeMetricsAPI);
+router.patch('/api/admin/users/:id/toggle-status', requireAdmin, adminController.toggleUserStatusAPI);
+router.patch('/api/admin/users/batch-status', requireAdmin, adminController.batchUpdateUserStatusAPI);
 
 module.exports = router;
+
+
+

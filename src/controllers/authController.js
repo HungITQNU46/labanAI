@@ -171,7 +171,7 @@ const setAuthenticatedSession = (req, user) => new Promise((resolve, reject) => 
     req.session.regenerate((error) => {
         if (error) return reject(error);
         req.session.user = {
-            id: user._id.toString(),
+            id: String(user._id),
             name: user.hoTen,
             role: user.role,
             email: user.email || null,

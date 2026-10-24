@@ -47,7 +47,7 @@ const taiKhoanSchema = new mongoose.Schema({
     }
 }, {
     timestamps: true,
-    id: false,
+    id: true,
     toJSON: {
         virtuals: true,
         transform(_document, result) {
