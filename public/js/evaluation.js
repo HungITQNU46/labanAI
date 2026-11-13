@@ -142,15 +142,62 @@ document.getElementById('btn-submit').addEventListener('click', () => {
 });
 
 let myChart = null;
+
 function renderChart() {
-    const ctx = document.getElementById('riasecChart').getContext('2d');
+    const canvas = document.getElementById('riasecChart');
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
     if (myChart) myChart.destroy();
+
+    const isDark = document.documentElement.classList.contains('dark');
+    const gridColor = isDark ? 'rgba(0, 229, 255, 0.18)' : 'rgba(15, 23, 42, 0.1)';
+    const labelColor = isDark ? '#F8FAFC' : '#0F172A';
+
     myChart = new Chart(ctx, {
         type: 'radar',
-        data: { labels: ['Thực tế (R)', 'Nghiên cứu (I)', 'Sáng tạo (A)', 'Xã hội (S)', 'Quản lý (E)', 'Nghiệp vụ (C)'], datasets: [{ data: [38, 44, 31, 40, 35, 28], backgroundColor: 'rgba(0, 180, 216, 0.25)', borderColor: 'rgba(0, 180, 216, 1)', pointBackgroundColor: 'rgba(123, 44, 191, 1)', borderWidth: 2, pointRadius: 4 }] },
-        options: { responsive: true, maintainAspectRatio: false, layout: { padding: 25 }, scales: { r: { angleLines: { color: 'rgba(15, 23, 42, 0.1)' }, grid: { color: 'rgba(15, 23, 42, 0.1)', circular: true }, pointLabels: { font: { size: 12, family: "'Inter', sans-serif", weight: 'bold' }, color: '#0F172A', padding: 15 }, min: 0, max: 50, ticks: { display: false } } }, plugins: { legend: { display: false } } }
+        data: {
+            labels: ['Thực tế (R)', 'Nghiên cứu (I)', 'Sáng tạo (A)', 'Xã hội (S)', 'Quản lý (E)', 'Nghiệp vụ (C)'],
+            datasets: [{
+                data: [38, 44, 31, 40, 35, 28],
+                backgroundColor: isDark ? 'rgba(0, 229, 255, 0.22)' : 'rgba(0, 180, 216, 0.25)',
+                borderColor: isDark ? '#00E5FF' : '#00B4D8',
+                pointBackgroundColor: isDark ? '#A855F7' : '#7B2CBF',
+                borderWidth: 2,
+                pointRadius: 4
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            layout: { padding: 25 },
+            scales: {
+                r: {
+                    angleLines: { color: gridColor },
+                    grid: { color: gridColor, circular: true },
+                    pointLabels: {
+                        font: { size: 12, family: "'Inter', sans-serif", weight: 'bold' },
+                        color: labelColor,
+                        padding: 15
+                    },
+                    min: 0,
+                    max: 50,
+                    ticks: { display: false }
+                }
+            },
+            plugins: { legend: { display: false } }
+        }
     });
 }
+
+window.addEventListener('laban:themechange', () => {
+    if (typeof currentStep !== 'undefined' && currentStep === 3) {
+        renderChart();
+    }
+});
+
+window.addEventListener('laban:themechange', () => {
+    if (currentStep === 3) renderChart();
+});
 
 function triggerChatbotModal() { window.location.href = '/chatbot'; }
 

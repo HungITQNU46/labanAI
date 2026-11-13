@@ -40,20 +40,18 @@ function applySidebarState() {
     const sidebar = document.getElementById('sidebar');
     const mainWrapper = document.getElementById('main-wrapper');
     const topHeader = document.getElementById('top-header'); 
-    const bottomNav = document.getElementById('bottom-nav-bar'); // Thanh đáy trang Đánh giá
-    const chatBottomBar = document.getElementById('chat-bottom-bar'); // Thanh đáy trang Chatbot
+    const bottomNav = document.getElementById('bottom-nav-bar');
+    const chatBottomBar = document.getElementById('chat-bottom-bar');
     
     if (!sidebar) return;
 
     if (isSidebarCollapsed) {
-        // Trạng thái thu gọn Sidebar
         sidebar.classList.add('-translate-x-full');
         if (mainWrapper) mainWrapper.classList.remove('md:pl-64');
         if (topHeader) topHeader.classList.remove('md:left-64');
         if (bottomNav) bottomNav.classList.remove('md:left-64');
         if (chatBottomBar) chatBottomBar.classList.remove('md:left-64');
     } else {
-        // Trạng thái mở rộng Sidebar
         sidebar.classList.remove('-translate-x-full');
         if (mainWrapper) mainWrapper.classList.add('md:pl-64');
         if (topHeader) topHeader.classList.add('md:left-64');
@@ -90,7 +88,6 @@ function renderLayout(activeMenuId) {
                             <a href="/news" class="${activeMenuId === 'nav-news' ? 'text-cyan font-bold' : 'hover:text-cyan transition-colors'}">Tin tức</a>
                             <a href="/guide" class="${activeMenuId === 'nav-guide' ? 'text-cyan font-bold' : 'hover:text-cyan transition-colors'}">Hướng dẫn</a>
                             <a href="/about" class="${activeMenuId === 'nav-about' ? 'text-cyan font-bold' : 'hover:text-cyan transition-colors'}">Về chúng tôi</a>
-                            
                         </nav>
                         <div class="flex items-center gap-2">
                             <button type="button" onclick="openAuthModal('login')" class="rounded-xl px-3 py-2 text-sm font-bold text-cyan hover:bg-cyan/10 transition-colors">Đăng nhập</button>
@@ -113,7 +110,6 @@ function renderLayout(activeMenuId) {
                 </div>
             </div>
         `;
-
 
         loggedInHTML += `
             <aside id="sidebar" class="fixed top-0 left-0 h-screen w-64 glass-card border-r border-navy/10 z-[60] flex flex-col bg-surface/95 backdrop-blur-xl shadow-2xl transition-transform duration-300 ease-out pt-24">
@@ -141,13 +137,11 @@ function renderLayout(activeMenuId) {
     if (typeof lucide !== 'undefined') lucide.createIcons();
 }
 
-// Bắt đầu hành động chính từ trang chủ, đưa người dùng về đăng nhập hoặc sang trang đánh giá nếu đã đăng nhập.
 function handleStartAction() {
     if (!checkLoginState()) openAuthModal(); 
     else window.location.href = '/evaluation'; 
 }
 
-// Mở chức năng chatbot nếu người dùng đã đăng nhập, nếu chưa thì yêu cầu đăng nhập.
 function handleChatbotAction() {
     if (!checkLoginState()) openAuthModal(); 
     else window.location.href = '/chatbot'; 
@@ -197,18 +191,16 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 });
 
-// Hiển thị popup đăng nhập/đăng ký trên giao diện người dùng.
 function openAuthModal(tab = 'login') {
     const modal = document.getElementById('auth-modal');
     if (modal) { modal.classList.remove('hidden'); modal.classList.add('flex'); switchAuthTab(tab); }
 }
-// Ẩn popup đăng nhập/đăng ký khi người dùng đóng hoặc hoàn tất thao tác.
+
 function closeAuthModal() {
     const modal = document.getElementById('auth-modal');
     if (modal) { modal.classList.add('hidden'); modal.classList.remove('flex'); }
 }
 
-// Chuyển đổi giữa tab Đăng nhập và Đăng ký trong modal chung của hệ thống.
 function switchAuthTab(tab) {
     const loginForm = document.getElementById('form-login'), registerForm = document.getElementById('form-register');
     const tabLogin = document.getElementById('tab-login'), tabRegister = document.getElementById('tab-register');
@@ -253,7 +245,6 @@ async function submitAuthForm(endpoint, form) {
     }
 }
 
-// Gửi thông tin đăng nhập và điều hướng theo quyền do máy chủ trả về.
 async function loginUser(event) {
     event.preventDefault();
     try {
@@ -264,7 +255,6 @@ async function loginUser(event) {
     }
 }
 
-// Tạo tài khoản mới; sau khi thành công chuyển sang tab đăng nhập.
 async function registerUser(event) {
     event.preventDefault();
     const form = event.currentTarget;
@@ -295,3 +285,114 @@ async function registerUser(event) {
 if (new URLSearchParams(window.location.search).get('auth') === 'login') {
     document.addEventListener('DOMContentLoaded', () => openAuthModal('login'));
 }
+
+// ==========================================
+// NÚT GẠT GIAO DIỆN KÉP (LIGHT LUXURY & DARK CYBER)
+// ==========================================
+function toggleThemeMode() {
+    const html = document.documentElement;
+    const isNowDark = html.classList.toggle('dark');
+    localStorage.setItem('laban_theme', isNowDark ? 'dark' : 'light');
+
+    const switchBtn = document.getElementById('theme-switch-btn');
+    if (switchBtn) {
+        switchBtn.setAttribute('aria-checked', String(isNowDark));
+        switchBtn.setAttribute(
+            'title',
+            isNowDark ? 'Đang dùng Dark Cyber — Nhấn để sang Light Luxury' : 'Đang dùng Light Luxury — Nhấn để sang Dark Cyber'
+        );
+    }
+
+    window.dispatchEvent(new CustomEvent('laban:themechange', {
+        detail: { isDark: isNowDark }
+    }));
+}
+
+function mountThemeToggleSwitch() {
+    // Tự động xóa bỏ nút cũ (#theme-toggle-btn) nếu còn tồn tại trong DOM
+    document.getElementById('theme-toggle-btn')?.remove();
+
+    if (document.getElementById('theme-switch-btn')) return;
+
+    
+
+    const isDark = document.documentElement.classList.contains('dark');
+    const toggleHTML = `
+        <button
+            id="theme-switch-btn"
+            type="button"
+            role="switch"
+            aria-checked="${isDark}"
+            aria-label="Chuyển đổi chế độ Sáng và Tối"
+            title="${isDark ? 'Đang dùng Dark Cyber — Nhấn để sang Light Luxury' : 'Đang dùng Light Luxury — Nhấn để sang Dark Cyber'}"
+            onclick="toggleThemeMode()"
+            class="theme-switch-pill"
+        >
+            <span class="theme-switch-thumb" aria-hidden="true"></span>
+            <span class="theme-switch-icon sun-icon" aria-hidden="true">
+                <i data-lucide="sun" class="w-3.5 h-3.5 stroke-[2.4]"></i>
+            </span>
+            <span class="theme-switch-icon moon-icon" aria-hidden="true">
+                <i data-lucide="moon-star" class="w-3.5 h-3.5 stroke-[2.2]"></i>
+            </span>
+        </button>
+    `;
+
+    document.body.insertAdjacentHTML('beforeend', toggleHTML);
+    if (typeof lucide !== 'undefined') lucide.createIcons();
+}
+
+document.addEventListener('DOMContentLoaded', mountThemeToggleSwitch);
+
+
+function toggleThemeMode() {
+    const html = document.documentElement;
+    const isNowDark = html.classList.toggle('dark');
+    localStorage.setItem('laban_theme', isNowDark ? 'dark' : 'light');
+
+    const switchBtn = document.getElementById('theme-switch-btn');
+    if (switchBtn) {
+        switchBtn.setAttribute('aria-checked', String(isNowDark));
+        switchBtn.setAttribute(
+            'title',
+            isNowDark ? 'Đang dùng Dark Cyber — Nhấn để sang Light Luxury' : 'Đang dùng Light Luxury — Nhấn để sang Dark Cyber'
+        );
+    }
+
+    window.dispatchEvent(new CustomEvent('laban:themechange', {
+        detail: { isDark: isNowDark }
+    }));
+}
+
+function mountThemeToggleSwitch() {
+    // Xóa nút cũ nếu còn tồn tại
+    document.getElementById('theme-toggle-btn')?.remove();
+    if (document.getElementById('theme-switch-btn')) return;
+
+    const isDark = document.documentElement.classList.contains('dark');
+    const toggleHTML = `
+        <button
+            id="theme-switch-btn"
+            type="button"
+            role="switch"
+            aria-checked="${isDark}"
+            aria-label="Chuyển đổi chế độ Sáng và Tối"
+            title="${isDark ? 'Đang dùng Dark Cyber — Nhấn để sang Light Luxury' : 'Đang dùng Light Luxury — Nhấn để sang Dark Cyber'}"
+            onclick="toggleThemeMode()"
+            class="theme-switch-pill"
+        >
+            <span class="theme-switch-thumb" aria-hidden="true"></span>
+            <span class="theme-switch-icon sun-icon" aria-hidden="true">
+                <i data-lucide="sun" class="w-3.5 h-3.5 stroke-[2.4]"></i>
+            </span>
+            <span class="theme-switch-icon moon-icon" aria-hidden="true">
+                <i data-lucide="moon-star" class="w-3.5 h-3.5 stroke-[2.2]"></i>
+            </span>
+        </button>
+    `;
+
+    document.body.insertAdjacentHTML('beforeend', toggleHTML);
+    if (typeof lucide !== 'undefined') lucide.createIcons();
+}
+
+document.addEventListener('DOMContentLoaded', mountThemeToggleSwitch);
