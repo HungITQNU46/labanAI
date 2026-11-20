@@ -6,6 +6,9 @@ const homeController = require('../controllers/homeController');
 const chatbotController = require('../controllers/chatbotController');
 const evaluationController = require('../controllers/evaluationController');
 const adminController = require('../controllers/adminController');
+
+const newsController = require('../controllers/newsController');//tintuc
+
 const { requireAuth, requireAdmin } = require('../middleware/authMiddleware');
 
 // Xác thực tài khoản
@@ -27,5 +30,8 @@ router.get('/evaluation', requireAuth, evaluationController.getEvaluation);
 
 // Phân hệ Quản trị viên
 router.get('/admin', requireAdmin, adminController.getAdminDashboard);
+
+router.get('/api/news', newsController.getAllNews);//tintuc
+router.post('/api/news/sync', newsController.syncNews);//tintuc
 
 module.exports = router;
