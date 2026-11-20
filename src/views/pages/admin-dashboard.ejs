@@ -1,5 +1,23 @@
 <%- include('../partials/header') %>
 
+<!-- Thư viện chọn ngày chuẩn ngày/tháng/năm Flatpickr -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+<style>
+    .flatpickr-calendar { font-family: inherit; border-radius: 1rem; box-shadow: 0 20px 25px -5px rgba(15, 23, 42, 0.15); z-index: 99999 !important; }
+    .flatpickr-day.selected { background: #00B4D8 !important; border-color: #00B4D8 !important; }
+    
+</style>
+
+<%
+    const safeStats = (typeof stats !== 'undefined' && stats) ? stats : { totalUsers: 0, totalEvaluations: 0, totalNews: 5 };
+    const safeSubtitle = (typeof chartSubtitle !== 'undefined' && chartSubtitle) ? chartSubtitle : 'Số lượt hoàn thành bài đánh giá hướng nghiệp Hollands<br>trong 7 ngày gần nhất<br>(12/10/2026 - 18/10/2026)';
+    const safeMajors = (typeof popularMajors !== 'undefined' && Array.isArray(popularMajors)) ? popularMajors : [];
+    const safeUsers = (typeof users !== 'undefined' && Array.isArray(users)) ? users : [];
+
+    const totalStudentsCount = safeUsers.filter(u => (u.role || 'user') === 'user').length;
+    const totalAdminsCount = safeUsers.filter(u => u.role === 'admin').length;
+%>
+
 <button id="admin-brand-toggle" type="button" onclick="toggleAdminSidebar()" class="fixed left-4 top-3.5 z-[70] flex items-center gap-3 bg-transparent p-0 text-left sm:left-8" title="Nhấn vào logo để ẩn thanh điều hướng" aria-expanded="true">
     <span class="flex h-11 w-11 shrink-0 items-center justify-center rounded-[14px] bg-gradient-to-b from-[#00B4D8] to-[#7B2CBF] text-white shadow-md shadow-cyan/20 transition-transform duration-300 ease-out hover:rotate-45">
         <i data-lucide="compass" class="h-6 w-6 stroke-[2.2]"></i>
@@ -9,17 +27,18 @@
         <span class="mt-1 block text-[8.5px] font-bold uppercase tracking-widest text-slate-400">CHỌN NGÀNH, CHỌN TƯƠNG LAI</span>
     </span>
 </button>
+
 <div id="main-wrapper" class="min-h-screen w-full bg-background transition-all duration-300 md:ml-64">
     <button id="admin-sidebar-backdrop" type="button" onclick="toggleAdminSidebar()" class="fixed inset-0 z-[50] hidden bg-navy/40 md:hidden" aria-label="Đóng thanh điều hướng"></button>
     <aside id="admin-sidebar" class="fixed left-0 top-0 z-[60] flex h-screen w-64 -translate-x-full flex-col border-r border-navy/10 bg-surface/95 shadow-2xl backdrop-blur-xl transition-transform duration-300 md:translate-x-0">
         <nav class="flex-1 space-y-2 overflow-y-auto px-4 pb-7 pt-24 text-sm font-semibold">
-            <button type="button" data-target="dashboard" class="admin-nav active flex w-full items-center justify-between gap-3 rounded-2xl border border-transparent bg-cyan/10 px-4 py-4 text-left text-cyan transition-colors hover:bg-cyan/10">
+            <button type="button" data-target="dashboard" onclick="activateAdminPanel('dashboard')" class="admin-nav active flex w-full items-center justify-between gap-3 rounded-2xl border border-transparent bg-cyan/10 px-4 py-4 text-left text-cyan transition-colors hover:bg-cyan/10">
                 <span class="flex items-center gap-3"><i data-lucide="layout-dashboard" class="h-5 w-5"></i> Trung tâm điều khiển</span>
             </button>
-            <button type="button" data-target="accounts" class="admin-nav flex w-full items-center gap-3 rounded-2xl border border-transparent px-4 py-4 text-left text-muted transition-colors hover:bg-navy/5 hover:text-cyan">
+            <button type="button" data-target="accounts" onclick="activateAdminPanel('accounts')" class="admin-nav flex w-full items-center gap-3 rounded-2xl border border-transparent px-4 py-4 text-left text-muted transition-colors hover:bg-navy/5 hover:text-cyan">
                 <i data-lucide="users" class="h-5 w-5"></i> Quản lý tài khoản
             </button>
-            <button type="button" data-target="news" class="admin-nav flex w-full items-center gap-3 rounded-2xl border border-transparent px-4 py-4 text-left text-muted transition-colors hover:bg-navy/5 hover:text-cyan">
+            <button type="button" data-target="news" onclick="activateAdminPanel('news')" class="admin-nav flex w-full items-center gap-3 rounded-2xl border border-transparent px-4 py-4 text-left text-muted transition-colors hover:bg-navy/5 hover:text-cyan">
                 <i data-lucide="newspaper" class="h-5 w-5"></i> Quản lý tin tức
             </button>
         </nav>
@@ -32,235 +51,439 @@
     </aside>
 
     <main class="min-h-screen px-4 py-6 pt-20 sm:px-6 lg:px-8 md:pt-6">
-        <div class="mx-auto max-w-7xl">
-                <section id="dashboard" class="admin-panel space-y-6">
-                    <div class="glass-card rounded-3xl border border-navy/5 p-5 shadow-lg">
-                        <div class="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
-                            <div>
-                                <h2 class="mt-3 text-2xl font-black text-navy">Trung tâm điều khiển</h2>
-                            </div>
-                            <div class="flex flex-wrap items-center gap-3">
-                                <button id="export-dashboard" type="button" class="inline-flex items-center gap-2 rounded-xl bg-gradient-to-r from-cyan to-violet px-4 py-2.5 text-sm font-bold text-white shadow-sm transition hover:opacity-90">
-                                    <i data-lucide="download" class="h-4 w-4"></i>
-                                    Xuất Excel
-                                </button>
-                                <div class="flex items-center gap-2 rounded-2xl border border-navy/10 bg-slate-50 px-3 py-2 text-xs font-semibold text-muted">
-                                    <span class="h-2.5 w-2.5 rounded-full bg-emerald-500"></span>
-                                    Hệ thống hoạt động bình thường
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+        <div class="mx-auto max-w-7xl space-y-6">
 
-                    <div class="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
-                        <div data-export-summary class="glass-card rounded-3xl border border-navy/5 p-5 shadow-sm">
-                            <div class="flex items-center justify-between">
-                                <p class="text-xs font-bold uppercase tracking-[0.18em] text-muted">Người dùng</p>
-                                <span class="rounded-xl bg-cyan/10 p-2 text-cyan"><i data-lucide="users" class="w-4 h-4"></i></span>
-                            </div>
-                            <p class="mt-4 text-3xl font-black text-navy">12.155</p>
-                        </div>
-                        <div data-export-summary class="glass-card rounded-3xl border border-navy/5 p-5 shadow-sm">
-                            <div class="flex items-center justify-between">
-                                <p class="text-xs font-bold uppercase tracking-[0.18em] text-muted">Đã làm bài đánh giá</p>
-                                <span class="rounded-xl bg-emerald/10 p-2 text-emerald"><i data-lucide="newspaper" class="w-4 h-4"></i></span>
-                            </div>
-                            <p class="mt-4 text-3xl font-black text-navy">8.742</p>
-                        </div>
-                        <div data-export-summary class="glass-card rounded-3xl border border-navy/5 p-5 shadow-sm">
-                            <div class="flex items-center justify-between">
-                                <p class="text-xs font-bold uppercase tracking-[0.18em] text-muted">Số lượng bài viết</p>
-                                <span class="rounded-xl bg-amber/10 p-2 text-amber-500"><i data-lucide="newspaper" class="w-4 h-4"></i></span>
-                            </div>
-                            <p class="mt-4 text-3xl font-black text-navy">58</p>
-                        </div>
-                    </div>
+            <!-- THANH THÔNG BÁO DỮ LIỆU REALTIME TRỰC TIẾP -->
+            <div class="fixed right-4 top-4 z-[50] sm:right-8 flex items-center gap-2 text-xs font-semibold text-slate-400 select-none pointer-events-none">
+                <span class="relative flex h-2 w-2">
+                    <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-cyan opacity-75"></span>
+                    <span class="relative inline-flex rounded-full h-2 w-2 bg-cyan"></span>
+                </span>
+                <span id="admin-access-time-display">Theo dõi từ: --:-- (--/--)</span>
+            </div>
 
-                    <div class="grid gap-6 xl:grid-cols-[1.4fr_1fr]">
-                        <section class="glass-card overflow-hidden rounded-2xl border border-navy/10 shadow-sm">
-                            <div class="flex flex-col gap-4 border-b border-navy/10 px-6 py-6 sm:flex-row sm:items-center sm:justify-between">
-                                <div>
-                                    <h3 class="text-2xl font-bold text-navy">Hoạt động tư vấn</h3>
-                                    <p class="mt-1 text-sm text-muted">Số lượt hoàn thành trong 7 ngày gần nhất</p>
-                                </div>
-                                <div class="flex items-center justify-between gap-4 rounded-md border border-navy/10 px-4 py-3 text-sm text-muted sm:min-w-48">
-                                    <span>7 ngày qua</span>
-                                    <i data-lucide="chevron-down" class="h-5 w-5"></i>
-                                </div>
-                            </div>
-                            <div class="px-6 pb-6 pt-8 sm:px-10 sm:pt-10">
-                                <div role="img" aria-label="Biểu đồ hoạt động tư vấn từ thứ Hai đến Chủ nhật" class="relative h-56 border-b border-navy/10 sm:h-64">
-                                    <div class="absolute inset-x-0 top-1/4 border-t-2 border-slate-100"></div>
-                                    <div class="absolute inset-x-0 top-2/4 border-t-2 border-slate-100"></div>
-                                    <div class="absolute inset-x-0 top-3/4 border-t-2 border-slate-100"></div>
-                                    <div class="absolute inset-0 flex items-end justify-around gap-3">
-                                        <div class="h-[54%] w-[7%] rounded-t-md bg-cyan/30"></div>
-                                        <div class="h-[71%] w-[7%] rounded-t-md bg-violet/35"></div>
-                                        <div class="h-[46%] w-[7%] rounded-t-md bg-cyan/30"></div>
-                                        <div class="h-[92%] w-[7%] rounded-t-md bg-ocean"></div>
-                                        <div class="h-[77%] w-[7%] rounded-t-md bg-cyan/40"></div>
-                                        <div class="h-[64%] w-[7%] rounded-t-md bg-violet/35"></div>
-                                        <div class="h-[85%] w-[7%] rounded-t-md bg-cyan/40"></div>
-                                    </div>
-                                </div>
-                                <div class="flex justify-around gap-3 pt-4 text-sm text-muted" aria-hidden="true">
-                                    <span>T2</span>
-                                    <span>T3</span>
-                                    <span>T4</span>
-                                    <span>T5</span>
-                                    <span>T6</span>
-                                    <span>T7</span>
-                                    <span>CN</span>
-                                </div>
-                            </div>
-                        </section>
-
-                        <section class="glass-card rounded-2xl border border-navy/10 p-6 shadow-sm sm:p-8">
-                            <div class="flex items-start justify-between gap-3">
-                                <div>
-                                    <h3 class="text-2xl font-bold text-navy">Ngành được quan tâm</h3>
-                                    <p class="mt-1 text-sm text-muted">Phân bổ từ các kết quả tư vấn</p>
-                                </div>
-                                <span class="mt-1 whitespace-nowrap text-sm font-bold text-ocean">Chi tiết ↗</span>
-                            </div>
-                            <ol data-export-majors class="mt-8">
-                                <li class="flex items-center gap-4 border-b border-navy/10 py-5 first:pt-2">
-                                    <span class="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-cyan/10 font-bold text-ocean">01</span>
-                                    <div class="min-w-0 flex-1">
-                                        <p class="font-bold text-navy">Công nghệ thông tin</p>
-                                        <p class="mt-1 text-sm text-muted">32% lượt gợi ý</p>
-                                    </div>
-                                    <span class="text-xl font-bold text-ocean">32%</span>
-                                </li>
-                                <li class="flex items-center gap-4 border-b border-navy/10 py-5">
-                                    <span class="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-violet/10 font-bold text-violet">02</span>
-                                    <div class="min-w-0 flex-1">
-                                        <p class="font-bold text-navy">Thiết kế đồ họa</p>
-                                        <p class="mt-1 text-sm text-muted">24% lượt gợi ý</p>
-                                    </div>
-                                    <span class="text-xl font-bold text-ocean">24%</span>
-                                </li>
-                                <li class="flex items-center gap-4 py-5">
-                                    <span class="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-ocean/10 font-bold text-ocean">03</span>
-                                    <div class="min-w-0 flex-1">
-                                        <p class="font-bold text-navy">Quản trị kinh doanh</p>
-                                        <p class="mt-1 text-sm text-muted">18% lượt gợi ý</p>
-                                    </div>
-                                    <span class="text-xl font-bold text-ocean">18%</span>
-                                </li>
-                            </ol>
-                        </section>
-                    </div>
-
-                </section>
-
-                <section id="accounts" class="admin-panel hidden">
-                    <div class="glass-card rounded-3xl border border-navy/5 p-5 shadow-lg">
-                        <div class="mb-4 flex items-center justify-between">
-                            <h3 class="text-3xl font-black text-navy">Quản lý tài khoản người dùng</h3>
-                            <button id="export-accounts" type="button" class="inline-flex items-center gap-2 rounded-2xl border border-cyan/20 bg-cyan/10 px-4 py-2.5 text-sm font-bold text-cyan transition hover:bg-cyan/15">
+            <!-- PANEL 1: TRUNG TÂM ĐIỀU KHIỂN -->
+            <section id="dashboard" class="admin-panel space-y-6">
+                <div class="glass-card rounded-3xl border border-navy/5 p-5 shadow-lg">
+                    <div class="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
+                        <h3 class="text-3xl font-black text-navy">Trung tâm điều khiển</h3>
+                        <div class="flex flex-wrap items-center gap-3">
+                            <button id="export-dashboard" type="button" class="inline-flex items-center gap-2 rounded-2xl border border-cyan/20 bg-cyan/10 px-4 py-2.5 text-sm font-bold text-cyan transition hover:bg-cyan/15">
                                 <i data-lucide="download" class="h-4 w-4"></i>
                                 Xuất Excel
                             </button>
                         </div>
-
-                        <div class="overflow-x-auto rounded-2xl border border-navy/10 bg-white/70">
-                            <table class="min-w-full text-left text-sm text-navy">
-                                <thead class="bg-slate-50 text-xs uppercase tracking-[0.12em] text-muted">
-                                    <tr>
-                                        <th class="px-4 py-3 font-bold">Tên</th>
-                                        <th class="px-4 py-3 font-bold">Email</th>
-                                        <th class="px-4 py-3 font-bold">Vai trò</th>
-                                        <th class="px-4 py-3 font-bold">Trạng thái</th>
-                                        <th class="px-4 py-3 font-bold text-right">Thao tác</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <tr class="border-t border-navy/5">
-                                        <td class="px-4 py-3 font-semibold">Đoàn Nguyễn Gia Hưng</td>
-                                        <td class="px-4 py-3">giahung@gmail.com</td>
-                                        <td class="px-4 py-3"><span class="rounded-full bg-cyan/10 px-2 py-1 text-[11px] font-bold text-cyan">Người dùng</span></td>
-                                        <td class="px-4 py-3"><span class="rounded-full bg-emerald-100 px-2 py-1 text-[11px] font-bold text-emerald-700">Hoạt động</span></td>
-                                        <td class="px-4 py-3 text-right space-x-2">
-                                            <button type="button" class="rounded-xl border border-cyan/30 bg-cyan/5 px-2.5 py-1.5 text-[11px] font-bold text-cyan">Đặt lại mật khẩu</button>
-                                            <button type="button" class="rounded-xl border border-red-200 bg-red-50 px-2.5 py-1.5 text-[11px] font-bold text-red-600">Khóa tài khoản</button>
-                                        </td>
-                                    </tr>
-                                    <tr class="border-t border-navy/5">
-                                        <td class="px-4 py-3 font-semibold">Văn Minh Thanh Thiệu</td>
-                                        <td class="px-4 py-3">thanhthieu@gmail.com</td>
-                                        <td class="px-4 py-3"><span class="rounded-full bg-cyan/10 px-2 py-1 text-[11px] font-bold text-cyan">Người dùng</span></td>
-                                        <td class="px-4 py-3"><span class="rounded-full bg-emerald-100 px-2 py-1 text-[11px] font-bold text-emerald-700">Hoạt động</span></td>
-                                        <td class="px-4 py-3 text-right space-x-2">
-                                            <button type="button" class="rounded-xl border border-cyan/30 bg-cyan/5 px-2.5 py-1.5 text-[11px] font-bold text-cyan">Đặt lại mật khẩu</button>
-                                            <button type="button" class="rounded-xl border border-red-200 bg-red-50 px-2.5 py-1.5 text-[11px] font-bold text-red-600">Khóa tài khoản</button>
-                                        </td>
-                                    </tr>
-                                    <tr class="border-t border-navy/5">
-                                        <td class="px-4 py-3 font-semibold">Cao Thị Thanh Ngân</td>
-                                        <td class="px-4 py-3">thanhngan@gmail.com</td>
-                                        <td class="px-4 py-3"><span class="rounded-full bg-cyan/10 px-2 py-1 text-[11px] font-bold text-cyan">Người dùng</span></td>
-                                        <td class="px-4 py-3"><span class="rounded-full bg-emerald-100 px-2 py-1 text-[11px] font-bold text-emerald-700">Hoạt động</span></td>
-                                        <td class="px-4 py-3 text-right space-x-2">
-                                            <button type="button" class="rounded-xl border border-cyan/30 bg-cyan/5 px-2.5 py-1.5 text-[11px] font-bold text-cyan">Đặt lại mật khẩu</button>
-                                            <button type="button" class="rounded-xl border border-red-200 bg-red-50 px-2.5 py-1.5 text-[11px] font-bold text-red-600">Khóa tài khoản</button>
-                                        </td>
-                                    </tr>
-                                    <tr class="border-t border-navy/5">
-                                        <td class="px-4 py-3 font-semibold">Nguyễn Nhất Nguyên</td>
-                                        <td class="px-4 py-3">nhatnguyen@gmail.com</td>
-                                        <td class="px-4 py-3"><span class="rounded-full bg-cyan/10 px-2 py-1 text-[11px] font-bold text-cyan">Người dùng</span></td>
-                                        <td class="px-4 py-3"><span class="rounded-full bg-emerald-100 px-2 py-1 text-[11px] font-bold text-emerald-700">Hoạt động</span></td>
-                                        <td class="px-4 py-3 text-right space-x-2">
-                                            <button type="button" class="rounded-xl border border-cyan/30 bg-cyan/5 px-2.5 py-1.5 text-[11px] font-bold text-cyan">Đặt lại mật khẩu</button>
-                                            <button type="button" class="rounded-xl border border-red-200 bg-red-50 px-2.5 py-1.5 text-[11px] font-bold text-red-600">Khóa tài khoản</button>
-                                        </td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                        </div>
                     </div>
-                </section>
+                </div>
 
-                <section id="news" class="admin-panel hidden">
-                    <div class="glass-card rounded-3xl border border-navy/5 p-5 shadow-lg">
-                        <div class="mb-4 flex items-center justify-between">
-                            <h3 class="text-3xl font-black text-navy">Quản lý tin tức</h3>
-                            <button type="button" class="rounded-2xl bg-cyan/10 px-4 py-2.5 text-sm font-bold text-cyan border border-cyan/20">+ Tạo bài viết</button>
+                <!-- 3 Thẻ chỉ số tổng quan (Có Badge hiển thị số lượng mới) -->
+                <div class="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
+                    <!-- Thẻ 1: Người dùng -->
+                    <div data-export-summary onclick="activateAdminPanel('accounts')" class="glass-card rounded-3xl border border-navy/5 p-5 shadow-sm cursor-pointer hover:border-cyan hover:shadow-md transition-all group relative" title="Bấm để sang Quản lý tài khoản">
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center gap-2">
+                                <p class="text-xs font-bold uppercase tracking-[0.18em] text-muted group-hover:text-cyan transition-colors">Người dùng</p>
+                                <span id="badge-new-users" class="hidden items-center text-[10px] font-black px-2 py-0.5 rounded-full bg-cyan/15 text-cyan border border-cyan/30 animate-pulse"></span>
+                            </div>
+                            <span class="rounded-xl bg-cyan/10 p-2 text-cyan group-hover:scale-110 transition-transform"><i data-lucide="users" class="w-4 h-4"></i></span>
                         </div>
+                        <p id="metric-total-users" class="mt-4 text-3xl font-black text-navy"><%= Number(safeStats.totalUsers || 0).toLocaleString('vi-VN') %></p>
+                    </div>
 
-                        <% const managedNews = [
-                            { title: 'Thế Hệ Gen Z & Nguy Cơ Lỗi Thời: Top 5 Kỹ Năng Số Cần Chuẩn Bị Cho Kỷ Nguyên AI 2027', category: 'Xu hướng nghề & AI · Bài nổi bật', date: '01/10/2026' },
-                            { title: 'Phương Pháp 3 Chiều Chọn Ngành: Sở Thích, Điểm Thi & Mức Thu Nhập Thực Tế', category: 'Cẩm nang chọn ngành · Bài nổi bật', date: 'Bài nổi bật' },
-                            { title: 'Sinh Viên IT Năm 3 Review Thẳng Thắn: Học Công Nghệ Thông Tin Có Màu Hồng Như Lời Đồn?', category: 'Góc sinh viên · Bài nổi bật', date: 'Bài nổi bật' },
-                            { title: 'Học Kỹ Thuật Phần Mềm Năm 2026: Cần Trình Độ Tiếng Anh & Thuật Toán Như Thế Nào?', category: 'Xu hướng nghề & AI', date: '30/09/2026' },
-                            { title: 'Bí Quyết Phân Bổ Nguyện Vọng Đại Học 2026: Tránh Rủi Ro Bằng Chiến Lược Bậc Thang', category: 'Thông tin tuyển sinh', date: '27/09/2026' }
-                        ]; %>
-                        <div class="space-y-4">
-                            <% managedNews.forEach((article) => { %>
-                                <article class="rounded-2xl border border-navy/10 bg-slate-50 p-4">
-                                    <div class="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
-                                        <div class="min-w-0">
-                                            <div class="mb-2 flex flex-wrap items-center gap-2">
-                                                <span class="rounded-full bg-cyan/10 px-2.5 py-1 text-[11px] font-bold text-cyan"><%= article.category %></span>
-                                                <span class="text-xs text-muted"><%= article.date %></span>
-                                            </div>
-                                            <p class="text-base font-bold leading-relaxed text-navy"><%= article.title %></p>
+                    <!-- Thẻ 2: Số lượng tin tức -->
+                    <div data-export-summary onclick="activateAdminPanel('news')" class="glass-card rounded-3xl border border-navy/5 p-5 shadow-sm cursor-pointer hover:border-amber-400 hover:shadow-md transition-all group relative" title="Bấm để sang Quản lý tin tức">
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center gap-2">
+                                <p class="text-xs font-bold uppercase tracking-[0.18em] text-muted group-hover:text-amber-500 transition-colors">Số lượng tin tức</p>
+                                <span id="badge-new-news" class="hidden items-center text-[10px] font-black px-2 py-0.5 rounded-full bg-amber-500/15 text-amber-600 border border-amber-500/30 animate-pulse"></span>
+                            </div>
+                            <span class="rounded-xl bg-amber/10 p-2 text-amber-500 group-hover:scale-110 transition-transform"><i data-lucide="newspaper" class="w-4 h-4"></i></span>
+                        </div>
+                        <p id="metric-total-news" class="mt-4 text-3xl font-black text-navy"><%= Number(safeStats.totalNews || 0).toLocaleString('vi-VN') %></p>
+                    </div>
+
+                    <!-- Thẻ 3: Số lượt đánh giá hướng nghiệp -->
+                    <div data-export-summary class="glass-card rounded-3xl border border-navy/5 p-5 shadow-sm relative">
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center gap-2">
+                                <p class="text-xs font-bold uppercase tracking-[0.18em] text-muted">Số lượt đánh giá hướng nghiệp</p>
+                                <span id="badge-new-evaluations" class="hidden items-center text-[10px] font-black px-2 py-0.5 rounded-full bg-emerald-500/15 text-emerald-600 border border-emerald-500/30 animate-pulse"></span>
+                            </div>
+                            <span class="rounded-xl bg-emerald/10 p-2 text-emerald"><i data-lucide="file-check" class="w-4 h-4"></i></span>
+                        </div>
+                        <p id="metric-total-evaluations" class="mt-4 text-3xl font-black text-navy"><%= Number(safeStats.totalEvaluations || 0).toLocaleString('vi-VN') %></p>
+                    </div>
+                </div>
+
+                <div class="grid gap-6 xl:grid-cols-[1.4fr_1fr]">
+                    <!-- Biểu đồ Hoạt động tư vấn -->
+                    <section class="glass-card relative rounded-3xl border border-navy/5 shadow-sm flex flex-col justify-between">
+                        <div class="flex flex-col gap-3 border-b border-navy/10 px-6 py-5 sm:flex-row sm:items-center sm:justify-between min-h-[118px]">
+                            <div class="flex-1 pr-2">
+                                <h3 class="text-2xl font-bold text-navy leading-tight">Hoạt động tư vấn</h3>
+                                <p id="chart-dynamic-subtitle" class="mt-1 text-xs sm:text-sm text-muted font-medium leading-relaxed min-h-[56px] block">
+                                    <%- safeSubtitle %>
+                                </p>
+                            </div>
+                            
+                            <div class="relative shrink-0 z-40">
+                                <button id="timeframe-dropdown-btn" type="button" onclick="toggleTimeframeDropdown(event)" class="flex items-center justify-between gap-2.5 rounded-xl border border-navy/15 bg-white px-3.5 py-2.5 text-xs sm:text-sm font-bold text-navy shadow-sm min-w-[240px] hover:border-cyan transition cursor-pointer">
+                                    <span id="timeframe-label" class="flex items-center gap-2 whitespace-nowrap">
+                                        <i data-lucide="calendar" class="h-4 w-4 text-cyan shrink-0"></i>
+                                        <span>7 ngày qua</span>
+                                    </span>
+                                    <i data-lucide="chevron-down" class="h-4 w-4 text-muted transition-transform duration-200 shrink-0" id="timeframe-chevron"></i>
+                                </button>
+
+                                <div id="timeframe-dropdown-menu" onclick="event.stopPropagation()" class="absolute right-0 top-full mt-2 hidden w-[330px] h-[355px] rounded-2xl border border-slate-200 bg-white p-4 shadow-2xl z-50 flex flex-col justify-between select-none">
+                                    <div class="shrink-0">
+                                        <span class="block text-[10px] font-extrabold uppercase tracking-wider text-slate-400 mb-2">Mốc thời gian nhanh</span>
+                                        <div class="grid grid-cols-3 gap-1.5 bg-slate-100 p-1 rounded-xl">
+                                            <button type="button" id="preset-today" onclick="selectTimeframe('today', 'Hôm nay')" class="preset-btn py-1.5 px-2 rounded-lg text-xs font-bold text-slate-600 hover:text-navy transition">Hôm nay</button>
+                                            <button type="button" id="preset-7days" onclick="selectTimeframe('7days', '7 ngày qua')" class="preset-btn py-1.5 px-2 rounded-lg text-xs font-bold bg-white text-cyan shadow-sm transition">7 ngày qua</button>
+                                            <button type="button" id="preset-1month" onclick="selectTimeframe('1month', '1 tháng qua')" class="preset-btn py-1.5 px-2 rounded-lg text-xs font-bold text-slate-600 hover:text-navy transition">1 tháng qua</button>
                                         </div>
-                                        <span class="w-fit shrink-0 rounded-full bg-emerald-100 px-2.5 py-1 text-[11px] font-bold text-emerald-700">Hiện</span>
                                     </div>
-                                    <div class="mt-4 flex flex-wrap items-center justify-end gap-2">
-                                        <button type="button" class="rounded-xl border border-cyan/30 bg-cyan/5 px-3 py-1.5 text-xs font-bold text-cyan">Chỉnh sửa</button>
-                                        <button type="button" class="rounded-xl border border-amber-200 bg-amber-50 px-3 py-1.5 text-xs font-bold text-amber-700">Ẩn bài viết</button>
-                                        <button type="button" class="rounded-xl border border-red-200 bg-red-50 px-3 py-1.5 text-xs font-bold text-red-600">Xóa</button>
+
+                                    <div class="border-t border-slate-100 pt-3 flex-1 flex flex-col justify-between mt-3">
+                                        <div class="shrink-0">
+                                            <span class="block text-[10px] font-extrabold uppercase tracking-wider text-slate-400 mb-2">Tùy chỉnh lịch cụ thể</span>
+                                            <div class="grid grid-cols-2 gap-1.5 bg-slate-100 p-1 rounded-xl">
+                                                <button type="button" id="btn-mode-single" onclick="setCustomDateMode('single')" class="py-1.5 px-2 text-xs font-bold rounded-lg bg-white text-cyan shadow-sm transition">Chọn 1 ngày</button>
+                                                <button type="button" id="btn-mode-range" onclick="setCustomDateMode('range')" class="py-1.5 px-2 text-xs font-bold rounded-lg text-slate-600 hover:text-navy transition">Chọn khoảng thời gian</button>
+                                            </div>
+                                        </div>
+
+                                        <div class="relative h-[116px] w-full flex flex-col justify-center my-1">
+                                            <div id="single-date-wrapper" class="space-y-1.5">
+                                                <label class="block text-[11px] font-bold text-slate-600">Ngày cần xem thống kê:</label>
+                                                <input type="text" id="custom-single-date" placeholder="ngày/tháng/năm" readonly class="w-full rounded-xl border border-slate-200 bg-slate-50/70 px-3 py-2 text-xs font-bold text-navy outline-none cursor-pointer focus:border-cyan focus:bg-white transition" />
+                                                <p class="text-[10px] text-slate-400">Hiển thị số lượt đánh giá theo các mốc giờ trong ngày.</p>
+                                            </div>
+
+                                            <div id="range-date-wrapper" class="hidden space-y-2">
+                                                <div class="flex items-center justify-between gap-2">
+                                                    <label class="text-[11px] font-bold text-slate-600 w-16 shrink-0">Từ ngày:</label>
+                                                    <input type="text" id="custom-start-date" placeholder="ngày/tháng/năm" readonly class="flex-1 rounded-xl border border-slate-200 bg-slate-50/70 px-2.5 py-1.5 text-xs font-bold text-navy outline-none cursor-pointer focus:border-cyan focus:bg-white transition" />
+                                                </div>
+                                                <div class="flex items-center justify-between gap-2">
+                                                    <label class="text-[11px] font-bold text-slate-600 w-16 shrink-0">Đến ngày:</label>
+                                                    <input type="text" id="custom-end-date" placeholder="ngày/tháng/năm" readonly class="flex-1 rounded-xl border border-slate-200 bg-slate-50/70 px-2.5 py-1.5 text-xs font-bold text-navy outline-none cursor-pointer focus:border-cyan focus:bg-white transition" />
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <button type="button" onclick="applyCustomDateFilter()" class="w-full py-2.5 rounded-xl bg-gradient-to-r from-cyan to-ocean text-white text-xs font-bold shadow-md hover:opacity-95 transition active:scale-[0.99] shrink-0">
+                                            Áp dụng bộ lọc
+                                        </button>
                                     </div>
-                                </article>
-                            <% }); %>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="px-6 pb-6 pt-8 sm:px-8 flex-1 flex flex-col justify-end">
+                            <div class="relative h-56 sm:h-64 w-full border-b border-navy/10">
+                                <div class="absolute inset-x-0 top-1/4 border-t border-dashed border-slate-200/80 pointer-events-none"></div>
+                                <div class="absolute inset-x-0 top-2/4 border-t border-dashed border-slate-200/80 pointer-events-none"></div>
+                                <div class="absolute inset-x-0 top-3/4 border-t border-dashed border-slate-200/80 pointer-events-none"></div>
+
+                                <div id="chart-bars-container" class="relative z-10 w-full h-full flex items-end justify-between gap-1 sm:gap-2 px-1"></div>
+                            </div>
+                            <div id="chart-labels-container" class="w-full flex items-center justify-between gap-1 sm:gap-2 pt-3 px-1 min-h-[28px]"></div>
+                        </div>
+                    </section>
+
+                    <!-- THẺ: TOP NGÀNH ĐƯỢC AI ĐỀ XUẤT -->
+                    <section class="glass-card rounded-3xl border border-navy/5 p-6 shadow-sm sm:p-8 flex flex-col justify-between min-h-[380px]">
+                        <div class="flex items-start justify-between gap-3">
+                            <div>
+                                <h3 class="text-2xl font-bold text-navy leading-tight">Top ngành được AI đề xuất</h3>
+                                <p class="mt-1 text-xs sm:text-sm text-muted">Xếp hạng theo độ tương thích & tần suất AI gợi ý</p>
+                            </div>
+                            <button type="button" onclick="openAllRecommendedMajorsModal()" class="mt-1 whitespace-nowrap text-sm font-bold text-cyan hover:underline cursor-pointer flex items-center gap-1">
+                                <span>Chi tiết</span> <i data-lucide="arrow-up-right" class="w-4 h-4"></i>
+                            </button>
+                        </div>
+
+                        <div class="mt-6 flex-1 flex flex-col justify-center">
+                            <% if (safeMajors && safeMajors.length > 0) { %>
+                                <div class="space-y-4">
+                                    <% safeMajors.forEach(function(major, idx) { 
+                                        const rankStyles = [
+                                            { bg: 'bg-cyan/10', text: 'text-cyan', bar: 'bg-cyan' },
+                                            { bg: 'bg-violet/10', text: 'text-violet', bar: 'bg-violet' },
+                                            { bg: 'bg-ocean/10', text: 'text-ocean', bar: 'bg-ocean' }
+                                        ];
+                                        const c = rankStyles[idx] || rankStyles[0];
+                                    %>
+                                    <div data-major="<%= major.name %>" onclick="viewMajorDetails(this.dataset.major)" class="p-3.5 rounded-2xl bg-white border border-slate-100 hover:border-cyan/30 hover:shadow-md transition-all cursor-pointer group">
+                                        <div class="flex items-center justify-between gap-3 mb-2.5">
+                                            <div class="flex items-center gap-3 min-w-0">
+                                                <span class="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl <%= c.bg %> font-black <%= c.text %> text-sm">
+                                                    <%= major.rank %>
+                                                </span>
+                                                <div class="min-w-0">
+                                                    <div class="flex items-center gap-2">
+                                                        <p class="font-bold text-navy text-sm sm:text-base truncate group-hover:text-cyan transition-colors"><%= major.name %></p>
+                                                        <span class="text-[10px] font-bold px-2 py-0.5 rounded-md bg-emerald-50 text-emerald-700 border border-emerald-200 shrink-0">
+                                                            Độ phù hợp TB: <%= major.avgMatch || '85.0' %>%
+                                                        </span>
+                                                    </div>
+                                                    <p class="text-[11px] text-muted mt-0.5"><%= major.count || 0 %> lượt học sinh được AI đề xuất</p>
+                                                </div>
+                                            </div>
+                                            <span class="text-xl font-black <%= c.text %> shrink-0"><%= major.percentage %>%</span>
+                                        </div>
+
+                                        <div class="w-full h-2 rounded-full bg-slate-100 overflow-hidden">
+                                            <div class="h-full rounded-full <%= c.bar %> transition-all duration-500" style="width: <%= major.percentage %>%;"></div>
+                                        </div>
+                                    </div>
+                                    <% }); %>
+                                </div>
+                            <% } else { %>
+                                <div class="flex flex-col items-center justify-center py-8 px-4 text-center my-auto">
+                                    <div class="w-14 h-14 rounded-2xl bg-gradient-to-tr from-cyan/15 to-violet/10 text-cyan flex items-center justify-center mb-3 shadow-inner">
+                                        <i data-lucide="sparkles" class="w-7 h-7 stroke-[1.8]"></i>
+                                    </div>
+                                    <h4 class="text-base font-bold text-navy">Chưa có dữ liệu đề xuất</h4>
+                                    <p class="text-xs text-muted mt-1.5 max-w-xs leading-relaxed">
+                                        Bảng xếp hạng sẽ tự động cập nhật ngay khi người dùng hoàn thành bài khảo sát hướng nghiệp.
+                                    </p>
+                                </div>
+                            <% } %>
+                        </div>
+                    </section>
+                </div>
+            </section>
+
+            <!-- PANEL 2: QUẢN LÝ TÀI KHOẢN (ĐẦY ĐỦ CONTROL BAR, TABS, SEARCH, CHECKBOX) -->
+            <section id="accounts" class="admin-panel hidden space-y-4">
+                <div class="glass-card rounded-3xl border border-navy/5 p-5 shadow-lg space-y-4">
+                    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+                        <div>
+                            <h3 class="text-3xl font-black text-navy">Quản lý tài khoản người dùng</h3>
+                            
+                        </div>
+                        <button id="export-accounts" type="button" class="inline-flex items-center gap-2 rounded-2xl border border-cyan/20 bg-cyan/10 px-4 py-2.5 text-sm font-bold text-cyan transition hover:bg-cyan/15">
+                            <i data-lucide="download" class="h-4 w-4"></i>
+                            Xuất Excel
+                        </button>
+                    </div>
+
+                    <!-- THANH ĐIỀU KHIỂN: TÌM KIẾM + TABS PHÂN LOẠI + LỌC TRẠNG THÁI -->
+                    <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-3 pt-2 border-t border-navy/5">
+                        <!-- Ô tìm kiếm tức thì -->
+                        <div class="relative w-full lg:w-80">
+                            <i data-lucide="search" class="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400"></i>
+                            <input type="text" id="user-search-input" oninput="handleUserSearch(this.value)" placeholder="Tìm kiếm theo họ tên, email..." class="w-full rounded-xl border border-slate-200 bg-slate-50/80 pl-10 pr-4 py-2 text-xs font-semibold text-navy outline-none focus:border-cyan focus:bg-white transition shadow-sm" />
+                        </div>
+
+                        <div class="flex flex-wrap items-center gap-3">
+                            <!-- 3 Tabs phân loại vai trò -->
+                            <div class="flex items-center p-1 bg-slate-100 rounded-xl gap-1">
+                                <button type="button" id="tab-role-all" onclick="setUserRoleFilter('all')" class="tab-role-btn py-1.5 px-3 rounded-lg text-xs font-bold bg-white text-cyan shadow-sm transition">
+                                    Tất cả (<span id="count-role-all"><%= safeUsers.length %></span>)
+                                </button>
+                                <button type="button" id="tab-role-user" onclick="setUserRoleFilter('user')" class="tab-role-btn py-1.5 px-3 rounded-lg text-xs font-bold text-slate-600 hover:text-navy transition">
+                                    Người dùng (<span id="count-role-user"><%= totalStudentsCount %></span>)
+                                </button>
+                                <button type="button" id="tab-role-admin" onclick="setUserRoleFilter('admin')" class="tab-role-btn py-1.5 px-3 rounded-lg text-xs font-bold text-slate-600 hover:text-navy transition">
+                                    Quản trị viên (<span id="count-role-admin"><%= totalAdminsCount %></span>)
+                                </button>
+                            </div>
+
+                            <!-- Dropdown bộ lọc trạng thái -->
+                            <div class="relative">
+                                <select id="user-status-filter" onchange="setUserStatusFilter(this.value)" class="rounded-xl border border-slate-200 bg-white px-3 py-2 text-xs font-bold text-navy outline-none focus:border-cyan shadow-sm cursor-pointer">
+                                    <option value="all">Tất cả trạng thái</option>
+                                    <option value="active">Đang hoạt động</option>
+                                    <option value="locked">Đã bị khóa</option>
+                                </select>
+                            </div>
                         </div>
                     </div>
-                </section>
+
+                    <!-- BẢNG DANH SÁCH TÀI KHOẢN -->
+                    <div class="overflow-x-auto rounded-2xl border border-navy/10 bg-white/70">
+                        <table class="min-w-full text-left text-sm text-navy">
+                            <thead class="bg-slate-50 text-xs uppercase tracking-[0.12em] text-muted select-none">
+                                <tr>
+                                    <th class="px-4 py-3 font-bold w-12 text-center">
+                                        <input type="checkbox" id="check-all-users" onchange="toggleSelectAllUsers(this)" class="rounded border-slate-300 text-cyan focus:ring-cyan cursor-pointer w-4 h-4" title="Chọn tất cả" />
+                                    </th>
+                                    <th class="px-4 py-3 font-bold">Tên</th>
+                                    <th class="px-4 py-3 font-bold">Email</th>
+                                    <th class="px-4 py-3 font-bold">Vai trò</th>
+                                    <th class="px-4 py-3 font-bold">Trạng thái</th>
+                                    <th class="px-4 py-3 font-bold text-right">Thao tác</th>
+                                </tr>
+                            </thead>
+                            <tbody id="user-table-tbody">
+                                <% if (safeUsers && safeUsers.length > 0) { %>
+                                    <% safeUsers.forEach(function(u) { 
+                                        const isActive = u.trangThai !== false;
+                                        const isUserRole = (u.role || 'user') === 'user';
+                                        const uId = String(u._id || u.id);
+                                    %>
+                                    <tr id="user-row-<%= uId %>" data-user-id="<%= uId %>" data-name="<%= (u.hoTen || '').toLowerCase() %>" data-email="<%= (u.email || '').toLowerCase() %>" data-role="<%= u.role || 'user' %>" data-status="<%= isActive ? 'active' : 'locked' %>" class="user-row border-t border-navy/5 hover:bg-slate-50/60 transition-colors">
+                                        <td class="px-4 py-3 text-center">
+                                            <input type="checkbox" value="<%= uId %>" onchange="handleUserCheckboxChange()" class="user-row-checkbox rounded border-slate-300 text-cyan focus:ring-cyan cursor-pointer w-4 h-4" />
+                                        </td>
+                                        <td class="px-4 py-3 font-semibold text-navy"><%= u.hoTen || 'Người dùng' %></td>
+                                        <td class="px-4 py-3 text-slate-600"><%= u.email || 'Chưa có email' %></td>
+                                        <td class="px-4 py-3">
+                                            <span class="role-badge rounded-full <%= isUserRole ? 'bg-cyan/10 text-cyan' : 'bg-purple-100 text-purple-700' %> px-2 py-1 text-[11px] font-bold">
+                                                <%= isUserRole ? 'Người dùng' : 'Quản trị viên' %>
+                                            </span>
+                                        </td>
+                                        <td class="px-4 py-3">
+                                            <span class="status-badge rounded-full <%= isActive ? 'bg-emerald-100 text-emerald-700' : 'bg-amber-100 text-amber-700' %> px-2 py-1 text-[11px] font-bold">
+                                                <%= isActive ? 'Hoạt động' : 'Bị khóa' %>
+                                            </span>
+                                        </td>
+                                        <td class="px-4 py-3 text-right space-x-2">
+                                            <button type="button" 
+                                                    onclick="toggleUserStatus(this, '<%= uId %>')" 
+                                                    class="toggle-status-btn rounded-xl border <%= isActive ? 'border-red-200 bg-red-50 text-red-600 hover:bg-red-100' : 'border-emerald-200 bg-emerald-50 text-emerald-700 hover:bg-emerald-100' %> px-2.5 py-1.5 text-[11px] font-bold transition">
+                                                <%= isActive ? 'Khóa tài khoản' : 'Mở khóa' %>
+                                            </button>
+                                        </td>
+                                    </tr>
+                                    <% }); %>
+                                <% } else { %>
+                                    <tr>
+                                        <td colspan="6" class="px-4 py-8 text-center text-xs text-muted">
+                                            Chưa có tài khoản người dùng nào trong cơ sở dữ liệu.
+                                        </td>
+                                    </tr>
+                                <% } %>
+                                <tr id="no-search-results" class="hidden">
+                                    <td colspan="6" class="px-4 py-12 text-center text-xs text-muted">
+                                        <i data-lucide="user-x" class="w-8 h-8 text-slate-300 mx-auto mb-2"></i>
+                                        <p class="font-bold text-slate-600 text-sm">Không tìm thấy tài khoản nào</p>
+                                        <p class="mt-1">Không có tài khoản nào khớp với bộ lọc và từ khóa tìm kiếm của bạn.</p>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+            <!-- PANEL 3: QUẢN LÝ TIN TỨC -->
+            <section id="news" class="admin-panel hidden">
+                <div class="glass-card rounded-3xl border border-navy/5 p-5 shadow-lg">
+                    <div class="mb-4 flex items-center justify-between">
+                        <h3 class="text-3xl font-black text-navy">Quản lý tin tức</h3>
+                        <button type="button" class="rounded-2xl bg-cyan/10 px-4 py-2.5 text-sm font-bold text-cyan border border-cyan/20">+ Tạo bài viết</button>
+                    </div>
+
+                    <% const managedNews = [
+                        { title: 'Thế Hệ Gen Z & Nguy Cơ Lỗi Thời: Top 5 Kỹ Năng Số Cần Chuẩn Bị Cho Kỷ Nguyên AI 2027', category: 'Xu hướng nghề & AI · Bài nổi bật', date: '01/10/2026' },
+                        { title: 'Phương Pháp 3 Chiều Chọn Ngành: Sở Thích, Điểm Thi & Mức Thu Nhập Thực Tế', category: 'Cẩm nang chọn ngành · Bài nổi bật', date: 'Bài nổi bật' },
+                        { title: 'Sinh Viên IT Năm 3 Review Thẳng Thắn: Học Công Nghệ Thông Tin Có Màu Hồng Như Lời Đồn?', category: 'Góc sinh viên · Bài nổi bật', date: 'Bài nổi bật' },
+                        { title: 'Học Kỹ Thuật Phần Mềm Năm 2026: Cần Trình Độ Tiếng Anh & Thuật Toán Như Thế Nào?', category: 'Xu hướng nghề & AI', date: '30/09/2026' },
+                        { title: 'Bí Quyết Phân Bổ Nguyện Vọng Đại Học 2026: Tránh Rủi Ro Bằng Chiến Lược Bậc Thang', category: 'Thông tin tuyển sinh', date: '27/09/2026' }
+                    ]; %>
+                    <div class="space-y-4">
+                        <% managedNews.forEach(function(article) { %>
+                            <article class="rounded-2xl border border-navy/10 bg-slate-50 p-4">
+                                <div class="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+                                    <div class="min-w-0">
+                                        <div class="mb-2 flex flex-wrap items-center gap-2">
+                                            <span class="rounded-full bg-cyan/10 px-2.5 py-1 text-[11px] font-bold text-cyan"><%= article.category %></span>
+                                            <span class="text-xs text-muted"><%= article.date %></span>
+                                        </div>
+                                        <p class="text-base font-bold leading-relaxed text-navy"><%= article.title %></p>
+                                    </div>
+                                    <span class="w-fit shrink-0 rounded-full bg-emerald-100 px-2.5 py-1 text-[11px] font-bold text-emerald-700">Hiện</span>
+                                </div>
+                                <div class="mt-4 flex flex-wrap items-center justify-end gap-2">
+                                    <button type="button" class="rounded-xl border border-cyan/30 bg-cyan/5 px-3 py-1.5 text-xs font-bold text-cyan">Chỉnh sửa</button>
+                                    <button type="button" class="rounded-xl border border-amber-200 bg-amber-50 px-3 py-1.5 text-xs font-bold text-amber-700">Ẩn bài viết</button>
+                                    <button type="button" class="rounded-xl border border-red-200 bg-red-50 px-3 py-1.5 text-xs font-bold text-red-600">Xóa</button>
+                                </div>
+                            </article>
+                        <% }); %>
+                    </div>
+                </div>
+            </section>
+        </div>
+
+        <!-- THANH CÔNG CỤ NỔI THAO TÁC HÀNG LOẠT (BATCH ACTIONS TOOLBAR) -->
+        <div id="batch-action-bar" class="fixed bottom-6 left-1/2 -translate-x-1/2 z-[100] hidden items-center gap-3 sm:gap-4 rounded-2xl bg-navy/95 px-5 py-3 text-white shadow-2xl backdrop-blur-xl border border-white/10 transition-all select-none">
+            <span class="text-xs font-bold text-slate-200 whitespace-nowrap" id="batch-selected-count">Đã chọn 0 tài khoản</span>
+            <div class="h-4 w-px bg-white/20"></div>
+            <div class="flex items-center gap-2">
+                <button type="button" onclick="executeBatchAction(false)" class="rounded-xl bg-red-500/20 hover:bg-red-500/30 text-red-300 border border-red-500/30 px-3 py-1.5 text-xs font-bold transition flex items-center gap-1.5">
+                    <i data-lucide="lock" class="w-3.5 h-3.5"></i> <span>Khóa đã chọn</span>
+                </button>
+                <button type="button" onclick="executeBatchAction(true)" class="rounded-xl bg-emerald-500/20 hover:bg-emerald-500/30 text-emerald-300 border border-emerald-500/30 px-3 py-1.5 text-xs font-bold transition flex items-center gap-1.5">
+                    <i data-lucide="unlock" class="w-3.5 h-3.5"></i> <span>Mở khóa</span>
+                </button>
+                <button type="button" onclick="exportSelectedAccountsExcel()" class="rounded-xl bg-cyan/20 hover:bg-cyan/30 text-cyan border border-cyan/30 px-3 py-1.5 text-xs font-bold transition flex items-center gap-1.5">
+                    <i data-lucide="download" class="w-3.5 h-3.5"></i> <span>Xuất Excel</span>
+                </button>
+            </div>
+            <button type="button" onclick="deselectAllUsers()" class="text-slate-400 hover:text-white ml-1 p-1" title="Bỏ chọn">
+                <i data-lucide="x" class="w-4 h-4"></i>
+            </button>
+        </div>
+
+        <!-- TOAST CONTAINER (THÔNG BÁO TÁC VỤ NỔI) -->
+        <div id="admin-toast-container" class="fixed top-6 right-6 z-[150] space-y-2 pointer-events-none"></div>
+
+        <!-- MODAL 1: TẤT CẢ CÁC NGÀNH ĐƯỢC AI GỢI Ý -->
+        <div id="all-majors-modal" class="fixed inset-0 z-[125] hidden items-center justify-center p-4">
+            <div class="absolute inset-0 bg-navy/60 backdrop-blur-sm" onclick="closeAllRecommendedMajorsModal()"></div>
+            <div class="bg-white rounded-3xl shadow-2xl z-10 w-full max-w-3xl p-6 sm:p-8 relative border border-slate-200 max-h-[90vh] flex flex-col">
+                <div class="flex justify-between items-center pb-4 border-b border-slate-100">
+                    <div>
+                        <span class="text-xs font-bold text-cyan uppercase tracking-wider">Thống kê</span>
+                        <h3 class="text-2xl font-black text-navy mt-1">Tất cả ngành được AI đề xuất</h3>
+                        <p class="text-xs text-muted mt-0.5">Xếp hạng theo tổng số lượt học sinh được mô hình AI tư vấn</p>
+                    </div>
+                    <button type="button" onclick="closeAllRecommendedMajorsModal()" class="w-9 h-9 rounded-full bg-slate-100 text-muted hover:text-navy flex items-center justify-center">
+                        <i data-lucide="x" class="w-5 h-5"></i>
+                    </button>
+                </div>
+
+                <div class="flex-1 overflow-y-auto py-5 space-y-3" id="all-majors-modal-list"></div>
+            </div>
+        </div>
+
+        <!-- MODAL 2: CHI TIẾT 1 NGÀNH HỌC -->
+        <div id="major-detail-modal" class="fixed inset-0 z-[120] hidden items-center justify-center p-4">
+            <div class="absolute inset-0 bg-navy/60 backdrop-blur-sm" onclick="closeMajorDetailModal()"></div>
+            <div class="bg-white rounded-3xl shadow-2xl z-10 w-full max-w-2xl p-6 sm:p-8 relative border border-slate-200 max-h-[90vh] flex flex-col">
+                <div class="flex justify-between items-center pb-4 border-b border-slate-100">
+                    <div>
+                        <span class="text-xs font-bold text-cyan uppercase tracking-wider">Thông tin chi tiết ngành học</span>
+                        <h3 id="modal-major-title" class="text-2xl font-black text-navy mt-1">--</h3>
+                    </div>
+                    <button type="button" onclick="closeMajorDetailModal()" class="w-9 h-9 rounded-full bg-slate-100 text-muted hover:text-navy flex items-center justify-center">
+                        <i data-lucide="x" class="w-5 h-5"></i>
+                    </button>
+                </div>
+
+                <div class="flex-1 overflow-y-auto py-5 space-y-5">
+                    <div class="p-4 rounded-2xl bg-cyan/5 border border-cyan/20 flex justify-between items-center">
+                        <span class="text-sm font-semibold text-navy">Số lượt học sinh được AI đề xuất:</span>
+                        <span id="modal-total-hits" class="text-xl font-black text-cyan">0 lượt</span>
+                    </div>
+
+                    <div>
+                        <h4 class="font-bold text-sm text-navy mb-3">Các trường đại học đào tạo & Điểm chuẩn dự kiến</h4>
+                        <div id="modal-schools-list" class="space-y-3"></div>
+                    </div>
+                </div>
+            </div>
         </div>
     </main>
 </div>
 
+<!-- Thư viện Flatpickr CDN hỗ trợ chọn ngày tiếng Việt DD/MM/YYYY -->
+<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+<script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/vn.js"></script>
 <%- include('../partials/footer', { extraScripts: '<script src="/js/admin.js"></script>' }) %>
