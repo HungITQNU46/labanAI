@@ -1,0 +1,696 @@
+{
+  "manifest_version": "1.0.0",
+  "phase": "B-02",
+  "created_at_utc": "2026-11-20T21:30:40.707053+00:00",
+  "environment": {
+    "python_version": "3.14.7 (tags/v3.14.7:823f032, Aug  5 2026, 10:51:32) [MSC v.1944 64 bit (AMD64)]",
+    "numpy_version": "2.5.3",
+    "pandas_version": "3.0.6",
+    "scikit_learn_version": "1.9.1",
+    "xgboost_version": "3.4.1",
+    "joblib_version": "1.6.0"
+  },
+  "data_provenance": {
+    "source_workbook": "dataLabanAI.xlsx",
+    "raw_workbook_sha256": "c8a9445edba02a37cf862a3b1eabffba910eb7eeaf1d48b4c6f8ac19fea296c8",
+    "train_index_sha256": "471fecbbc5d665e949eae03bcdebedc996044f30136a56d8b1d698ad3d7e2d4d",
+    "total_raw_records": 4910,
+    "train_records": 3963,
+    "test_records_locked_untouched": 947,
+    "feature_order_27": [
+      "R1",
+      "I1",
+      "A1",
+      "R2",
+      "I2",
+      "A2",
+      "S1",
+      "S2",
+      "R3",
+      "A3",
+      "S3",
+      "E1",
+      "R4",
+      "S4",
+      "E2",
+      "R5",
+      "I3",
+      "A4",
+      "E3",
+      "I4",
+      "A5",
+      "E4",
+      "C1",
+      "E5",
+      "C2",
+      "C3",
+      "C4"
+    ],
+    "binary_encoding_rule": "1,2 -> 0; 4,5 -> 1; 3 -> dropped per target"
+  },
+  "models": {
+    "R": {
+      "model_id": "model_q5_re",
+      "domain": "R",
+      "target_column": "Q5_LikeRe",
+      "artifact_file": "model_q5_re.joblib",
+      "sha256": "a79b191bd338d96712076958a96e97906dd31cb5dd29241e265ed8870f079228",
+      "algorithm": "LogisticRegression",
+      "preprocessing": "StandardScaler",
+      "hyperparameters": {
+        "C": 1.0,
+        "solver": "lbfgs",
+        "max_iter": 10000,
+        "tol": 0.0001,
+        "random_state": 42,
+        "class_weight": null
+      },
+      "training_samples": 2860,
+      "class_distribution": {
+        "0 (Dislike)": 2055,
+        "1 (Like)": 805
+      },
+      "classes": [
+        0,
+        1
+      ]
+    },
+    "I": {
+      "model_id": "model_q5_in",
+      "domain": "I",
+      "target_column": "Q5_LikeIn",
+      "artifact_file": "model_q5_in.joblib",
+      "sha256": "13d1c2b24959b90d72b8f087c9dde927e65aa9f8b4f7e996af87f8956408086b",
+      "algorithm": "XGBClassifier",
+      "preprocessing": "None (Raw27)",
+      "hyperparameters": {
+        "n_estimators": 160,
+        "max_depth": 2,
+        "learning_rate": 0.05,
+        "subsample": 0.85,
+        "colsample_bytree": 0.85,
+        "reg_lambda": 4.0,
+        "objective": "binary:logistic",
+        "eval_metric": "logloss",
+        "tree_method": "hist",
+        "random_state": 42,
+        "n_jobs": 1
+      },
+      "training_samples": 2884,
+      "class_distribution": {
+        "0 (Dislike)": 1720,
+        "1 (Like)": 1164
+      },
+      "classes": [
+        0,
+        1
+      ]
+    },
+    "A": {
+      "model_id": "model_q5_ar",
+      "domain": "A",
+      "target_column": "Q5_LikeAr",
+      "artifact_file": "model_q5_ar.joblib",
+      "sha256": "597e558cede88097996e90f95bb527e02cec64998da377b995f729a722837a2d",
+      "algorithm": "LogisticRegression",
+      "preprocessing": "StandardScaler",
+      "hyperparameters": {
+        "C": 1.0,
+        "solver": "lbfgs",
+        "max_iter": 10000,
+        "tol": 0.0001,
+        "random_state": 42,
+        "class_weight": null
+      },
+      "training_samples": 2895,
+      "class_distribution": {
+        "0 (Dislike)": 1481,
+        "1 (Like)": 1414
+      },
+      "classes": [
+        0,
+        1
+      ]
+    },
+    "S": {
+      "model_id": "model_q5_so",
+      "domain": "S",
+      "target_column": "Q5_LikeSo",
+      "artifact_file": "model_q5_so.joblib",
+      "sha256": "7f733ac5bc1448ca7f097d562bcfd43e90c016f59e853121d71ff555b3514f59",
+      "algorithm": "XGBClassifier",
+      "preprocessing": "None (Raw27)",
+      "hyperparameters": {
+        "n_estimators": 160,
+        "max_depth": 2,
+        "learning_rate": 0.05,
+        "subsample": 0.85,
+        "colsample_bytree": 0.85,
+        "reg_lambda": 4.0,
+        "objective": "binary:logistic",
+        "eval_metric": "logloss",
+        "tree_method": "hist",
+        "random_state": 42,
+        "n_jobs": 1
+      },
+      "training_samples": 2784,
+      "class_distribution": {
+        "0 (Dislike)": 1564,
+        "1 (Like)": 1220
+      },
+      "classes": [
+        0,
+        1
+      ]
+    },
+    "E": {
+      "model_id": "model_q5_en",
+      "domain": "E",
+      "target_column": "Q5_LikeEn",
+      "artifact_file": "model_q5_en.joblib",
+      "sha256": "ed503a2fa423ef595a68b9600c19a922a07a1825b427d5529e032082e8d63ff2",
+      "algorithm": "LogisticRegression",
+      "preprocessing": "StandardScaler",
+      "hyperparameters": {
+        "C": 1.0,
+        "solver": "lbfgs",
+        "max_iter": 10000,
+        "tol": 0.0001,
+        "random_state": 42,
+        "class_weight": null
+      },
+      "training_samples": 2829,
+      "class_distribution": {
+        "0 (Dislike)": 1542,
+        "1 (Like)": 1287
+      },
+      "classes": [
+        0,
+        1
+      ]
+    },
+    "C": {
+      "model_id": "model_q5_co",
+      "domain": "C",
+      "target_column": "Q5_LikeCo",
+      "artifact_file": "model_q5_co.joblib",
+      "sha256": "6ce98de356f190cbd89caff77ea584f4d05dc43de3681fe8b8aef2361199e20e",
+      "algorithm": "XGBClassifier",
+      "preprocessing": "None (Raw27)",
+      "hyperparameters": {
+        "n_estimators": 160,
+        "max_depth": 2,
+        "learning_rate": 0.05,
+        "subsample": 0.85,
+        "colsample_bytree": 0.85,
+        "reg_lambda": 4.0,
+        "objective": "binary:logistic",
+        "eval_metric": "logloss",
+        "tree_method": "hist",
+        "random_state": 42,
+        "n_jobs": 1
+      },
+      "training_samples": 2874,
+      "class_distribution": {
+        "0 (Dislike)": 1761,
+        "1 (Like)": 1113
+      },
+      "classes": [
+        0,
+        1
+      ]
+    }
+  },
+  "calibration_status": "NOT_APPROVED",
+  "calibration_notes": "Probabilities are raw model outputs and have NOT been approved for cross-domain comparison or Top-3 ranking. Z-score transformation is an exploratory heuristic and is NOT applied to final artifacts.",
+  "oof_diagnostics": {
+    "R": {
+      "target_col": "Q5_LikeRe",
+      "labeled_population": {
+        "n_samples": 2860,
+        "n_positive": 805,
+        "prevalence": 0.2815,
+        "dummy_baseline_accuracy": 0.7185,
+        "oof_accuracy": 0.8042,
+        "oof_balanced_accuracy": 0.7036,
+        "oof_precision": 0.7369,
+        "oof_recall": 0.4733,
+        "oof_f1_binary": 0.5764,
+        "oof_f1_macro": 0.7245,
+        "brier_score": 0.1451,
+        "baseline_brier_score": 0.2022,
+        "brier_skill_score": 0.2826,
+        "log_loss": 0.4589,
+        "mean_oof_prob": 0.2804,
+        "std_oof_prob": 0.2398,
+        "reliability_5_bins": [
+          {
+            "bin_range": [
+              0.0,
+              0.2
+            ],
+            "count": 1468,
+            "mean_predicted_prob": 0.0994,
+            "fraction_positive": 0.1063
+          },
+          {
+            "bin_range": [
+              0.2,
+              0.4
+            ],
+            "count": 720,
+            "mean_predicted_prob": 0.305,
+            "fraction_positive": 0.275
+          },
+          {
+            "bin_range": [
+              0.4,
+              0.6
+            ],
+            "count": 272,
+            "mean_predicted_prob": 0.4895,
+            "fraction_positive": 0.5257
+          },
+          {
+            "bin_range": [
+              0.6,
+              0.8
+            ],
+            "count": 250,
+            "mean_predicted_prob": 0.6829,
+            "fraction_positive": 0.712
+          },
+          {
+            "bin_range": [
+              0.8,
+              1.0
+            ],
+            "count": 150,
+            "mean_predicted_prob": 0.8829,
+            "fraction_positive": 0.8667
+          }
+        ]
+      },
+      "full_train_population": {
+        "n_samples": 3963,
+        "mean_oof_prob": 0.296,
+        "std_oof_prob": 0.2279,
+        "min_oof_prob": 0.0057,
+        "max_oof_prob": 0.9846,
+        "quantile_25": 0.1114,
+        "quantile_50": 0.2315,
+        "quantile_75": 0.4051
+      }
+    },
+    "I": {
+      "target_col": "Q5_LikeIn",
+      "labeled_population": {
+        "n_samples": 2884,
+        "n_positive": 1164,
+        "prevalence": 0.4036,
+        "dummy_baseline_accuracy": 0.5964,
+        "oof_accuracy": 0.7725,
+        "oof_balanced_accuracy": 0.7576,
+        "oof_precision": 0.7361,
+        "oof_recall": 0.6804,
+        "oof_f1_binary": 0.7071,
+        "oof_f1_macro": 0.7606,
+        "brier_score": 0.1603,
+        "baseline_brier_score": 0.2407,
+        "brier_skill_score": 0.3342,
+        "log_loss": 0.4913,
+        "mean_oof_prob": 0.4013,
+        "std_oof_prob": 0.2684,
+        "reliability_5_bins": [
+          {
+            "bin_range": [
+              0.0,
+              0.2
+            ],
+            "count": 971,
+            "mean_predicted_prob": 0.1211,
+            "fraction_positive": 0.1164
+          },
+          {
+            "bin_range": [
+              0.2,
+              0.4
+            ],
+            "count": 590,
+            "mean_predicted_prob": 0.2885,
+            "fraction_positive": 0.261
+          },
+          {
+            "bin_range": [
+              0.4,
+              0.6
+            ],
+            "count": 563,
+            "mean_predicted_prob": 0.4943,
+            "fraction_positive": 0.5222
+          },
+          {
+            "bin_range": [
+              0.6,
+              0.8
+            ],
+            "count": 412,
+            "mean_predicted_prob": 0.7079,
+            "fraction_positive": 0.7087
+          },
+          {
+            "bin_range": [
+              0.8,
+              1.0
+            ],
+            "count": 348,
+            "mean_predicted_prob": 0.8614,
+            "fraction_positive": 0.8937
+          }
+        ]
+      },
+      "full_train_population": {
+        "n_samples": 3963,
+        "mean_oof_prob": 0.4128,
+        "std_oof_prob": 0.2546,
+        "min_oof_prob": 0.0357,
+        "max_oof_prob": 0.97,
+        "quantile_25": 0.1724,
+        "quantile_50": 0.395,
+        "quantile_75": 0.608
+      }
+    },
+    "A": {
+      "target_col": "Q5_LikeAr",
+      "labeled_population": {
+        "n_samples": 2895,
+        "n_positive": 1414,
+        "prevalence": 0.4884,
+        "dummy_baseline_accuracy": 0.5116,
+        "oof_accuracy": 0.7461,
+        "oof_balanced_accuracy": 0.746,
+        "oof_precision": 0.7406,
+        "oof_recall": 0.739,
+        "oof_f1_binary": 0.7398,
+        "oof_f1_macro": 0.746,
+        "brier_score": 0.1739,
+        "baseline_brier_score": 0.2499,
+        "brier_skill_score": 0.3041,
+        "log_loss": 0.5249,
+        "mean_oof_prob": 0.4881,
+        "std_oof_prob": 0.2831,
+        "reliability_5_bins": [
+          {
+            "bin_range": [
+              0.0,
+              0.2
+            ],
+            "count": 604,
+            "mean_predicted_prob": 0.1132,
+            "fraction_positive": 0.1606
+          },
+          {
+            "bin_range": [
+              0.2,
+              0.4
+            ],
+            "count": 610,
+            "mean_predicted_prob": 0.2944,
+            "fraction_positive": 0.2607
+          },
+          {
+            "bin_range": [
+              0.4,
+              0.6
+            ],
+            "count": 624,
+            "mean_predicted_prob": 0.5012,
+            "fraction_positive": 0.5016
+          },
+          {
+            "bin_range": [
+              0.6,
+              0.8
+            ],
+            "count": 518,
+            "mean_predicted_prob": 0.7131,
+            "fraction_positive": 0.6969
+          },
+          {
+            "bin_range": [
+              0.8,
+              1.0
+            ],
+            "count": 539,
+            "mean_predicted_prob": 0.8957,
+            "fraction_positive": 0.898
+          }
+        ]
+      },
+      "full_train_population": {
+        "n_samples": 3963,
+        "mean_oof_prob": 0.4904,
+        "std_oof_prob": 0.2665,
+        "min_oof_prob": 0.0092,
+        "max_oof_prob": 0.9929,
+        "quantile_25": 0.2634,
+        "quantile_50": 0.4996,
+        "quantile_75": 0.7169
+      }
+    },
+    "S": {
+      "target_col": "Q5_LikeSo",
+      "labeled_population": {
+        "n_samples": 2784,
+        "n_positive": 1220,
+        "prevalence": 0.4382,
+        "dummy_baseline_accuracy": 0.5618,
+        "oof_accuracy": 0.7166,
+        "oof_balanced_accuracy": 0.7106,
+        "oof_precision": 0.6819,
+        "oof_recall": 0.6623,
+        "oof_f1_binary": 0.6719,
+        "oof_f1_macro": 0.7112,
+        "brier_score": 0.1888,
+        "baseline_brier_score": 0.2462,
+        "brier_skill_score": 0.2331,
+        "log_loss": 0.5613,
+        "mean_oof_prob": 0.44,
+        "std_oof_prob": 0.2393,
+        "reliability_5_bins": [
+          {
+            "bin_range": [
+              0.0,
+              0.2
+            ],
+            "count": 668,
+            "mean_predicted_prob": 0.158,
+            "fraction_positive": 0.1587
+          },
+          {
+            "bin_range": [
+              0.2,
+              0.4
+            ],
+            "count": 688,
+            "mean_predicted_prob": 0.2854,
+            "fraction_positive": 0.2805
+          },
+          {
+            "bin_range": [
+              0.4,
+              0.6
+            ],
+            "count": 628,
+            "mean_predicted_prob": 0.5197,
+            "fraction_positive": 0.5143
+          },
+          {
+            "bin_range": [
+              0.6,
+              0.8
+            ],
+            "count": 543,
+            "mean_predicted_prob": 0.7015,
+            "fraction_positive": 0.7256
+          },
+          {
+            "bin_range": [
+              0.8,
+              1.0
+            ],
+            "count": 257,
+            "mean_predicted_prob": 0.8396,
+            "fraction_positive": 0.7938
+          }
+        ]
+      },
+      "full_train_population": {
+        "n_samples": 3963,
+        "mean_oof_prob": 0.4474,
+        "std_oof_prob": 0.2306,
+        "min_oof_prob": 0.0963,
+        "max_oof_prob": 0.938,
+        "quantile_25": 0.218,
+        "quantile_50": 0.4409,
+        "quantile_75": 0.6203
+      }
+    },
+    "E": {
+      "target_col": "Q5_LikeEn",
+      "labeled_population": {
+        "n_samples": 2829,
+        "n_positive": 1287,
+        "prevalence": 0.4549,
+        "dummy_baseline_accuracy": 0.5451,
+        "oof_accuracy": 0.7116,
+        "oof_balanced_accuracy": 0.7082,
+        "oof_precision": 0.6874,
+        "oof_recall": 0.6713,
+        "oof_f1_binary": 0.6792,
+        "oof_f1_macro": 0.7086,
+        "brier_score": 0.1916,
+        "baseline_brier_score": 0.248,
+        "brier_skill_score": 0.2272,
+        "log_loss": 0.5672,
+        "mean_oof_prob": 0.4544,
+        "std_oof_prob": 0.2473,
+        "reliability_5_bins": [
+          {
+            "bin_range": [
+              0.0,
+              0.2
+            ],
+            "count": 528,
+            "mean_predicted_prob": 0.1198,
+            "fraction_positive": 0.1534
+          },
+          {
+            "bin_range": [
+              0.2,
+              0.4
+            ],
+            "count": 753,
+            "mean_predicted_prob": 0.2955,
+            "fraction_positive": 0.2829
+          },
+          {
+            "bin_range": [
+              0.4,
+              0.6
+            ],
+            "count": 699,
+            "mean_predicted_prob": 0.5067,
+            "fraction_positive": 0.4964
+          },
+          {
+            "bin_range": [
+              0.6,
+              0.8
+            ],
+            "count": 569,
+            "mean_predicted_prob": 0.7058,
+            "fraction_positive": 0.703
+          },
+          {
+            "bin_range": [
+              0.8,
+              1.0
+            ],
+            "count": 280,
+            "mean_predicted_prob": 0.8716,
+            "fraction_positive": 0.8786
+          }
+        ]
+      },
+      "full_train_population": {
+        "n_samples": 3963,
+        "mean_oof_prob": 0.467,
+        "std_oof_prob": 0.2338,
+        "min_oof_prob": 0.0114,
+        "max_oof_prob": 0.9825,
+        "quantile_25": 0.2718,
+        "quantile_50": 0.477,
+        "quantile_75": 0.6407
+      }
+    },
+    "C": {
+      "target_col": "Q5_LikeCo",
+      "labeled_population": {
+        "n_samples": 2874,
+        "n_positive": 1113,
+        "prevalence": 0.3873,
+        "dummy_baseline_accuracy": 0.6127,
+        "oof_accuracy": 0.7453,
+        "oof_balanced_accuracy": 0.7128,
+        "oof_precision": 0.7153,
+        "oof_recall": 0.5687,
+        "oof_f1_binary": 0.6336,
+        "oof_f1_macro": 0.7192,
+        "brier_score": 0.1733,
+        "baseline_brier_score": 0.2373,
+        "brier_skill_score": 0.2699,
+        "log_loss": 0.5217,
+        "mean_oof_prob": 0.3853,
+        "std_oof_prob": 0.2455,
+        "reliability_5_bins": [
+          {
+            "bin_range": [
+              0.0,
+              0.2
+            ],
+            "count": 998,
+            "mean_predicted_prob": 0.1337,
+            "fraction_positive": 0.1293
+          },
+          {
+            "bin_range": [
+              0.2,
+              0.4
+            ],
+            "count": 599,
+            "mean_predicted_prob": 0.296,
+            "fraction_positive": 0.3038
+          },
+          {
+            "bin_range": [
+              0.4,
+              0.6
+            ],
+            "count": 653,
+            "mean_predicted_prob": 0.4929,
+            "fraction_positive": 0.4839
+          },
+          {
+            "bin_range": [
+              0.6,
+              0.8
+            ],
+            "count": 411,
+            "mean_predicted_prob": 0.7109,
+            "fraction_positive": 0.7324
+          },
+          {
+            "bin_range": [
+              0.8,
+              1.0
+            ],
+            "count": 213,
+            "mean_predicted_prob": 0.8571,
+            "fraction_positive": 0.8685
+          }
+        ]
+      },
+      "full_train_population": {
+        "n_samples": 3963,
+        "mean_oof_prob": 0.3994,
+        "std_oof_prob": 0.2359,
+        "min_oof_prob": 0.0472,
+        "max_oof_prob": 0.9706,
+        "quantile_25": 0.171,
+        "quantile_50": 0.3948,
+        "quantile_75": 0.5516
+      }
+    }
+  }
+}

@@ -1,0 +1,100 @@
+{
+  "config_version": "1.0.0",
+  "config_name": "riasec27_ml_top3_p2_ranking_config",
+  "phase": "B-03-R2",
+  "created_at_utc": "2026-11-21T05:32:00Z",
+  "research_status": "RESEARCH_ONLY — TOP3_NOT_VALIDATED",
+  "method_description": "Direction B Prototype: 27 RIASEC raw items -> Flat Profile Guard -> 6 ML Models (Probabilities) -> P2 Z-Score Standardization -> Pearson r with O*NET OI (21 READY majors) -> Boundary Tie Check -> Top-3",
+  "input_specification": {
+    "question_count": 27,
+    "value_range": [1, 5],
+    "value_type": "integer",
+    "question_order": [
+      "R1", "I1", "A1", "R2", "I2", "A2", "S1", "S2", "R3", "A3",
+      "S3", "E1", "R4", "S4", "E2", "R5", "I3", "A4", "E3", "I4",
+      "A5", "E4", "C1", "E5", "C2", "C3", "C4"
+    ],
+    "domain_order": ["R", "I", "A", "S", "E", "C"],
+    "domain_question_indices": {
+      "R": [0, 3, 8, 12, 15],
+      "I": [1, 4, 16, 19],
+      "A": [2, 5, 9, 17, 20],
+      "S": [6, 7, 10, 13],
+      "E": [11, 14, 18, 21, 23],
+      "C": [22, 24, 25, 26]
+    }
+  },
+  "flat_profile_guard": {
+    "enabled": true,
+    "strategy": "exact_integer_rational_identity",
+    "rational_condition": "(S_R == S_A == S_E) and (S_I == S_S == S_C) and (4 * S_R == 5 * S_I)",
+    "variance_threshold": 1e-12,
+    "action_on_flat": "ABSTAIN_FLAT_PROFILE",
+    "explanation": "Exact integer equality across 6 domain means (denominators 5 for R,A,E and 4 for I,S,C). If means are identical, student responses show zero vocational differentiation across RIASEC dimensions. Ranking is aborted to prevent spurious Top-3 fabrication."
+  },
+  "model_dependencies": {
+    "manifest_relative_path": "../riasec27_q5_models_v1/models_manifest.json",
+    "expected_manifest_sha256": "12a4271a06d7df22f3fa30cf1c81b6a2bacd0eb3982367fa2895da0e41becd15",
+    "models_dir_relative_path": "../riasec27_q5_models_v1",
+    "artifacts": {
+      "R": {
+        "file": "model_q5_re.joblib",
+        "sha256": "a79b191bd338d96712076958a96e97906dd31cb5dd29241e265ed8870f079228",
+        "algorithm": "LogisticRegression"
+      },
+      "I": {
+        "file": "model_q5_in.joblib",
+        "sha256": "13d1c2b24959b90d72b8f087c9dde927e65aa9f8b4f7e996af87f8956408086b",
+        "algorithm": "XGBClassifier"
+      },
+      "A": {
+        "file": "model_q5_ar.joblib",
+        "sha256": "597e558cede88097996e90f95bb527e02cec64998da377b995f729a722837a2d",
+        "algorithm": "LogisticRegression"
+      },
+      "S": {
+        "file": "model_q5_so.joblib",
+        "sha256": "7f733ac5bc1448ca7f097d562bcfd43e90c016f59e853121d71ff555b3514f59",
+        "algorithm": "XGBClassifier"
+      },
+      "E": {
+        "file": "model_q5_en.joblib",
+        "sha256": "ed503a2fa423ef595a68b9600c19a922a07a1825b427d5529e032082e8d63ff2",
+        "algorithm": "LogisticRegression"
+      },
+      "C": {
+        "file": "model_q5_co.joblib",
+        "sha256": "6ce98de356f190cbd89caff77ea584f4d05dc43de3681fe8b8aef2361199e20e",
+        "algorithm": "XGBClassifier"
+      }
+    }
+  },
+  "standardization_parameters": {
+    "method": "z_score",
+    "formula": "z_d = (p_hat_d - mu_d) / sigma_d",
+    "reference_population": "full_train_population",
+    "reference_n_samples": 3963,
+    "provenance": "Locked 5-fold out-of-fold predictions on full Train population from models_manifest.json",
+    "parameters": {
+      "R": {"mean": 0.2960, "std": 0.2279},
+      "I": {"mean": 0.4128, "std": 0.2546},
+      "A": {"mean": 0.4904, "std": 0.2665},
+      "S": {"mean": 0.4474, "std": 0.2306},
+      "E": {"mean": 0.4670, "std": 0.2338},
+      "C": {"mean": 0.3994, "std": 0.2359}
+    }
+  },
+  "reference_catalog": {
+    "relative_path": "../riasec27_top3_b1_v0/reference.json",
+    "expected_sha256": "229133218552bd407d2b0fb5cf2ef0e419cb940e321cfccb2fbb50acccdd6bb5",
+    "allowed_status": ["READY_FOR_PROTOTYPE"],
+    "expected_ready_count": 21,
+    "onet_version": "30.2"
+  },
+  "ranking_policy": {
+    "similarity_metric": "pearson_correlation",
+    "tie_detection_tolerance_ulp": 32,
+    "boundary_tie_action": "TIED_BOUNDARY",
+    "id_tie_break": false
+  }
+}

@@ -1,0 +1,110 @@
+{
+  "verification_date": "2026-11-14",
+  "branch": "Nguyen",
+  "starting_commit": "3f2cd53",
+  "initial_uncommitted_changes": [
+    ".gitignore",
+    "data/"
+  ],
+  "immutable_original_file_count": 18,
+  "immutable_original_files_unchanged": true,
+  "original_file_sha256": {
+    "data/ml_pipeline/configs/baseline_experiment_policy.v1.json": "9600df75fb20bb1ca4fc5e441843fce7bf8eba240952dec7b5f2f7aa2e6f14b5",
+    "data/ml_pipeline/configs/data_contract.v1.json": "8df575062e64bd8f97bdc37dd7c631d4942e6cc7a506faf07f2ffb5f36d456e6",
+    "data/ml_pipeline/configs/full1000_nested_groupcv_policy.v1.json": "e48cf50f480edbd8e9fd6c0ededc81f367bb5fb6445423777d34fdc52f49a168",
+    "data/ml_pipeline/configs/major_family_mapping.proposed.json": "4ee4581625b079cf6d2b645cab50c3ff45473464e00819dffa1f328936993e92",
+    "data/ml_pipeline/configs/README.md": "2735fac847eedfe91048e74fb00713d552c132a67832c7b7d117b8ea3a347892",
+    "data/ml_pipeline/configs/split_policy.v1.json": "7b386f702a08fa63dbb08576ce2a17fd2865fa3025446f00016dbe0094813505",
+    "data/ml_pipeline/manifests/c2a_split_owner-declared-real-2026-10-19.manifest.json": "4aed514e0829808e10a47cd3c733d1926c6a43489444e42d8f88a8b11b78c57e",
+    "data/ml_pipeline/manifests/c2b_model_selection_owner-declared-real-2026-10-19.manifest.json": "1f80cd556e5cdc43f853ab35f94e00bbec303440f9a152e589b46fb3b9b983da",
+    "data/ml_pipeline/manifests/dataset_owner-declared-real-2026-10-19.manifest.json": "b582995f526aed19c755676cf6a9e19a8dd7ce759e591e778ffd0bbacd7a63c4",
+    "data/ml_pipeline/manifests/full1000_nested_groupcv_v1.manifest.json": "b693d067ffd32d54c270b5993a2dac0842049a31a121b440c1ca243fe80c6925",
+    "data/ml_pipeline/manifests/README.md": "c943b73389e42a9bed43072702af741849ce212c25eccf801c952e87b53306c6",
+    "data/ml_pipeline/reports/c1_data_contract_quality_audit.v1.json": "4e2b0845809fb1c479db95b2db3b89a4b272148392248aac30eaabb7e1cf3ead",
+    "data/ml_pipeline/reports/c2a_split_design_pretraining_validation.v1.json": "21582c4ff24fda6c8601e565800ed915ea4f5ebfb389908747a7944c63970879",
+    "data/ml_pipeline/reports/c2b_baseline_training.v1.json": "3392a640c42c29b1569d4700ad9320f13cf2877898d5fe22c5d22eecd6fc91b7",
+    "data/ml_pipeline/reports/full1000_nested_groupcv_v1.report.json": "227d0f26d98d239328063cee0f0b50514039a81fcc686b81cf9af0d89403f4b2",
+    "data/ml_pipeline/reports/README.md": "151279a4c284521f8a7565a749a9e70a3ac8f6c6f063771030a2511eb1b89d4d",
+    ".gitignore": "ea3f9047cdc0df9c5f59f11e00fc13b2c86f8ebcfccf63e94f4da03aa780252a",
+    "data_AI_1000_rows.xlsx": "13e37affaeca2eaef49ee998acb80efb70de6146ce1ba4f781c215740786ff42"
+  },
+  "changed_existing_files": [
+    "data/ml_pipeline/README.md",
+    "data/ml_pipeline/artifacts/README.md",
+    "data/ml_pipeline/configs/source_policy.v1.json",
+    "data/ml_pipeline/notebooks/00_repo_and_data_audit.ipynb",
+    "data/ml_pipeline/notebooks/01_ingest_to_mongo_dry_run.ipynb",
+    "data/ml_pipeline/notebooks/02_quality_audit.ipynb",
+    "data/ml_pipeline/notebooks/03_cleaning_and_major_mapping.ipynb",
+    "data/ml_pipeline/notebooks/04_eda_and_riasec_quality.ipynb",
+    "data/ml_pipeline/notebooks/05_split_and_leakage_checks.ipynb",
+    "data/ml_pipeline/notebooks/06_baseline_classification.ipynb",
+    "data/ml_pipeline/notebooks/07_major_profiles.ipynb",
+    "data/ml_pipeline/notebooks/08_hybrid_recommendation.ipynb",
+    "data/ml_pipeline/notebooks/09_synthetic_ablation.ipynb",
+    "data/ml_pipeline/notebooks/10_final_real_evaluation.ipynb",
+    "data/ml_pipeline/notebooks/11_export_artifacts.ipynb",
+    "data/ml_pipeline/notebooks/12_full1000_nested_groupcv.ipynb",
+    "data/ml_pipeline/tests/test_data_contract.py",
+    "data/ml_pipeline/python/labanai_ml/data_contract.py",
+    "data/ml_pipeline/python/labanai_ml/inference.py",
+    "data/ml_pipeline/python/labanai_ml/__init__.py",
+    "package.json",
+    "server.js",
+    "src/routes/web.js",
+    "src/controllers/evaluationController.js",
+    "src/views/pages/evaluation.ejs"
+  ],
+  "new_files": [
+    "data/ml_pipeline/check_notebooks.py",
+    "data/ml_pipeline/requirements-notebooks.txt",
+    "data/ml_pipeline/artifacts/f54_centroid_full1000_v1.json",
+    "data/ml_pipeline/artifacts/f54_centroid_full1000_v1.manifest.json",
+    "data/ml_pipeline/tests/test_f54_artifact.py",
+    "data/ml_pipeline/python/labanai_ml/artifact_export.py",
+    "public/js/ml-research.js",
+    "src/models/mlModel.js",
+    "src/views/partials/ml-research.ejs",
+    "tests/ml.test.js",
+    "data/ml_pipeline/reports/continuation_2026-11-14.md",
+    "data/ml_pipeline/reports/continuation_2026-11-14.verification.json"
+  ],
+  "validation": {
+    "python_unittest": {
+      "passed": 66,
+      "failed": 0
+    },
+    "node_tests": {
+      "passed": 16,
+      "failed": 0
+    },
+    "notebooks_executed_individually_from_root": 13,
+    "notebooks_executed_individually_from_notebooks_directory": 13,
+    "python_syntax_files": 25,
+    "javascript_syntax": "PASS",
+    "notebook_and_pipeline_json": "PASS",
+    "training_python_node_inference_parity": "PASS",
+    "api_and_ejs_smoke": "PASS",
+    "browser_visual_qa": "NOT_RUN_NO_BROWSER_TOOL"
+  },
+  "scientific_boundaries": {
+    "riasec_f6": "BLOCKED_PENDING_CONFIRMED_CODEBOOK",
+    "family_mapping": "PROPOSED",
+    "synthetic_ablation": "NOT_RUN_NO_APPROVED_SYNTHETIC_SOURCE",
+    "nested_selection_hit_at_3": 0.291,
+    "declared_kpi_threshold": 0.8,
+    "kpi_threshold_met": false,
+    "independent_provenance_verification": "NOT_YET_INDEPENDENTLY_VERIFIED"
+  },
+  "scope": {
+    "workbook_modified": false,
+    "old_reports_modified": false,
+    "old_manifests_modified": false,
+    "locked_test_reevaluated": false,
+    "nested_training_rerun": false,
+    "mongodb_connected": false,
+    "node_dependencies_changed": false,
+    "commit_created": false,
+    "pushed": false
+  }
+}

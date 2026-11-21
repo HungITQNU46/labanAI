@@ -1,0 +1,40 @@
+<section class="glass-card rounded-3xl p-5 sm:p-8 mb-8 scroll-mt-24" id="ml-research-panel" aria-labelledby="ml-f54-title">
+    <div class="flex flex-wrap items-center gap-2 mb-3">
+        <span class="rounded-full bg-cyan/10 px-3 py-1 text-xs font-bold text-ocean">Khảo sát chính · F54-v1</span>
+        <span class="text-xs text-muted">54 câu · 9 trang · Không có đáp án chọn sẵn</span>
+    </div>
+    <h3 id="ml-f54-title" class="text-xl font-bold text-navy">Khám phá ngành học qua khảo sát F54</h3>
+    <p id="ml-f54-help" class="text-sm text-muted mt-3">Với mỗi nhận định, chọn mức độ đúng với bạn từ 1 đến 5. Trả lời lần lượt 54 câu; bạn có thể quay lại chỉnh sửa trước khi gửi. Đáp án chỉ được giữ trong bộ nhớ trang và không được lưu vào cơ sở dữ liệu.</p>
+    <p class="text-xs text-muted mt-2">Kết quả tham khảo từ dữ liệu nghiên cứu. Hit@3 của Raw Cosine là 29,9% trong báo cáo chẩn đoán trước, không phải độ chính xác của một cá nhân.</p>
+    <form id="ml-f54-form" class="mt-6" aria-busy="false" novalidate>
+        <div class="rounded-2xl bg-slate-50 border border-slate-100 p-4 mb-5">
+            <div class="flex flex-wrap justify-between gap-2 text-sm font-semibold mb-2">
+                <span id="ml-f54-progress-text" aria-live="polite">Đã trả lời 0/54</span>
+                <span id="ml-f54-page">Trang 1/9 · Câu 1–6</span>
+            </div>
+            <progress id="ml-f54-progress" max="54" value="0" aria-label="Tiến độ khảo sát F54" class="w-full h-3 accent-cyan"></progress>
+        </div>
+        <div id="ml-f54-questions" class="space-y-5 scroll-mt-24" aria-describedby="ml-f54-help"></div>
+        <p id="ml-f54-status" class="text-sm text-muted my-4" role="status" aria-live="polite" aria-atomic="true" data-state="idle"></p>
+        <div class="flex flex-wrap items-center justify-between gap-3 border-t border-slate-100 pt-4">
+            <button type="button" id="ml-f54-reset" class="px-4 py-2 rounded-xl border border-slate-200 text-sm font-semibold text-navy">Làm lại khảo sát</button>
+            <div class="flex flex-wrap items-center gap-2">
+                <button type="button" id="ml-f54-prev" disabled class="px-5 py-2 rounded-xl border border-slate-200 text-sm font-bold text-navy disabled:opacity-40">Trước</button>
+                <button type="button" id="ml-f54-next" class="btn-gradient px-5 py-2 rounded-xl text-white font-bold text-sm disabled:opacity-40">Tiếp</button>
+                <button type="submit" id="ml-f54-submit" disabled hidden class="hidden btn-gradient px-5 py-2 rounded-xl text-white font-bold text-sm disabled:opacity-40">Xem kết quả</button>
+            </div>
+        </div>
+        <div class="flex flex-wrap items-center gap-3 mt-4 text-sm">
+            <label for="ml-f54-top-k" class="font-semibold">Số ngành tham khảo (1–33)</label>
+            <input id="ml-f54-top-k" type="number" min="1" max="33" step="1" value="3" required aria-describedby="ml-f54-status" class="input-field w-24" inputmode="numeric">
+        </div>
+    </form>
+    <section id="ml-f54-result-panel" class="hidden mt-6 border-t border-slate-200 pt-5 scroll-mt-24" hidden aria-labelledby="ml-f54-result-title">
+        <h4 id="ml-f54-result-title" class="font-bold text-lg text-navy">Kết quả tham khảo từ câu trả lời của bạn</h4>
+        <p id="ml-f54-summary" class="text-sm font-semibold text-navy mt-2" aria-live="polite"></p>
+        <ol id="ml-f54-results" class="mt-3 space-y-2" aria-label="Các ngành có phản hồi tương đồng"></ol>
+        <p class="text-sm text-muted mt-4">Kết quả thể hiện mức độ tương đồng giữa câu trả lời khảo sát và hồ sơ ngành học trong dữ liệu huấn luyện. Đây là kết quả tham khảo, không phải kết luận chắc chắn về ngành nghề phù hợp.</p>
+        <p class="text-xs text-muted mt-2">Điểm tương đồng /100 không phải xác suất trúng tuyển. Những mẫu phản hồi cùng hướng, như toàn 1, toàn 3 hoặc toàn 5, có thể cho cùng thứ hạng.</p>
+    </section>
+</section>
+<script id="f54-data" type="application/json"><%- f54QuestionnaireData %></script>

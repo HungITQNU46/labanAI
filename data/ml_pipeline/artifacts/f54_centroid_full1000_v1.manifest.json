@@ -1,0 +1,7 @@
+{
+  "manifest_version": "1.0.0",
+  "model_version": "f54-centroid-full1000-v1",
+  "files": {
+    "f54_centroid_full1000_v1.json": "8d4e3303cde59bb276b98834e112c04a89650359e4245c181079e64665189d1b"
+  }
+}

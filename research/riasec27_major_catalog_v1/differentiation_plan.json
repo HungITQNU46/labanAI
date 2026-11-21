@@ -1,0 +1,250 @@
+{
+  "version": "1.1.0",
+  "framework": "Two-Tier Career Differentiation Framework (Research Hypothesis)",
+  "updated_at": "2026-11-21T06:45:00+07:00",
+  "phase": "B-04-R1",
+  "status": "RESEARCH_HYPOTHESIS_PENDING_EMPIRICAL_VALIDATION",
+  "author": "LabanAI Research & Education Data Team",
+  "description": "Bản thiết kế cấu trúc phân định 12 ngành phi READY qua cơ chế Hai cấp (Two-Tier). Đã loại bỏ toàn bộ trọng số composite chưa được thẩm định và không cho phép chèn đại diện cụm giả vào quy trình tính điểm tự động.",
+  "architectural_principles": [
+    "Tier 1 chỉ được phép chấm điểm tự động đối với 21 ngành READY_FOR_PROTOTYPE đã có mã O*NET đại diện 1-1 trong baseline reference.json.",
+    "Bốn cụm ngành (12 ngành phi READY) KHÔNG có vector đại diện được phê duyệt trong Tier 1; do đó KHÔNG được tự động chèn vào bảng xếp hạng Top-3.",
+    "Phân định rõ ràng giữa hai cơ chế tương tác: Cơ chế A (Khám phá chủ động do người dùng kích hoạt) và Cơ chế B (Hệ thống tự động gợi ý cụm - hiện đang KHÓA).",
+    "Tuyệt đối không sử dụng trọng số tổ hợp nghề (Composite Weights) trong bất kỳ hàm chấm điểm nào khi chưa có nghiên cứu chuyên gia độc lập.",
+    "Khi người dùng bỏ qua (skip) câu hỏi Tier 2, hệ thống chỉ hiển thị thông tin mô tả so sánh định tính giữa các ngành, tuyệt đối không tự chọn một ngành con."
+  ],
+  "interaction_mechanisms": {
+    "MECHANISM_A_USER_EXPLORATION": {
+      "mechanism_id": "MECHANISM_A_USER_EXPLORATION",
+      "name": "Khám phá Chủ động do Người dùng Yêu cầu",
+      "status": "ACTIVE_RESEARCH_PROTOTYPE",
+      "description": "Khi người dùng chủ động chọn một nhóm ngành hoặc một ngành thuộc 12 ngành CONDITIONAL/UNRESOLVED trong danh mục tra cứu, hệ thống hiển thị câu hỏi bổ trợ để giúp người dùng tự định hướng.",
+      "output_nature": "Phân tích định hướng và mô tả sự khác biệt giữa các chuyên ngành, KHÔNG công bố là kết quả xếp hạng Top-3 đã kiểm chứng khoa học."
+    },
+    "MECHANISM_B_SYSTEM_SUGGESTION": {
+      "mechanism_id": "MECHANISM_B_SYSTEM_SUGGESTION",
+      "name": "Hệ thống Tự động Gợi ý Cụm từ 27 Câu RIASEC",
+      "status": "BLOCKED_PENDING_EMPIRICAL_VALIDATION",
+      "block_reason": "Bốn đại diện cụm chưa có vector RIASEC tổng hợp và quy tắc xếp hạng được phê duyệt khoa học. Cấm tự tạo vector trung bình hoặc trọng số giả để chèn vào Top-3 tự động."
+    }
+  },
+  "clusters": {
+    "CLUSTER_A_SECONDARY_TEACHERS": {
+      "cluster_id": "CLUSTER_A_SECONDARY_TEACHERS",
+      "cluster_name": "Nhóm Sư phạm Trung học phổ thông",
+      "status": "CONDITIONAL",
+      "member_majors": [
+        "su_pham_toan_hoc",
+        "su_pham_ngu_van",
+        "su_pham_tieng_anh",
+        "su_pham_tin_hoc",
+        "su_pham_hoa_hoc",
+        "su_pham_dia_ly",
+        "giao_duc_chinh_tri"
+      ],
+      "shared_baseline_soc": "25-2031.00",
+      "shared_oi_vector": [2.73, 3.19, 3.77, 7.00, 2.90, 3.61],
+      "root_cause_indistinguishable": "Cả 7 ngành cùng chia sẻ mã nghề Giáo viên THPT trong O*NET 30.2. RIASEC đo lường đặc điểm công việc giảng dạy (Social = 7.00), không đo lường sở thích nội dung môn học chuyên ngành.",
+      "tier2_questions": [
+        {
+          "question_id": "T2_SEC_TEACH_01",
+          "cluster_id": "CLUSTER_A_SECONDARY_TEACHERS",
+          "prompt_target_audience": "Học sinh phổ thông (THCS/THPT) quan tâm đến nghề giáo",
+          "text": "Nếu có cơ hội chia sẻ và hướng dẫn bài học cho các bạn cùng trang lứa, bạn cảm thấy hào hứng nhất với chủ đề nào dưới đây?",
+          "type": "single_choice",
+          "options": [
+            {
+              "option_id": "OPT_MATH",
+              "text": "Các bài toán tư duy logic, câu đố hình học và phương pháp giải phương trình.",
+              "target_major": "su_pham_toan_hoc",
+              "rationale": "Sở thích học tập gắn với lĩnh vực Toán học."
+            },
+            {
+              "option_id": "OPT_LIT",
+              "text": "Đọc và thảo luận về tác phẩm văn học, câu chuyện cuộc sống và cách diễn đạt cảm xúc qua bài viết.",
+              "target_major": "su_pham_ngu_van",
+              "rationale": "Sở thích gắn với lĩnh vực Ngữ văn."
+            },
+            {
+              "option_id": "OPT_ENG",
+              "text": "Giao tiếp tiếng Anh, tìm hiểu văn hóa các nước nói tiếng Anh và phát âm ngoại ngữ.",
+              "target_major": "su_pham_tieng_anh",
+              "rationale": "Sở thích gắn với lĩnh vực Tiếng Anh."
+            },
+            {
+              "option_id": "OPT_CS",
+              "text": "Khám phá cách hoạt động của máy tính, thuật toán phần mềm và kỹ năng số.",
+              "target_major": "su_pham_tin_hoc",
+              "rationale": "Sở thích gắn với lĩnh vực Tin học."
+            },
+            {
+              "option_id": "OPT_CHEM",
+              "text": "Các thí nghiệm khoa học trực quan, biến đổi màu sắc của chất và ứng dụng hóa chất đời sống.",
+              "target_major": "su_pham_hoa_hoc",
+              "rationale": "Sở thích gắn với lĩnh vực Hóa học."
+            },
+            {
+              "option_id": "OPT_GEO",
+              "text": "Khám phá bản đồ thế giới, địa hình tự nhiên, khí hậu và đặc điểm vùng miền các quốc gia.",
+              "target_major": "su_pham_dia_ly",
+              "rationale": "Sở thích gắn với lĩnh vực Địa lý."
+            },
+            {
+              "option_id": "OPT_POLITICS",
+              "text": "Tìm hiểu về các quy định pháp luật học đường, bài học đạo đức và cách tổ chức đời sống cộng đồng.",
+              "target_major": "giao_duc_chinh_tri",
+              "rationale": "Sở thích gắn với lĩnh vực Giáo dục công dân / Giáo dục kinh tế & pháp luật."
+            }
+          ],
+          "bias_warning": "Câu hỏi đo lường sở thích hứng thú học tập, không đại diện cho năng lực học tập hay điều kiện xét tuyển.",
+          "skip_behavior": "Hiển thị bản đồ thông tin mô tả tổng quan cả 7 ngành Sư phạm THPT, không tự ý chọn ngành."
+        }
+      ]
+    },
+    "CLUSTER_B_IT_SOFTWARE": {
+      "cluster_id": "CLUSTER_B_IT_SOFTWARE",
+      "cluster_name": "Nhóm Công nghệ thông tin & Kỹ thuật phần mềm",
+      "status": "CONDITIONAL",
+      "member_majors": [
+        "ky_thuat_phan_mem",
+        "cong_nghe_thong_tin"
+      ],
+      "root_cause_indistinguishable": "Kỹ thuật phần mềm là ngành 1-1 với Lập trình viên/Phát triển phần mềm (15-1252.00). CNTT là ngành ô dù rộng, chưa có mã SOC đơn lẻ bao quát.",
+      "tier2_questions": [
+        {
+          "question_id": "T2_IT_SE_01",
+          "cluster_id": "CLUSTER_B_IT_SOFTWARE",
+          "prompt_target_audience": "Học sinh quan tâm đến lĩnh vực máy tính",
+          "text": "Khi tưởng tượng về công việc trong thế giới công nghệ, hoạt động nào kích thích trí tò mò của bạn nhất?",
+          "type": "single_choice",
+          "options": [
+            {
+              "option_id": "OPT_SE_DEV",
+              "text": "Tự tay viết mã nguồn (coding) để tạo ra một ứng dụng, trang web hoặc trò chơi máy tính hoàn chỉnh.",
+              "target_major": "ky_thuat_phan_mem",
+              "rationale": "Hứng thú thiên về quy trình sản xuất phần mềm."
+            },
+            {
+              "option_id": "OPT_IT_SYS",
+              "text": "Tìm hiểu cách kết nối mạng máy tính, cài đặt máy chủ, đám mây (Cloud) và bảo vệ an toàn thông tin khỏi hacker.",
+              "target_major": "cong_nghe_thong_tin",
+              "rationale": "Hứng thú thiên về hạ tầng, quản trị hệ thống và an ninh mạng."
+            }
+          ],
+          "bias_warning": "Sở thích này phản ánh định hướng tìm hiểu ban đầu, không khẳng định năng lực kỹ thuật chuyên sâu.",
+          "skip_behavior": "Mô tả sự khác biệt giữa hướng Lập trình ứng dụng và hướng Hạ tầng/An ninh mạng."
+        }
+      ]
+    },
+    "CLUSTER_C_REGIONAL_CULTURAL": {
+      "cluster_id": "CLUSTER_C_REGIONAL_CULTURAL",
+      "cluster_name": "Nhóm Khu vực học & Văn hóa học",
+      "status": "CONDITIONAL",
+      "member_majors": [
+        "dong_phuong_hoc",
+        "viet_nam_hoc"
+      ],
+      "root_cause_indistinguishable": "Cả hai ngành khoa học xã hội nhân văn từng bị gán ép sang nghề dịch vụ (biên dịch, hướng dẫn viên). Cần phân định dựa trên phạm vi nghiên cứu không gian địa lý - văn hóa.",
+      "tier2_questions": [
+        {
+          "question_id": "T2_REG_CULT_01",
+          "cluster_id": "CLUSTER_C_REGIONAL_CULTURAL",
+          "prompt_target_audience": "Học sinh yêu thích văn hóa và xã hội",
+          "text": "Không gian văn hóa và xã hội nào bạn mong muốn dành thời gian tìm hiểu và nghiên cứu sâu sắc nhất?",
+          "type": "single_choice",
+          "options": [
+            {
+              "option_id": "OPT_ORIENTAL",
+              "text": "Lịch sử, ngôn ngữ, lối sống và quan hệ quốc tế của các nước châu Á như Nhật Bản, Hàn Quốc, Trung Quốc hoặc Ấn Độ.",
+              "target_major": "dong_phuong_hoc",
+              "rationale": "Định hướng nghiên cứu khu vực học quốc tế."
+            },
+            {
+              "option_id": "OPT_VIETNAMESE",
+              "text": "Lịch sử phong tục, bản sắc văn hóa các dân tộc Việt Nam và chia sẻ vẻ đẹp đất nước, con người Việt Nam cho bạn bè quốc tế.",
+              "target_major": "viet_nam_hoc",
+              "rationale": "Định hướng nghiên cứu văn hóa Việt Nam và giao lưu văn hóa."
+            }
+          ],
+          "bias_warning": "Câu hỏi phản ánh sở thích khám phá văn hóa, không đại diện cho yêu cầu tuyển dụng nghề nghiệp.",
+          "skip_behavior": "Mô tả phạm vi đào tạo của ngành Đông phương học và Việt Nam học."
+        }
+      ]
+    },
+    "CLUSTER_D_TOURISM_PUBLIC_ADMIN": {
+      "cluster_id": "CLUSTER_D_TOURISM_PUBLIC_ADMIN",
+      "cluster_name": "Nhóm Quản lý đặc thù đa diện (UNRESOLVED)",
+      "status": "UNRESOLVED",
+      "member_majors": [
+        "quan_ly_du_lich_lu_hanh",
+        "quan_ly_nha_nuoc"
+      ],
+      "root_cause_indistinguishable": "Mỗi ngành là một chương trình đào tạo đại học độc lập nhưng không có một mã nghề O*NET 1-1 duy nhất tương đương trong cấu trúc nghề của Hoa Kỳ.",
+      "composite_soc_design_state": {
+        "status": "UNVALIDATED_DESIGN_HYPOTHESIS",
+        "note": "Tuyệt đối không dùng các tỷ trọng dưới đây vào bất kỳ hàm tính điểm nào. Đây chỉ là khung danh mục nghề tham khảo đang chờ thẩm định độc lập.",
+        "profiles": {
+          "quan_ly_du_lich_lu_hanh": {
+            "candidate_occupations": [
+              {"soc": "13-1121.00", "title": "Meeting, Convention, and Event Planners", "illustrative_example_weight": "UNVALIDATED_EXAMPLE"},
+              {"soc": "41-3041.00", "title": "Travel Agents", "illustrative_example_weight": "UNVALIDATED_EXAMPLE"},
+              {"soc": "11-9081.00", "title": "Lodging Managers", "illustrative_example_weight": "UNVALIDATED_EXAMPLE"}
+            ]
+          },
+          "quan_ly_nha_nuoc": {
+            "candidate_occupations": [
+              {"soc": "11-3012.00", "title": "Administrative Services Managers", "illustrative_example_weight": "UNVALIDATED_EXAMPLE"},
+              {"soc": "13-1111.00", "title": "Management Analysts", "illustrative_example_weight": "UNVALIDATED_EXAMPLE"}
+            ]
+          }
+        }
+      },
+      "tier2_questions": [
+        {
+          "question_id": "T2_TOURISM_01",
+          "cluster_id": "CLUSTER_D_TOURISM_PUBLIC_ADMIN",
+          "text": "Trong lĩnh vực du lịch và lữ hành, mảng hoạt động nào gợi mở sự hứng thú lớn nhất cho bạn?",
+          "type": "single_choice",
+          "options": [
+            {
+              "option_id": "OPT_TOUR_MGMT",
+              "text": "Lên ý tưởng, xây dựng lịch trình tour du lịch, tổ chức sự kiện và quản lý dịch vụ nghỉ dưỡng.",
+              "target_major": "quan_ly_du_lich_lu_hanh",
+              "rationale": "Sở thích quản lý và tổ chức dịch vụ lữ hành."
+            },
+            {
+              "option_id": "OPT_TOUR_GUIDE",
+              "text": "Trực tiếp thuyết minh, giới thiệu danh lam thắng cảnh và đồng hành cùng du khách trên các chuyến đi.",
+              "target_major": "quan_ly_du_lich_lu_hanh",
+              "rationale": "Sở thích hướng dẫn và tương tác hiện trường."
+            }
+          ],
+          "bias_warning": "Câu hỏi khảo sát hứng thú tìm hiểu, không phản ánh năng lực hướng dẫn hay kinh doanh.",
+          "skip_behavior": "Cung cấp cẩm nang phân biệt giữa Quản trị dịch vụ lữ hành và Nghiệp vụ hướng dẫn viên."
+        },
+        {
+          "question_id": "T2_PUB_ADMIN_01",
+          "cluster_id": "CLUSTER_D_TOURISM_PUBLIC_ADMIN",
+          "text": "Khi nghĩ về hoạt động quản lý công trong xã hội, bạn muốn tìm hiểu sâu về phương diện nào?",
+          "type": "single_choice",
+          "options": [
+            {
+              "option_id": "OPT_PUB_CIVIL",
+              "text": "Quy trình thủ tục hành chính, tổ chức bộ máy cơ quan công quyền và điều hành công việc phục vụ người dân.",
+              "target_major": "quan_ly_nha_nuoc",
+              "rationale": "Quan tâm đến quản trị hành chính công vụ."
+            },
+            {
+              "option_id": "OPT_PUB_POLICY",
+              "text": "Tìm hiểu cách thức xây dựng các chính sách phát triển kinh tế - xã hội và đánh giá hiệu quả phục vụ cộng đồng.",
+              "target_major": "quan_ly_nha_nuoc",
+              "rationale": "Quan tâm đến phân tích và hoạch định chính sách công."
+            }
+          ],
+          "bias_warning": "Câu hỏi khảo sát mức độ quan tâm về tổ chức xã hội, không đại diện cho yêu cầu tuyển dụng.",
+          "skip_behavior": "Cung cấp cẩm nang phân biệt giữa Quản lý nhà nước (khu vực công) và Quản trị kinh doanh (khu vực tư)."
+        }
+      ]
+    }
+  }
+}

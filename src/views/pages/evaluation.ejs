@@ -1,5 +1,6 @@
 <%- include('../partials/header', { 
-    extraHead: `<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>` 
+    extraHead: `<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+        <style>body:not(:has(#holland-survey-panel[open])) #bottom-nav-bar { display: none; }</style>`
 }) %>
 
 <div id="main-wrapper" class="transition-all duration-300 w-full min-h-screen flex flex-col items-center relative pt-16 pb-28 px-4 sm:px-8">
@@ -8,18 +9,25 @@
 
     <main class="w-full max-w-5xl relative flex flex-col pt-8">
         <div class="mb-6 text-left">
-            <h2 id="page-heading" class="text-2xl font-black text-navy tracking-tight">Đánh giá Năng lực & Định hướng</h2>
-            <p id="page-subheading" class="text-sm text-muted mt-1">Khảo sát năng lực học tập và khám phá nghề nghiệp theo chuẩn Holland RIASEC.</p>
+            <h2 id="page-heading" class="text-2xl font-black text-navy tracking-tight">Khảo sát F54 & Tham khảo ngành học</h2>
+            <p id="page-subheading" class="text-sm text-muted mt-1">Trả lời 54 câu hỏi để nhận kết quả từ model F54. Bài Holland 60 câu được giữ riêng bên dưới.</p>
         </div>
 
         <!-- PHÂN HỆ 1: FORM -->
+        <%- include('../partials/ml-research') %>
+        <details id="holland-survey-panel" class="mb-8 rounded-3xl border border-slate-200 p-4 sm:p-6" <%= hollandInitiallyOpen ? 'open' : '' %>>
+        <summary class="font-bold text-navy cursor-pointer mb-4">Bài khảo sát riêng: Holland 60 câu & tuyển sinh (demo)</summary>
+        <aside id="holland-demo-notice" class="p-4 mb-6 rounded-2xl border border-amber-200 bg-amber-50 text-sm text-navy" role="note">
+            <strong>Holland 60 câu và tuyển sinh — luồng demo độc lập.</strong>
+            Bộ 60 câu được giữ nguyên. Biểu đồ, mã Holland và các gợi ý minh họa bên dưới là dữ liệu demo, chưa được tính từ đáp án của bạn và không phải kết quả model F54. Không chuyển 60 đáp án vào form F54.
+        </aside>
         <div id="assessment-container" class="flex-1 flex flex-col w-full">
             <div class="w-full max-w-3xl mx-auto mb-10 mt-2">
                 <div class="flex items-center justify-between relative before:absolute before:top-1/2 before:left-0 before:w-full before:h-1 before:bg-gray-200 before:-z-10 before:-translate-y-1/2">
                     <div id="progress-line" class="absolute top-1/2 left-0 h-1 bg-cyan -z-10 -translate-y-1/2 transition-all duration-500 w-0"></div>
                     <div class="step flex flex-col items-center gap-2" id="indicator-step-1"><div class="w-8 h-8 rounded-full bg-cyan text-white flex items-center justify-center font-bold shadow-md">1</div><span class="text-xs font-bold text-navy">Hồ sơ học tập</span></div>
                     <div class="step flex flex-col items-center gap-2" id="indicator-step-2"><div class="w-8 h-8 rounded-full bg-gray-200 text-gray-400 flex items-center justify-center font-bold shadow-md">2</div><span class="text-xs font-semibold text-gray-400">Trắc nghiệm Holland</span></div>
-                    <div class="step flex flex-col items-center gap-2" id="indicator-step-3"><div class="w-8 h-8 rounded-full bg-gray-200 text-gray-400 flex items-center justify-center font-bold shadow-md">3</div><span class="text-xs font-semibold text-gray-400">Kết quả AI</span></div>
+                    <div class="step flex flex-col items-center gap-2" id="indicator-step-3"><div class="w-8 h-8 rounded-full bg-gray-200 text-gray-400 flex items-center justify-center font-bold shadow-md">3</div><span class="text-xs font-semibold text-gray-400">Kết quả minh họa</span></div>
                 </div>
             </div>
 
@@ -58,26 +66,27 @@
 
             <!-- BƯỚC 3 -->
             <section id="step-3" class="step-content hidden transition-all duration-500">
+                <p class="p-4 mb-4 rounded-xl bg-amber-50 text-sm text-navy" role="note"><strong>Kết quả demo Holland.</strong> Radar, mã ISR và ví dụ ngành trong mục này là nội dung minh họa cố định; không phải phân tích cá nhân hoặc kết quả F54.</p>
                 <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 mb-6">
                     <div class="lg:col-span-5 glass-card rounded-3xl p-8 flex flex-col items-center justify-center">
-                        <h3 class="font-bold text-xl text-navy mb-4 text-center">Hồ sơ năng lực (Holland)</h3>
+                        <h3 class="font-bold text-xl text-navy mb-4 text-center">Biểu đồ Holland minh họa (demo)</h3>
                         <div class="w-full max-w-[340px] h-[340px] relative"><canvas id="riasecChart"></canvas></div>
                         <div id="holland-result-code" class="mt-4 text-4xl font-black text-transparent bg-clip-text bg-gradient-to-r from-cyan to-violet">ISR</div>
-                        <p class="text-xs text-muted font-semibold mt-1">Mã Holland đại diện cho tính cách nổi trội</p>
+                        <p class="text-xs text-muted font-semibold mt-1">Mã Holland minh họa, chưa tính từ đáp án</p>
                     </div>
                     <div class="lg:col-span-7 space-y-6">
                         <div class="glass-card rounded-3xl p-8 bg-gradient-to-br from-cyan/5 to-violet/5 border-cyan/20">
-                            <h4 class="font-bold text-lg text-navy mb-3 flex items-center gap-2"><i data-lucide="bot" class="text-cyan"></i> AI Phân tích chi tiết</h4>
-                            <p class="text-sm text-navy/80 leading-relaxed text-justify">Mô hình AI nhận diện hồ sơ của bạn nổi trội ở nhóm <strong>Investigative (Nghiên cứu)</strong> kết hợp <strong>Social (Xã hội)</strong>. Điểm số các môn Tự nhiên đạt mức tốt, phù hợp nhất với các khối ngành ứng dụng kỹ thuật và khoa học dữ liệu.</p>
+                            <h4 class="font-bold text-lg text-navy mb-3 flex items-center gap-2"><i data-lucide="bot" class="text-cyan"></i> Ví dụ diễn giải (demo)</h4>
+                            <p class="text-sm text-navy/80 leading-relaxed text-justify">Ví dụ minh họa một hồ sơ có nhóm <strong>Investigative (Nghiên cứu)</strong> kết hợp <strong>Social (Xã hội)</strong>. Nội dung này không được suy ra từ câu trả lời của bạn và không phải phần giải thích của model F54.</p>
                         </div>
                         <div class="glass-card rounded-3xl p-8">
-                            <h4 class="font-bold text-lg text-navy mb-4">Top Ngành đề xuất phù hợp nhất</h4>
+                            <h4 class="font-bold text-lg text-navy mb-4">Ví dụ ngành và điểm minh họa (demo)</h4>
                             <div class="space-y-3">
                                 <div class="p-4 rounded-2xl bg-white border border-gray-100 flex items-center justify-between shadow-sm">
-                                    <div class="flex items-center gap-3"><div class="w-10 h-10 rounded-xl bg-emerald/10 text-emerald flex items-center justify-center font-bold">1</div><div><div class="font-bold text-navy">Công nghệ thông tin</div><div class="text-xs text-muted">Kỹ thuật phần mềm & AI</div></div></div><div class="text-lg font-black text-emerald">89%</div>
+                                    <div class="flex items-center gap-3"><div class="w-10 h-10 rounded-xl bg-emerald/10 text-emerald flex items-center justify-center font-bold">1</div><div><div class="font-bold text-navy">Công nghệ thông tin</div><div class="text-xs text-muted">Kỹ thuật phần mềm & AI</div></div></div><div class="text-lg font-black text-emerald">89/100</div>
                                 </div>
                                 <div class="p-4 rounded-2xl bg-white border border-gray-100 flex items-center justify-between shadow-sm">
-                                    <div class="flex items-center gap-3"><div class="w-10 h-10 rounded-xl bg-cyan/10 text-cyan flex items-center justify-center font-bold">2</div><div><div class="font-bold text-navy">Khoa học Dữ liệu</div><div class="text-xs text-muted">Toán tin ứng dụng</div></div></div><div class="text-lg font-black text-cyan">85%</div>
+                                    <div class="flex items-center gap-3"><div class="w-10 h-10 rounded-xl bg-cyan/10 text-cyan flex items-center justify-center font-bold">2</div><div><div class="font-bold text-navy">Khoa học Dữ liệu</div><div class="text-xs text-muted">Toán tin ứng dụng</div></div></div><div class="text-lg font-black text-cyan">85/100</div>
                                 </div>
                             </div>
                         </div>
@@ -177,6 +186,7 @@
                 </div>
             </section>
         </div>
+        </details>
     </main>
 </div>
 
@@ -217,7 +227,7 @@
                 <span>Tiếp theo</span><i data-lucide="arrow-right" class="w-3.5 h-3.5"></i>
             </button>
             <button id="btn-submit" class="hidden btn-gradient px-6 py-2 rounded-xl text-white font-bold text-xs shadow hover-glow transition-all flex items-center gap-1.5">
-                <i data-lucide="sparkles" class="w-4 h-4"></i><span>Nhận phân tích AI</span>
+                <i data-lucide="sparkles" class="w-4 h-4"></i><span>Xem kết quả minh họa</span>
             </button>
         </div>
 
@@ -381,8 +391,8 @@
         <div class="absolute inset-0 border-4 border-cyan rounded-full border-t-transparent animate-spin"></div>
         <i data-lucide="brain" class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-violet w-8 h-8 animate-pulse"></i>
     </div>
-    <h3 class="text-xl font-bold text-navy mb-1">AI đang đối chiếu dữ liệu...</h3>
-    <p class="text-xs text-muted font-medium">Phân tích mô hình RIASEC và dự đoán xếp hạng ngành phù hợp</p>
+    <h3 class="text-xl font-bold text-navy mb-1">Đang mở bản minh họa Holland…</h3>
+    <p class="text-xs text-muted font-medium">Biểu đồ và ví dụ ngành là dữ liệu demo, độc lập với kết quả F54</p>
 </div>
 
 <!-- Chứa dữ liệu an toàn dưới dạng JSON tĩnh -->
@@ -390,4 +400,4 @@
     <%- questionsData %>
 </script>
 
-<%- include('../partials/footer', { extraScripts: '<script src="/js/evaluation.js"></script>' }) %>
+<%- include('../partials/footer', { extraScripts: '<script src="/js/evaluation.js"></script><script src="/js/ml-research.js"></script>' }) %>

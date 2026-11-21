@@ -1,0 +1,209 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "LabanAI_DirectionB_Independent_Evaluation_Data_Dictionary",
+  "version": "1.2.0",
+  "phase": "B-08-R2",
+  "created_at_utc": "2026-11-21T07:25:00Z",
+  "status": "EVALUATION_PROTOCOL_READY_FOR_ETHICS_PREPARATION",
+  "data_governance": {
+    "classification": "PSEUDONYMIZED_RESEARCH_DATASET",
+    "direct_identifiers_policy": "STRICTLY_EXCLUDED — No names, phone numbers, emails, addresses, national citizen IDs, or school report cards.",
+    "quasi_identifiers_notice": "Demographic variables (grade, region, school category, gender, timestamps) constitute potential indirect identifiers and are protected via aggregation, access control, and physical/cryptographic separation from consent logs."
+  },
+  "fields": {
+    "participant_metadata": {
+      "participant_id": {
+        "type": "string",
+        "format": "uuid",
+        "required": true,
+        "description": "Cryptographically generated UUIDv4 pseudonym. Separated physically and logically from signed consent records."
+      },
+      "cohort_grade": {
+        "type": "integer",
+        "enum": [10, 11, 12],
+        "required": true,
+        "description": "High school grade level in Vietnamese educational system."
+      },
+      "geographic_region": {
+        "type": "string",
+        "enum": ["NORTH", "CENTRAL", "SOUTH"],
+        "required": true,
+        "description": "Macro-geographic region of Vietnam."
+      },
+      "school_category": {
+        "type": "string",
+        "enum": ["PUBLIC_STANDARD", "PUBLIC_SPECIALIZED", "PRIVATE_INDEPENDENT", "VOCATIONAL_CONTINUING"],
+        "required": false,
+        "description": "Broad institutional category of the school."
+      },
+      "stream_orientation": {
+        "type": "string",
+        "enum": ["NATURAL_SCIENCES", "SOCIAL_SCIENCES", "UNDECIDED"],
+        "required": false,
+        "description": "Academic track orientation."
+      },
+      "session_duration_seconds": {
+        "type": "integer",
+        "minimum": 0,
+        "required": true,
+        "description": "Total elapsed time in seconds, used for data quality auditing (not automatic deletion)."
+      },
+      "timestamp_utc": {
+        "type": "string",
+        "format": "date-time",
+        "required": true,
+        "description": "ISO 8601 UTC timestamp of session completion."
+      }
+    },
+    "part_a_pre_recommendation_interest_ratings": {
+      "unprompted_aspirations": {
+        "type": "array",
+        "items": { "type": "string" },
+        "minItems": 0,
+        "maxItems": 5,
+        "required": false,
+        "description": "Free-text list of 0 to 5 university majors the student is considering prior to the survey, preventing anchoring bias."
+      },
+      "candidate_21_majors_ratings": {
+        "type": "array",
+        "required": true,
+        "description": "Itemized ratings for candidate majors in the 21 READY pool collected BEFORE seeing any recommendation.",
+        "items": {
+          "type": "object",
+          "required": ["major_id", "insufficient_info"],
+          "properties": {
+            "major_id": { "type": "string" },
+            "interest_level": {
+              "type": ["integer", "null"],
+              "enum": [0, 1, 2, 3, null],
+              "description": "0=No interest, 1=Slight curiosity, 2=Moderate consideration, 3=Top priority. Null if insufficient_info=true."
+            },
+            "insufficient_info": {
+              "type": "boolean",
+              "description": "True if student selected 'Chưa biết đủ thông tin về ngành'. Never imputed as 0."
+            }
+          }
+        }
+      }
+    },
+    "part_a_riasec27_instrument_responses": {
+      "answers": {
+        "type": "object",
+        "required": true,
+        "description": "Exact 27 RIASEC responses on Likert scale 1 to 5.",
+        "properties": {
+          "R1": { "type": "integer", "minimum": 1, "maximum": 5 },
+          "I1": { "type": "integer", "minimum": 1, "maximum": 5 },
+          "A1": { "type": "integer", "minimum": 1, "maximum": 5 },
+          "R2": { "type": "integer", "minimum": 1, "maximum": 5 },
+          "I2": { "type": "integer", "minimum": 1, "maximum": 5 },
+          "A2": { "type": "integer", "minimum": 1, "maximum": 5 },
+          "S1": { "type": "integer", "minimum": 1, "maximum": 5 },
+          "S2": { "type": "integer", "minimum": 1, "maximum": 5 },
+          "R3": { "type": "integer", "minimum": 1, "maximum": 5 },
+          "A3": { "type": "integer", "minimum": 1, "maximum": 5 },
+          "S3": { "type": "integer", "minimum": 1, "maximum": 5 },
+          "E1": { "type": "integer", "minimum": 1, "maximum": 5 },
+          "R4": { "type": "integer", "minimum": 1, "maximum": 5 },
+          "S4": { "type": "integer", "minimum": 1, "maximum": 5 },
+          "E2": { "type": "integer", "minimum": 1, "maximum": 5 },
+          "R5": { "type": "integer", "minimum": 1, "maximum": 5 },
+          "I3": { "type": "integer", "minimum": 1, "maximum": 5 },
+          "A4": { "type": "integer", "minimum": 1, "maximum": 5 },
+          "E3": { "type": "integer", "minimum": 1, "maximum": 5 },
+          "I4": { "type": "integer", "minimum": 1, "maximum": 5 },
+          "A5": { "type": "integer", "minimum": 1, "maximum": 5 },
+          "E4": { "type": "integer", "minimum": 1, "maximum": 5 },
+          "C1": { "type": "integer", "minimum": 1, "maximum": 5 },
+          "E5": { "type": "integer", "minimum": 1, "maximum": 5 },
+          "C2": { "type": "integer", "minimum": 1, "maximum": 5 },
+          "C3": { "type": "integer", "minimum": 1, "maximum": 5 },
+          "C4": { "type": "integer", "minimum": 1, "maximum": 5 }
+        }
+      }
+    },
+    "part_a_algorithmic_inference_snapshots": {
+      "p0_output": {
+        "type": "object",
+        "required": true,
+        "properties": {
+          "status": { "type": "string", "enum": ["SUCCESS", "ABSTAIN_FLAT_PROFILE", "TIED_BOUNDARY"] },
+          "domain_means": { "type": "object" },
+          "top3": { "type": "array" }
+        }
+      },
+      "p2_output": {
+        "type": "object",
+        "required": true,
+        "properties": {
+          "status": { "type": "string", "enum": ["SUCCESS", "ABSTAIN_FLAT_PROFILE", "TIED_BOUNDARY"] },
+          "ml_probabilities": { "type": "object" },
+          "standardized_vector": { "type": "object" },
+          "top3": { "type": "array" }
+        }
+      },
+      "blinding_assignment": {
+        "type": "string",
+        "enum": ["ALPHA_IS_P2_BETA_IS_P0", "ALPHA_IS_P0_BETA_IS_P2"],
+        "required": true
+      },
+      "pool_evaluation_mode": {
+        "type": "string",
+        "enum": ["FULL_21_CANDIDATE_POOL", "POOLED_P0_P2_LIMITED"],
+        "required": true
+      },
+      "ndcg_evaluability_status": {
+        "type": "string",
+        "enum": [
+          "EVALUABLE_COMPLETE",
+          "NOT_EVALUABLE_INSUFFICIENT_LABELS",
+          "NOT_EVALUABLE_ALGORITHM_ABSTAIN",
+          "NOT_EVALUABLE_ALGORITHM_TIED"
+        ],
+        "required": true,
+        "description": "Audit flag tracking whether NDCG@3 is mathematically computable on valid observed labels."
+      }
+    },
+    "part_b_blinded_experience_evaluation": {
+      "option_alpha_ratings": {
+        "type": "object",
+        "required": ["perceived_fit", "comprehensibility", "utility", "agency", "cognitive_disconnect_flag"],
+        "properties": {
+          "perceived_fit": { "type": "integer", "minimum": 1, "maximum": 5 },
+          "comprehensibility": { "type": "integer", "minimum": 1, "maximum": 5 },
+          "utility": { "type": "integer", "minimum": 1, "maximum": 5 },
+          "agency": { "type": "integer", "minimum": 1, "maximum": 5 },
+          "cognitive_disconnect_flag": { "type": "boolean" }
+        }
+      },
+      "option_beta_ratings": {
+        "type": "object",
+        "required": ["perceived_fit", "comprehensibility", "utility", "agency", "cognitive_disconnect_flag"],
+        "properties": {
+          "perceived_fit": { "type": "integer", "minimum": 1, "maximum": 5 },
+          "comprehensibility": { "type": "integer", "minimum": 1, "maximum": 5 },
+          "utility": { "type": "integer", "minimum": 1, "maximum": 5 },
+          "agency": { "type": "integer", "minimum": 1, "maximum": 5 },
+          "cognitive_disconnect_flag": { "type": "boolean" }
+        }
+      },
+      "head_to_head_preference": {
+        "type": "string",
+        "enum": ["PREFER_ALPHA", "PREFER_BETA", "EQUIVALENT_TIE", "UNCERTAIN_NOT_SURE"],
+        "required": true,
+        "description": "Unforced subjective preference between Option Alpha and Option Beta."
+      },
+      "qualitative_feedback": {
+        "type": "string",
+        "maxLength": 500,
+        "required": false
+      }
+    },
+    "proposed_future_research_variables": {
+      "PROPOSED_Q5_VALIDATION": {
+        "status": "PROPOSED_NOT_CURRENTLY_COLLECTED",
+        "description": "Direct collection of 6 career-group preference items (Q5_LikeRe .. Q5_LikeCo) on THPT cohort to enable true empirical measurement of ML classifier Accuracy/Calibration drift across educational levels. Requires dedicated ethics approval and participant consent before deployment."
+      }
+    }
+  }
+}
