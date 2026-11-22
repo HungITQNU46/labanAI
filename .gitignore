@@ -29,3 +29,21 @@ yarn-error.log*
 # Serialized ML artifacts; do not commit binary models
 /data/ml_pipeline/artifacts/**/*.joblib
 /data/ml_pipeline/artifacts/**/*.pkl
+
+# Python virtual environments
+.venv/
+venv/
+env/
+
+# General logs and coverage
+*.log
+.coverage
+coverage/
+.nyc_output/
+
+# OS and IDE files
+Thumbs.db
+Desktop.ini
+.vscode/
+.idea/
+*.code-workspace

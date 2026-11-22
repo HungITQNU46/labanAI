@@ -8,6 +8,7 @@
 'use strict';
 
 const riasec27Service = require('../services/riasec27Service');
+const explanationService = require('../services/grokExplanation');
 
 const jsonForHtml = (value) => JSON.stringify(value).replace(/[<>&]/g, (character) => ({
     '<': '\\u003c', '>': '\\u003e', '&': '\\u0026'
@@ -15,12 +16,15 @@ const jsonForHtml = (value) => JSON.stringify(value).replace(/[<>&]/g, (characte
 
 const getPreviewPage = (req, res) => {
     res.set('Cache-Control', 'no-store');
+    if (typeof res.redirect === 'function') {
+        return res.redirect(302, '/evaluation');
+    }
     const questionnaire = riasec27Service.getQuestionnaire();
-
-    res.render('pages/riasec27Preview', {
-        title: 'Khảo sát 27 câu RIASEC & Khám phá 33 Ngành (Preview Nội Bộ)',
+    res.render('pages/evaluation', {
+        title: 'Định hướng nghề nghiệp bằng AI',
         questionnaireData: jsonForHtml(questionnaire),
-        researchStatus: 'RESEARCH_ONLY — TOP3_NOT_VALIDATED'
+        researchStatus: 'RESEARCH_ONLY — TOP3_NOT_VALIDATED',
+        isAllowedPreview: true
     });
 };
 
@@ -40,6 +44,11 @@ const evaluateAnswers = async (req, res) => {
         }
         const answers = req.body.answers;
         const result = await riasec27Service.evaluateProfile(answers);
+        // Additive metadata only; P2 output and the Python bridge contract remain intact.
+        if (result.ml_ranking?.status === 'SUCCESS') {
+            try { result.explanation_context_token = explanationService.mintContext(result.ml_ranking); }
+            catch { result.explanation_context_token = null; } // AI must never break an ML result.
+        }
         res.json(result);
     } catch (err) {
         if (err instanceof riasec27Service.Riasec27InputError) {
@@ -105,10 +114,24 @@ const exploreTier2 = async (req, res) => {
     }
 };
 
+const explainResult = async (req, res) => {
+    res.set('Cache-Control', 'no-store');
+    try {
+        res.json(await explanationService.explain(req.body));
+    } catch (error) {
+        const known = error instanceof explanationService.ExplanationError;
+        res.status(known ? error.status : 503).json({
+            status: 'ERROR', error: known ? error.code : 'EXPLANATION_UNAVAILABLE',
+            message: explanationService.UNAVAILABLE, research_status: 'RESEARCH_ONLY — TOP3_NOT_VALIDATED'
+        });
+    }
+};
+
 module.exports = {
     getPreviewPage,
     getQuestions,
     evaluateAnswers,
+    explainResult,
     getCatalog,
     getThemes,
     exploreTier2

@@ -3,7 +3,7 @@ Module: research/riasec27_tier2_explorer_v0/research_flow.py
 Phase: B-05
 
 Decoupled Architecture:
-- Step 1: 27 RIASEC raw answers -> P2 ML Ranker (6 Q5 models -> O*NET OI Cosine)
+- Step 1: 27 RIASEC raw answers -> P2 ML Ranker (6 Q5 models -> O*NET OI Pearson)
   -> Top-3 from STRICTLY 21 READY majors (or ABSTAIN / TIED).
 - Step 2: Separate 33-major catalog discovery with transparent evidence metadata.
 - Step 3: User-initiated Tier 2 qualitative exploration (5 themes) when a user proactively

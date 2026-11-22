@@ -26,11 +26,12 @@
         }
     </script>
     <link rel="stylesheet" href="/css/styles.css">
+    <script>window.__LABANAI_PREVIEW_DEV__ = <%= Boolean(locals.isPreviewDev) %>;</script>
     <!-- Nơi render các thư viện/CSS đặc thù của từng trang -->
     <%- locals.extraHead || '' %>
 </head>
 <body class="bg-background text-navy antialiased overflow-x-hidden selection:bg-cyan selection:text-white flex min-h-screen">
 
     <div class="sweeping-light"></div>
-    
+
     <div id="layout-container"></div>

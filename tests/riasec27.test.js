@@ -409,9 +409,16 @@ describe('Catalog 33, Tier 2 Qualitative Exploration & Operational Safety (Crite
         const f54Data = await f54Rec.json();
         assert.equal(f54Data.recommendations.length, 3);
 
-        // Original Evaluation page
+        // Original Evaluation page renders RIASEC27 survey directly in preview mode
         const evalPage = await get('/evaluation');
         assert.equal(evalPage.status, 200);
+        const evalHtml = await evalPage.text();
+        assert.ok(evalHtml.includes('Định hướng nghề nghiệp bằng AI'));
+        assert.ok(evalHtml.includes('id="riasec27-form"'));
+        assert.ok(evalHtml.includes('id="questions-list"'));
+        assert.ok(!evalHtml.includes('id="ml-f54-form"'));
+        assert.ok(!evalHtml.includes('id="holland-survey-panel"'));
+        assert.ok(!evalHtml.includes('id="input-toan"'));
     });
 
     test('21. Zero persistence: No answers, personal probabilities or Top-3 saved to disk/DB', async () => {
@@ -422,14 +429,17 @@ describe('Catalog 33, Tier 2 Qualitative Exploration & Operational Safety (Crite
         assert.ok(!serviceContent.includes('fs.writeFile'));
     });
 
-    test('22. Preview page renders exact research warning and required disclaimers', async () => {
+    test('22. Preview UI has a concise reference note while backend research status remains unchanged', async () => {
         const res = await get('/evaluation/riasec27-preview');
         assert.equal(res.status, 200);
         const html = await res.text();
-        assert.ok(html.includes('RESEARCH_ONLY — TOP3_NOT_VALIDATED'));
-        assert.ok(html.includes('Đây là công cụ thử nghiệm nghiên cứu'));
-        assert.ok(html.includes('chưa được kiểm chứng về độ chính xác trong việc lựa chọn ngành đại học'));
-        assert.ok(html.includes('27 nhận định RIASEC'));
+        let renderLocals;
+        require('../src/controllers/riasec27Controller').getPreviewPage({}, {set(){},render(view,locals){renderLocals=locals;}});
+        assert.equal(renderLocals.researchStatus, 'RESEARCH_ONLY — TOP3_NOT_VALIDATED');
+        assert.ok(html.includes('Kết quả mang tính tham khảo, không thay thế tư vấn hướng nghiệp.'));
+        assert.ok(!html.includes('BẢN THỬ NGHIỆM NỘI BỘ'));
+        assert.ok(!html.includes('research-notice-heading'));
+        assert.ok(html.includes('Khảo sát 27 câu RIASEC'));
     });
 });
 
@@ -621,7 +631,7 @@ describe('B-07-R1: Server Listener Environment & Flag Matrix Verification', () =
             const res = await fetch(`http://127.0.0.1:${addr.port}/evaluation/riasec27-preview`);
             assert.equal(res.status, 200);
             const html = await res.text();
-            assert.ok(html.includes('RESEARCH_ONLY — TOP3_NOT_VALIDATED'));
+            assert.ok(html.includes('Kết quả mang tính tham khảo, không thay thế tư vấn hướng nghiệp.'));
         } finally {
             ephemeralServer.closeAllConnections();
             await new Promise((resolve, reject) => ephemeralServer.close((err) => (err ? reject(err) : resolve())));

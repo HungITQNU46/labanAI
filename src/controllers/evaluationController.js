@@ -1,22 +1,44 @@
-const hollandQuestionStore = require('../models/hollandQuestionStore');
+/**
+ * evaluationController.js
+ *
+ * Controller for Career Evaluation page and ML inference endpoints.
+ * Direction B: RIASEC27 + 6 ML models + Top-3 majors.
+ */
+
+'use strict';
+
 const mlModel = require('../models/mlModel');
-const f54Questionnaire = require('../models/f54Questionnaire');
+const riasec27Service = require('../services/riasec27Service');
+const { isPreviewEnabled, isLoopbackAddress, isValidLocalhostHost } = require('../middleware/riasec27PreviewGate');
 
 const jsonForHtml = (value) => JSON.stringify(value).replace(/[<>&]/g, (character) => ({
     '<': '\\u003c', '>': '\\u003e', '&': '\\u0026'
 })[character]);
 
-const getEvaluation = async (req, res) => {
-    const hollandQuestions = await hollandQuestionStore.getQuestions();
-    res.render('pages/evaluation', { 
-        title: 'Khảo sát F54 & Tham khảo ngành học',
-        questionsData: jsonForHtml(hollandQuestions),
-        f54QuestionnaireData: jsonForHtml({
-            questionnaire_version: f54Questionnaire.questionnaire_version,
-            questions: f54Questionnaire.questions,
-            answer_scale: f54Questionnaire.answer_scale
-        }),
-        hollandInitiallyOpen: req.query.view === 'prediction'
+const getEvaluation = (req, res) => {
+    res.set('Cache-Control', 'no-store');
+    const remoteIp = req.socket?.remoteAddress || req.connection?.remoteAddress;
+    const isLoopback = isLoopbackAddress(remoteIp);
+    const isValidHost = isValidLocalhostHost(req.headers.host);
+    const isAllowedPreview = isPreviewEnabled() && isLoopback && isValidHost;
+
+    if (isAllowedPreview) {
+        // In valid local development preview, render the 27 RIASEC survey directly
+        const questionnaire = riasec27Service.getQuestionnaire();
+        return res.render('pages/evaluation', {
+            title: 'Định hướng nghề nghiệp bằng AI',
+            questionnaireData: jsonForHtml(questionnaire),
+            researchStatus: 'RESEARCH_ONLY — TOP3_NOT_VALIDATED',
+            isAllowedPreview: true
+        });
+    }
+
+    // Outside a valid local preview, do not expose the research survey.
+    return res.render('pages/evaluation', {
+        title: 'Định hướng nghề nghiệp bằng AI',
+        questionnaireData: 'null',
+        researchStatus: 'RESEARCH_ONLY — TOP3_NOT_VALIDATED',
+        isAllowedPreview: false
     });
 };
 

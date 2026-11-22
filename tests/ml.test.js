@@ -307,29 +307,28 @@ test('valid hashes cannot bypass feature order, privacy fields or training confi
     }
 });
 
-test('existing EJS pages render, preserve all 60 Holland questions and include the F54 panel', async () => {
-    for (const route of ['/', '/about', '/guide', '/news', '/chatbot', '/evaluation', '/admin']) {
-        const response = await fetch(`${origin}${route}`);
-        assert.equal(response.status, 200, route);
-        const html = await response.text();
-        assert.match(html, /<!DOCTYPE html>/);
-        if (route === '/evaluation') {
-            const questions = JSON.parse(html.match(/<script id="holland-data" type="application\/json">([\s\S]*?)<\/script>/)[1]);
-            assert.equal(questions.length, 60);
-            assert.equal(new Set(questions.map((question) => question.id)).size, 60);
-            assert.match(html, /id="ml-f54-form"/);
-            assert.match(html, /\/js\/ml-research.js/);
-            const questionnaire = JSON.parse(html.match(/<script id="f54-data" type="application\/json">([\s\S]*?)<\/script>/)[1]);
-            assert.deepEqual(Object.keys(questionnaire).sort(), ['answer_scale', 'questionnaire_version', 'questions']);
-            assert.equal(questionnaire.questionnaire_version, 'F54-v1');
-            assert.deepEqual(questionnaire.questions, questionnaireSource().questions);
-            assert.deepEqual(questionnaire.answer_scale, questionnaireSource().answer_scale);
-            for (const field of ['source_workbook', 'source_sha256', 'source_sheet', 'question_header_sha256']) {
-                assert.equal(Object.hasOwn(questionnaire, field), false, field);
+test('existing EJS pages render and evaluation stays safe outside local preview', async () => {
+    const oldFlag = process.env.LABANAI_RIASEC27_PREVIEW;
+    delete process.env.LABANAI_RIASEC27_PREVIEW;
+    try {
+        for (const route of ['/', '/about', '/guide', '/news', '/chatbot', '/evaluation', '/admin']) {
+            const response = await fetch(`${origin}${route}`);
+            assert.equal(response.status, 200, route);
+            const html = await response.text();
+            assert.match(html, /<!DOCTYPE html>/);
+            if (route === '/evaluation') {
+                assert.match(html, /Định hướng nghề nghiệp bằng AI/);
+                assert.match(html, /Tính năng hiện chưa khả dụng/);
+                assert.doesNotMatch(html, /RESEARCH_ONLY|TOP3_NOT_VALIDATED|research_status|Nghiên cứu nội bộ/i);
+                assert.doesNotMatch(html, /id="questions-list"|id="btn-submit-riasec"/);
+                assert.doesNotMatch(html, /id="ml-f54-form"/);
+                assert.doesNotMatch(html, /id="holland-survey-panel"/);
+                assert.doesNotMatch(html, /id="input-toan"/);
+                assert.doesNotMatch(html, /id="wishlist-drag-container"/);
             }
-            assert.match(html, /id="holland-survey-panel"/);
-            assert.doesNotMatch(html, /id="ml-f54-answers"/);
         }
+    } finally {
+        if (oldFlag !== undefined) process.env.LABANAI_RIASEC27_PREVIEW = oldFlag;
     }
 });
 

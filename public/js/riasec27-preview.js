@@ -33,6 +33,32 @@
 
     const resultsPanel = document.getElementById('riasec27-results-panel');
     const resultsContent = document.getElementById('results-content');
+    const aiControls = document.getElementById('ai-explanation-controls');
+    const aiPanel = document.getElementById('ai-explanation-panel');
+    const aiOpen = document.getElementById('btn-explain-ai');
+    const aiClose = document.getElementById('btn-close-ai-explanation');
+    const aiConsent = document.getElementById('ai-explanation-consent');
+    const aiSend = document.getElementById('btn-create-ai-explanation');
+    const aiStatus = document.getElementById('ai-explanation-status');
+    const aiContent = document.getElementById('ai-explanation-content');
+    let contextToken = null;
+    let currentTop3 = [];
+    let explanationRequest = null;
+    let revision = 0;
+    let evaluationPending = false;
+
+    function clearExplanation() {
+        if (explanationRequest) explanationRequest.abort();
+        explanationRequest = null;
+        contextToken = null;
+        currentTop3 = [];
+        if (aiControls) aiControls.classList.add('hidden');
+        if (aiPanel) aiPanel.classList.add('hidden');
+        if (aiConsent) aiConsent.checked = false;
+        if (aiSend) { aiSend.disabled = true; aiSend.textContent = 'Đồng ý gửi và tạo giải thích'; }
+        if (aiContent) aiContent.replaceChildren();
+        if (aiStatus) aiStatus.textContent = '';
+    }
 
     const catalogListEl = document.getElementById('catalog-list');
     const filterButtons = document.querySelectorAll('.catalog-filter-btn');
@@ -93,6 +119,9 @@
                 radio.className = 'option-radio accent-cyan text-cyan';
 
                 radio.addEventListener('change', () => {
+                    revision++;
+                    clearExplanation();
+                    if (resultsPanel) resultsPanel.classList.add('hidden');
                     answers.set(q.question_id, s.value);
                     updateAnswerProgress();
                 });
@@ -117,11 +146,13 @@
         const count = answers.size;
         if (answeredCountEl) answeredCountEl.textContent = count;
         if (submitBtn) {
-            submitBtn.disabled = count !== TOTAL_QUESTIONS;
+            submitBtn.disabled = count !== TOTAL_QUESTIONS || evaluationPending;
         }
     }
 
     function resetSurvey() {
+        revision++;
+        clearExplanation();
         answers.clear();
         const radios = questionsContainer.querySelectorAll('input[type="radio"]');
         radios.forEach((r) => { r.checked = false; });
@@ -133,10 +164,14 @@
     // --- SECTION 2: SUBMIT & RENDER TOP-3 ---
     async function submitSurvey(e) {
         e.preventDefault();
-        if (answers.size !== TOTAL_QUESTIONS) return;
+        if (answers.size !== TOTAL_QUESTIONS || evaluationPending) return;
+
+        evaluationPending = true;
+        const submittedRevision = revision;
+        clearExplanation();
 
         submitBtn.disabled = true;
-        submitBtn.textContent = 'Đang xử lý mô hình ML...';
+        submitBtn.textContent = 'Đang tạo gợi ý...';
 
         const payloadAnswers = {};
         for (const [k, v] of answers.entries()) {
@@ -151,106 +186,143 @@
             });
 
             const data = await resp.json();
-            renderResults(data);
+            if (submittedRevision === revision) renderResults(data);
         } catch (err) {
-            renderError('Không thể kết nối đến máy chủ phân tích hoặc tiến trình xử lý gặp sự cố.');
+            if (submittedRevision === revision) renderError('Không thể kết nối đến máy chủ phân tích hoặc tiến trình xử lý gặp sự cố.', 'NETWORK_ERROR');
         } finally {
-            submitBtn.disabled = false;
-            submitBtn.textContent = 'Gửi tính điểm ML Top-3';
+            evaluationPending = false;
+            updateAnswerProgress();
+            submitBtn.textContent = 'Xem kết quả';
         }
     }
 
     function renderResults(data) {
         if (!resultsPanel || !resultsContent) return;
+        clearExplanation();
         resultsPanel.classList.remove('hidden');
         resultsPanel.scrollIntoView({ behavior: 'smooth' });
 
-        const ml = data.ml_ranking || {};
+        const ml = data?.ml_ranking || {};
         const status = ml.status || 'UNKNOWN';
 
         if (status === 'SUCCESS') {
             const top3 = ml.top3 || [];
             let cardsHtml = '<div class="grid grid-cols-1 md:grid-cols-3 gap-5">';
 
-            top3.forEach((item, index) => {
-                const rankNum = index + 1;
-                const scoreVal = item.pearson_r !== undefined ? item.pearson_r : item.similarity_score;
-                const scoreStr = scoreVal !== undefined
-                    ? (scoreVal >= 0 ? '+' : '') + scoreVal.toFixed(4)
-                    : 'N/A';
-
+            top3.forEach((item) => {
+                // Preserve native competition ranks; an equal score is not an ID tie-break.
+                const rankNum = Number.isInteger(item.rank) && item.rank > 0 ? item.rank : 'N/A';
                 cardsHtml += `
-                    <div class="p-5 rounded-2xl bg-white border border-slate-200 shadow-sm relative overflow-hidden flex flex-col justify-between">
-                        <div class="absolute top-0 right-0 bg-ocean text-white text-[11px] font-black px-3 py-1 rounded-bl-xl">
+                    <div class="top3-card min-w-0 break-words p-5 rounded-2xl bg-white border border-slate-200 shadow-sm relative overflow-hidden" data-major-id="${escapeHtml(item.major_id)}">
+                        <div data-result-field="rank" class="absolute top-0 right-0 bg-ocean text-white text-[11px] font-black px-3 py-1 rounded-bl-xl">
                             TOP #${rankNum}
                         </div>
-                        <div>
-                            <div class="text-xs text-muted font-mono mb-1">Mã: ${escapeHtml(item.major_code || item.moet_code || 'N/A')}</div>
-                            <h4 class="text-base font-bold text-navy mb-2">${escapeHtml(item.major_name_vi || item.major_id)}</h4>
+                        <div class="pt-4">
+                            <div data-result-field="major_code" class="text-xs text-muted font-mono mb-1">Mã: ${escapeHtml(item.major_code || item.moet_code || 'N/A')}</div>
+                            <h4 data-result-field="major_name" class="text-base font-bold text-navy mb-3">${escapeHtml(item.major_name_vi || item.major_id)}</h4>
                             <div class="p-2.5 rounded-xl bg-slate-50 border border-slate-100 text-xs text-slate-600 mb-3">
-                                <div class="font-semibold text-slate-800">O*NET: ${escapeHtml(item.soc_code || 'N/A')}</div>
-                                <div class="text-[11px] text-slate-500">${escapeHtml(item.occupation_title_en || '')}</div>
+                                <div data-result-field="soc_code" class="font-semibold text-slate-800">O*NET: ${escapeHtml(item.soc_code || 'N/A')}</div>
+                                <div data-result-field="occupation_title" class="mt-1 text-[11px] text-slate-500">${escapeHtml(item.occupation_title_en || '')}</div>
                             </div>
-                        </div>
-                        <div class="pt-3 border-t border-slate-100">
-                            <div class="flex items-center justify-between text-xs">
-                                <span class="text-muted">Chỉ số tương đồng:</span>
-                                <span class="font-mono font-bold text-ocean">${scoreStr}</span>
-                            </div>
-                            <p class="text-[10px] text-muted mt-1 italic">Tương quan Pearson r [-1, +1]. Không phải phần trăm phù hợp.</p>
                         </div>
                     </div>
                 `;
             });
             cardsHtml += '</div>';
 
-            resultsContent.innerHTML = `
-                <div class="p-4 rounded-2xl bg-emerald-50 border border-emerald-200 text-xs text-emerald-900 mb-4">
-                    <strong>Đã tính điểm thành công:</strong> Kết quả Top-3 được xếp hạng trên đúng 21 ngành READY_FOR_PROTOTYPE đã có hồ sơ nghề tham chiếu thử nghiệm.
-                </div>
-                ${cardsHtml}
-                <div class="mt-4 p-4 rounded-xl bg-slate-50 border border-slate-200 text-xs text-slate-600">
-                    <strong>Lưu ý khoa học:</strong> Kết quả trên thể hiện mức độ tương đồng giữa vector sở thích dự đoán từ 6 mô hình ML và hồ sơ nghề O*NET. Không đảm bảo sự thành công và không thay thế cho đánh giá năng lực thực tế.
-                </div>
-            `;
+            resultsContent.innerHTML = cardsHtml;
+            contextToken = typeof data.explanation_context_token === 'string' ? data.explanation_context_token : null;
+            currentTop3 = top3.map(item => ({ major_id: item.major_id, rank: item.rank, name: item.major_name_vi || item.major_id }));
+            if (aiControls) aiControls.classList.remove('hidden');
+            if (aiOpen) aiOpen.disabled = !contextToken;
         } else if (status === 'ABSTAIN_FLAT_PROFILE') {
             resultsContent.innerHTML = `
-                <div class="p-6 rounded-2xl bg-amber-50 border border-amber-200 text-amber-950">
+                <div data-result-status="ABSTAIN_FLAT_PROFILE" class="p-6 rounded-2xl bg-slate-50 border border-slate-200 text-navy" role="status">
                     <h4 class="font-bold text-base mb-2 flex items-center gap-2">
-                        <span>Hồ sơ RIASEC chưa phân hóa (ABSTAIN_FLAT_PROFILE)</span>
+                        <span>Hồ sơ sở thích chưa đủ phân biệt</span>
                     </h4>
                     <p class="text-xs leading-relaxed mb-3">
-                        ${escapeHtml(ml.message || 'Các câu trả lời của bạn có xu hướng đồng đều trên tất cả các nhóm sở thích, khiến phương sai giữa 6 lĩnh vực xấp xỉ 0.')}
+                        Các câu trả lời hiện tại chưa tạo được hồ sơ đủ phân biệt để đưa ra Top-3.
                     </p>
-                    <p class="text-xs leading-relaxed text-amber-800">
-                        Để tránh tạo ra bảng xếp hạng giả tạo (ảo giác Top-3), hệ thống quyết định hủy gợi ý tự động. Bạn có thể kiểm tra và điều chỉnh lại câu trả lời theo đúng sở thích thực tế nhất của mình.
+                    <p class="text-xs leading-relaxed text-slate-600">
+                        Hệ thống không tạo Top-3 thay thế. Đây không phải lỗi của bạn hoặc kết luận về năng lực. Bạn có thể trao đổi thêm với người tư vấn hướng nghiệp.
                     </p>
                 </div>
             `;
         } else if (status === 'TIED_BOUNDARY') {
             resultsContent.innerHTML = `
-                <div class="p-6 rounded-2xl bg-amber-50 border border-amber-200 text-amber-950">
+                <div data-result-status="TIED_BOUNDARY" class="p-6 rounded-2xl bg-slate-50 border border-slate-200 text-navy" role="status">
                     <h4 class="font-bold text-base mb-2 flex items-center gap-2">
-                        <span>Phát hiện hòa điểm biên (TIED_BOUNDARY)</span>
+                        <span>Chưa thể phân biệt các ngành đang hòa điểm</span>
                     </h4>
                     <p class="text-xs leading-relaxed mb-3">
-                        Nhiều ngành đạt điểm tương quan Pearson gần như hoàn toàn trùng khớp tại ranh giới Top-3. Hệ thống không sử dụng quy tắc phá hòa tùy tiện (arbitrary tie-break) để đảm bảo tính khách quan khoa học.
+                        Một số ngành đang hòa điểm ở ranh giới Top-3. Hệ thống giữ nguyên kết quả hòa và không tạo một Top-3 thay thế.
                     </p>
                 </div>
             `;
         } else {
-            renderError(ml.message || 'Hệ thống không thể xử lý hồ sơ này.');
+            // Backend diagnostics may contain internal paths. Never reflect them in the preview.
+            renderError('Hệ thống chưa thể tạo gợi ý vào lúc này. Bạn có thể thử lại sau.', data?.error);
         }
     }
 
-    function renderError(message) {
+    function renderError(message, errorCode) {
         if (!resultsPanel || !resultsContent) return;
+        clearExplanation();
+        const allowedCodes = new Set([
+            'NETWORK_ERROR', 'INVALID_RIASEC27_INPUT', 'SERVICE_UNAVAILABLE',
+            'PYTHON_EXIT_ERROR', 'PYTHON_IMPORT_ERROR', 'PYTHON_INTERNAL_ERROR', 'PYTHON_INPUT_ERROR',
+            'MODEL_DEPENDENCY_ERROR', 'SPAWN_ERROR', 'EMPTY_OUTPUT', 'PARSE_ERROR',
+            'TIMEOUT_ERROR', 'CONCURRENCY_LIMIT', 'PAYLOAD_TOO_LARGE', 'BUFFER_OVERFLOW'
+        ]);
+        const safeCode = allowedCodes.has(errorCode) ? errorCode : 'RIASEC27_EVALUATION_ERROR';
         resultsPanel.classList.remove('hidden');
         resultsContent.innerHTML = `
-            <div class="p-5 rounded-2xl bg-red-50 border border-red-200 text-red-900 text-xs">
+            <div data-error-code="${safeCode}" class="p-5 rounded-2xl bg-red-50 border border-red-200 text-red-900 text-xs" role="alert">
                 <strong>Thông báo:</strong> ${escapeHtml(message)}
             </div>
         `;
+    }
+
+    async function requestAIExplanation() {
+        if (!contextToken || !aiConsent?.checked || explanationRequest) return;
+        const request = new AbortController();
+        explanationRequest = request;
+        const requestRevision = revision;
+        const timer = setTimeout(() => request.abort(), 20000);
+        aiSend.disabled = true;
+        aiSend.textContent = 'Đang tạo giải thích...';
+        aiStatus.textContent = 'Đang yêu cầu nhà cung cấp AI giải thích ba ngành đã có.';
+        aiContent.replaceChildren();
+        try {
+            const response = await fetch('/api/riasec27/explain', { method: 'POST', headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ context_token: contextToken, consent: true }), signal: request.signal });
+            const data = await response.json();
+            if (requestRevision !== revision || explanationRequest !== request) return;
+            if (!response.ok || data.status !== 'SUCCESS' || !Array.isArray(data.explanations) || data.explanations.length !== 3 ||
+                data.explanations.some((item, i) => item.major_id !== currentTop3[i].major_id || item.rank !== currentTop3[i].rank || typeof item.reason !== 'string' || typeof item.explore !== 'string') || typeof data.limitations !== 'string') throw new Error('EXPLANATION_UNAVAILABLE');
+            const displayText = value => value.replace(/(?:research_status\s*:\s*)?RESEARCH_ONLY\s*[—-]\s*TOP3_NOT_VALIDATED/gi, '').trim();
+            data.explanations.forEach((item, i) => {
+                const box = document.createElement('div'); box.className = 'rounded-xl bg-white border border-slate-200 p-4';
+                const heading = document.createElement('h5'); heading.className = 'font-bold text-navy';
+                heading.textContent = `Top #${currentTop3[i].rank} — ${currentTop3[i].name}`;
+                const reason = document.createElement('p'); reason.className = 'mt-2 text-xs leading-relaxed'; reason.textContent = displayText(item.reason);
+                const explore = document.createElement('p'); explore.className = 'mt-2 text-xs leading-relaxed'; explore.textContent = displayText(item.explore);
+                box.append(heading, reason, explore); aiContent.appendChild(box);
+            });
+            const limits = document.createElement('p'); limits.className = 'text-xs text-slate-600'; limits.textContent = displayText(data.limitations);
+            aiContent.appendChild(limits);
+            aiStatus.textContent = 'Lời giải thích do AI tạo; thứ hạng ngành được giữ nguyên.';
+        } catch {
+            if (requestRevision === revision && explanationRequest === request) aiStatus.textContent = 'Chưa thể tạo lời giải thích bằng AI lúc này';
+        } finally {
+            clearTimeout(timer);
+            if (explanationRequest === request) {
+                explanationRequest = null;
+                aiSend.disabled = !aiConsent.checked;
+                aiSend.textContent = 'Đồng ý gửi và tạo giải thích';
+            }
+        }
     }
 
     // --- SECTION 3: CATALOG LIST & FILTER ---
@@ -522,6 +594,11 @@
     // --- INITIALIZATION ---
     function init() {
         renderQuestions();
+
+        if (aiOpen) aiOpen.addEventListener('click', () => aiPanel.classList.remove('hidden'));
+        if (aiClose) aiClose.addEventListener('click', () => { if (explanationRequest) explanationRequest.abort(); aiPanel.classList.add('hidden'); });
+        if (aiConsent) aiConsent.addEventListener('change', () => { aiSend.disabled = !aiConsent.checked || !!explanationRequest; });
+        if (aiSend) aiSend.addEventListener('click', requestAIExplanation);
 
         if (resetBtn) resetBtn.addEventListener('click', resetSurvey);
         if (form) form.addEventListener('submit', submitSurvey);

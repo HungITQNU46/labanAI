@@ -17,7 +17,7 @@
 ```
 ┌────────────────────────────────────────────────────────────────────────┐
 │                        THÀNH PHẦN A: ML RANKING                        │
-│ 27 câu RIASEC ──> 6 Model Q5 ──> Chuẩn hóa P2 ──> Cosine O*NET OI      │
+│ 27 câu RIASEC ──> 6 Model Q5 ──> Chuẩn hóa P2 ──> Pearson O*NET OI     │
 │                     ──> Top-3 (Strictly 21 Ngành READY)                │
 └──────────────────────────────────┬─────────────────────────────────────┘
                                    │

@@ -128,8 +128,15 @@ function callPythonBridge(payload, timeoutMs = 8000) {
 
         const child = spawn(command, args, {
             shell: false,
+            // JSON crosses a byte pipe, not a Windows console. Match Node's UTF-8 decoder
+            // even when the launching terminal/Python would otherwise use cp1252.
+            env: { ...process.env, PYTHONIOENCODING: 'utf-8' },
+            windowsHide: true,
             stdio: ['pipe', 'pipe', 'pipe']
         });
+        // Streams can split one multibyte character between two data events.
+        child.stdout.setEncoding('utf8');
+        child.stderr.setEncoding('utf8');
 
         let stdoutData = '';
         let stderrData = '';
@@ -185,6 +192,21 @@ function callPythonBridge(payload, timeoutMs = 8000) {
 
             try {
                 const parsed = JSON.parse(stdoutData);
+                const bridgeErrors = {
+                    IMPORT_ERROR: 'PYTHON_IMPORT_ERROR',
+                    INTERNAL_ERROR: 'PYTHON_INTERNAL_ERROR',
+                    EMPTY_INPUT: 'PYTHON_INPUT_ERROR',
+                    INVALID_JSON: 'PYTHON_INPUT_ERROR'
+                };
+                if (Object.hasOwn(bridgeErrors, parsed?.status)) {
+                    return reject(new Riasec27ServiceError('Tiến trình phân tích báo lỗi.', bridgeErrors[parsed.status]));
+                }
+                if (code !== 0) {
+                    return reject(new Riasec27ServiceError('Tiến trình phân tích kết thúc bất thường.', 'PYTHON_EXIT_ERROR'));
+                }
+                if (parsed?.ml_ranking?.status === 'DEPENDENCY_ERROR') {
+                    return reject(new Riasec27ServiceError('Không thể tải thành phần mô hình đã xác minh.', 'MODEL_DEPENDENCY_ERROR'));
+                }
                 resolve(parsed);
             } catch (jsonErr) {
                 reject(new Riasec27ServiceError(

@@ -26,6 +26,7 @@ router.post('/api/ml/recommendations', evaluationController.recommendMajors);
 router.get('/evaluation/riasec27-preview', riasec27PreviewGate, riasec27Controller.getPreviewPage);
 router.get('/api/riasec27/questions', riasec27PreviewGate, riasec27Controller.getQuestions);
 router.post('/api/riasec27/evaluate', riasec27PreviewGate, riasec27Controller.evaluateAnswers);
+router.post('/api/riasec27/explain', riasec27PreviewGate, riasec27Controller.explainResult);
 router.get('/api/riasec27/catalog', riasec27PreviewGate, riasec27Controller.getCatalog);
 router.get('/api/riasec27/themes', riasec27PreviewGate, riasec27Controller.getThemes);
 router.post('/api/riasec27/explore', riasec27PreviewGate, riasec27Controller.exploreTier2);

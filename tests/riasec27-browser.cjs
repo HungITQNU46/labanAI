@@ -165,10 +165,10 @@ async function runBrowserTests() {
         await waitFor(`document.readyState === 'complete'`, 'Page load complete');
 
         // Check disclaimer
-        const noticeText = await evaluate(`document.getElementById('research-notice-heading').parentElement.textContent`);
-        assert.ok(noticeText.includes('Đây là công cụ thử nghiệm nghiên cứu dựa trên 27 câu RIASEC'));
-        assert.ok(noticeText.includes('RESEARCH_ONLY — TOP3_NOT_VALIDATED'));
-        console.log('PASS: Research disclaimer and research_status banner verified.');
+        const noticeText = await evaluate(`document.getElementById('result-reference-note').textContent`);
+        assert.ok(noticeText.includes('Kết quả mang tính tham khảo, không thay thế tư vấn hướng nghiệp.'));
+        assert.equal(await evaluate(`/RESEARCH_ONLY|TOP3_NOT_VALIDATED|research_status/.test(document.querySelector('main').innerText)`),false);
+        console.log('PASS: Concise reference note is present; internal status is not visible.');
 
         // Verify 27 questions rendered
         await waitFor(`document.querySelectorAll('#questions-list > div').length === 27`, '27 question cards rendered');
@@ -200,8 +200,9 @@ async function runBrowserTests() {
         assert.ok(resultsText.includes('TOP #2'));
         assert.ok(resultsText.includes('TOP #3'));
         assert.ok(resultsText.includes('O*NET:'));
-        assert.ok(resultsText.includes('Tương quan Pearson r'));
-        console.log('PASS: Realistic profile generated SUCCESS Top-3 with Pearson r and O*NET metadata.');
+        assert.ok(!resultsText.includes('Pearson') && !resultsText.includes('%'));
+        assert.equal(await evaluate("document.querySelectorAll('main > section').length"), 2);
+        console.log('PASS: Realistic profile generated SUCCESS Top-3 with five short fields and no score on the main cards.');
 
         console.log('\n--- SCENARIO L: Reset / Làm lại khảo sát ---');
         await evaluate(`document.getElementById('btn-reset-answers').click()`);
@@ -226,10 +227,10 @@ async function runBrowserTests() {
         assert.equal(await evaluate(`document.getElementById('answered-count').textContent`), '27');
         await evaluate(`document.getElementById('btn-submit-riasec').click()`);
         await waitFor(`!document.getElementById('riasec27-results-panel').classList.contains('hidden')`, 'Results panel visible', 15000);
-        await waitFor(`document.getElementById('results-content').textContent.includes('ABSTAIN_FLAT_PROFILE')`, 'Abstain flat notice rendered', 15000);
+        await waitFor(`Boolean(document.querySelector('[data-result-status="ABSTAIN_FLAT_PROFILE"]'))`, 'Abstain flat notice rendered', 15000);
         const abstain1Text = await evaluate(`document.getElementById('results-content').textContent`);
-        assert.ok(abstain1Text.includes('Hồ sơ RIASEC chưa phân hóa'));
-        assert.ok(abstain1Text.includes('ABSTAIN_FLAT_PROFILE'));
+        assert.ok(abstain1Text.includes('Hồ sơ sở thích chưa đủ phân biệt'));
+        assert.ok(!abstain1Text.includes('ABSTAIN_FLAT_PROFILE'));
         assert.equal(await evaluate(`document.querySelectorAll('#results-content .absolute').length`), 0, 'No Top-3 cards on flat profile');
         console.log('PASS: Flat profile all 1s produces ABSTAIN_FLAT_PROFILE and zero Top-3 cards.');
 
@@ -248,108 +249,38 @@ async function runBrowserTests() {
         })()`);
         await pause(200);
         await evaluate(`document.getElementById('btn-submit-riasec').click()`);
-        await waitFor(`document.getElementById('results-content').textContent.includes('ABSTAIN_FLAT_PROFILE')`, 'Abstain flat notice rendered', 15000);
+        await waitFor(`Boolean(document.querySelector('[data-result-status="ABSTAIN_FLAT_PROFILE"]'))`, 'Abstain flat notice rendered', 15000);
         const abstain5Text = await evaluate(`document.getElementById('results-content').textContent`);
-        assert.ok(abstain5Text.includes('Hồ sơ RIASEC chưa phân hóa'));
-        assert.ok(abstain5Text.includes('ABSTAIN_FLAT_PROFILE'));
+        assert.ok(abstain5Text.includes('Hồ sơ sở thích chưa đủ phân biệt'));
+        assert.ok(!abstain5Text.includes('ABSTAIN_FLAT_PROFILE'));
         assert.equal(await evaluate(`document.querySelectorAll('#results-content .absolute').length`), 0, 'No Top-3 cards on flat profile');
         console.log('PASS: Flat profile all 5s produces ABSTAIN_FLAT_PROFILE and zero Top-3 cards.');
 
-        console.log('\n--- SCENARIO D: Tied Boundary UI Handling ---');
-        // Verify renderResults handles TIED_BOUNDARY gracefully without throwing
-        await evaluate(`(() => {
-            // Trigger UI render for tied boundary simulation
-            const mockTied = {
-                ml_ranking: {
-                    status: 'TIED_BOUNDARY',
-                    message: 'Phát hiện hòa điểm biên (TIED_BOUNDARY)'
-                }
-            };
-            const resultsPanel = document.getElementById('riasec27-results-panel');
-            const resultsContent = document.getElementById('results-content');
-            resultsPanel.classList.remove('hidden');
-            resultsContent.innerHTML = \`
-                <div class="p-6 rounded-2xl bg-amber-50 border border-amber-200 text-amber-950">
-                    <h4 class="font-bold text-base mb-2">Phát hiện hòa điểm biên (TIED_BOUNDARY)</h4>
-                    <p class="text-xs leading-relaxed">Nhiều ngành đạt điểm tương quan Pearson gần như hoàn toàn trùng khớp tại ranh giới Top-3. Hệ thống không sử dụng quy tắc phá hòa tùy tiện.</p>
-                </div>
-            \`;
-        })()`);
-        const tiedText = await evaluate(`document.getElementById('results-content').textContent`);
-        assert.ok(tiedText.includes('TIED_BOUNDARY'));
-        assert.ok(tiedText.includes('không sử dụng quy tắc phá hòa tùy tiện'));
-        console.log('PASS: Tied boundary handled transparently with scientific notice.');
+        console.log('\n--- SCENARIO D: Real TIED renderer, no fabricated cards or AI ---');
+        await evaluate(`window.beforeTiedFetch=window.fetch;window.fetch=async(url,options)=>url==='/api/riasec27/evaluate'?new Response(JSON.stringify({ml_ranking:{status:'TIED_BOUNDARY',top3:[]}}),{headers:{'Content-Type':'application/json'}}):window.beforeTiedFetch(url,options);document.getElementById('btn-submit-riasec').click()`);
+        await waitFor(`Boolean(document.querySelector('[data-result-status="TIED_BOUNDARY"]'))`, 'Actual tied renderer');
+        assert.equal(await evaluate(`document.querySelectorAll('.top3-card').length`), 0);
+        assert.equal(await evaluate(`document.getElementById('ai-explanation-controls').classList.contains('hidden')`), true);
+        await evaluate(`window.fetch=window.beforeTiedFetch`);
+        console.log('PASS: Actual renderer preserves TIED_BOUNDARY without fallback ranking.');
 
-        console.log('\n--- SCENARIO E: Search / Filter in Catalog of 33 Majors ---');
-        await waitFor(`document.querySelectorAll('#catalog-list > div').length === 33`, '33 majors loaded');
-        assert.equal(await evaluate(`document.querySelectorAll('#catalog-list > div').length`), 33);
+        console.log('\n--- SCENARIOS E-H: Legacy discovery data retained behind API, absent from survey ---');
+        assert.equal(await evaluate(`Boolean(document.getElementById('catalog-list') || document.getElementById('themes-grid'))`), false);
+        const catalog=await(await fetch(`${origin}/api/riasec27/catalog`)).json();
+        assert.equal(catalog.catalog.length,33);
+        for(const [status,count] of [['READY_FOR_PROTOTYPE',21],['CONDITIONAL',10],['UNRESOLVED',2]]) assert.equal(catalog.catalog.filter(m=>m.status===status).length,count);
+        const themes=await(await fetch(`${origin}/api/riasec27/themes`)).json();
+        assert.equal(themes.themes.length,5);
+        const postExplore=async body=>(await fetch(`${origin}/api/riasec27/explore`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)})).json();
+        assert.equal((await postExplore({major_id:'cong_nghe_thong_tin'})).status,'AWAITING_USER_CHOICE');
+        console.log('PASS: 33-major catalog, status boundaries and exploration API remain intact, with no extra survey section.');
 
-        // Filter READY (21)
-        await evaluate(`document.querySelector('.catalog-filter-btn[data-filter="READY"]').click()`);
-        await pause(100);
-        assert.equal(await evaluate(`document.querySelectorAll('#catalog-list > div').length`), 21);
-
-        // Filter CONDITIONAL (10)
-        await evaluate(`document.querySelector('.catalog-filter-btn[data-filter="CONDITIONAL"]').click()`);
-        await pause(100);
-        assert.equal(await evaluate(`document.querySelectorAll('#catalog-list > div').length`), 10);
-
-        // Filter UNRESOLVED (2)
-        await evaluate(`document.querySelector('.catalog-filter-btn[data-filter="UNRESOLVED"]').click()`);
-        await pause(100);
-        assert.equal(await evaluate(`document.querySelectorAll('#catalog-list > div').length`), 2);
-
-        // Filter ALL (33)
-        await evaluate(`document.querySelector('.catalog-filter-btn[data-filter="ALL"]').click()`);
-        await pause(100);
-        assert.equal(await evaluate(`document.querySelectorAll('#catalog-list > div').length`), 33);
-        console.log('PASS: Catalog filtering correctly partitions 21 READY, 10 CONDITIONAL, 2 UNRESOLVED (Total 33).');
-
-        console.log('\n--- SCENARIOS F, G, H: Major Cards Detail & Boundary Verification ---');
-        // Check READY major (e.g. Công nghệ thông tin)
-        const readyCardHtml = await evaluate(`(() => {
-            const card = document.querySelector('#catalog-list > div');
-            return card ? card.innerHTML : '';
-        })()`);
-        assert.ok(readyCardHtml.includes('21 READY (Có Top-3)'));
-        assert.ok(readyCardHtml.includes('Ánh xạ O*NET:'));
-
-        // Check CONDITIONAL major card has Tier 2 explore button
-        await evaluate(`document.querySelector('.catalog-filter-btn[data-filter="CONDITIONAL"]').click()`);
-        await pause(100);
-        const condBtnCount = await evaluate(`document.querySelectorAll('#catalog-list .btn-explore-major').length`);
-        assert.equal(condBtnCount, 10, 'All 10 CONDITIONAL majors have Tier 2 explore buttons');
-
-        // Check UNRESOLVED major card has Tier 2 explore button and indicates missing SOC
-        await evaluate(`document.querySelector('.catalog-filter-btn[data-filter="UNRESOLVED"]').click()`);
-        await pause(100);
-        const unresBtnCount = await evaluate(`document.querySelectorAll('#catalog-list .btn-explore-major').length`);
-        assert.equal(unresBtnCount, 2, 'All 2 UNRESOLVED majors have Tier 2 explore buttons');
-        console.log('PASS: Boundary enforcement verified: READY in Top-3, CONDITIONAL/UNRESOLVED routed to Tier 2.');
-
-        console.log('\n--- SCENARIO I: Tier 2 Exploration Flow (Theme B) ---');
-        await waitFor(`document.querySelectorAll('#themes-grid > div').length === 5`, '5 Tier 2 themes rendered');
-        await evaluate(`(() => {
-            const themeCard = document.querySelector('[data-theme-id="THEME_B_IT_AND_SOFTWARE"]');
-            if (themeCard) themeCard.click();
-        })()`);
-        await waitFor(`!document.getElementById('tier2-question-box').classList.contains('hidden')`, 'Tier 2 question box visible');
-        const themeTitle = await evaluate(`document.getElementById('tier2-theme-title').textContent`);
-        assert.ok(themeTitle.includes('Công nghệ thông tin') || themeTitle.includes('THEME_B'));
-
-        // Submit option
-        await evaluate(`document.getElementById('btn-submit-tier2').click()`);
-        await waitFor(`!document.getElementById('tier2-result-box').classList.contains('hidden')`, 'Tier 2 result box visible');
-        const guidanceText = await evaluate(`document.getElementById('tier2-guidance-text').textContent`);
-        assert.ok(guidanceText.includes('Bạn đã chọn tìm hiểu hướng này'));
-        console.log('PASS: Tier 2 interactive exploration and guidance verified.');
-
-        console.log('\n--- SCENARIO J: Tier 2 Skip Flow ---');
-        await evaluate(`document.getElementById('btn-skip-tier2').click()`);
-        await waitFor(`document.getElementById('tier2-focus-tag').textContent.includes('ĐÃ BỎ QUA')`, 'Skipped tag rendered', 10000);
-        const skippedTag = await evaluate(`document.getElementById('tier2-focus-tag').textContent`);
-        assert.ok(skippedTag.includes('ĐÃ BỎ QUA'));
-        console.log('PASS: Tier 2 Skip flow safely retains invariant catalog and Top-3.');
+        console.log('\n--- SCENARIOS I-J: Qualitative API and skip retained ---');
+        const uncertain=await postExplore({theme_id:'THEME_B_IT_AND_SOFTWARE',option_id:'OPT_B_UNCERTAIN',is_skip:false});
+        assert.equal(uncertain.status,'QUALITATIVE_EXPLORATION');
+        assert.equal(uncertain.fit_score,undefined);
+        assert.equal((await postExplore({theme_id:'THEME_B_IT_AND_SOFTWARE',is_skip:true})).status,'USER_SKIPPED');
+        console.log('PASS: Qualitative exploration/skip API remains available without affecting ML ranking.');
 
         console.log('\n--- SCENARIO K: Mobile Viewport & Responsiveness (375x667) ---');
         await cdp.call('Emulation.setDeviceMetricsOverride', {

@@ -13,6 +13,12 @@ app.set('views', path.join(__dirname, 'src', 'views'));
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(express.json({ limit: '10kb' }));
 
+// Expose preview state dynamically to all views
+app.use((req, res, next) => {
+    res.locals.isPreviewDev = process.env.NODE_ENV === 'development' && process.env.LABANAI_RIASEC27_PREVIEW === 'true';
+    next();
+});
+
 // Sử dụng định tuyến
 app.use('/', webRoutes);
 
@@ -33,7 +39,8 @@ const HOST = isPreviewDev ? '127.0.0.1' : (process.env.HOST || undefined);
 if (require.main === module) {
     const serverArgs = HOST ? [PORT, HOST] : [PORT];
     app.listen(...serverArgs, () => {
-        console.log(`🚀 Server La Bàn AI đang chạy tại: http://${HOST || 'localhost'}:${PORT}`);
+        const displayHost = (HOST === '0.0.0.0' || !HOST) ? '127.0.0.1' : HOST;
+        console.log(`🚀 Server La Bàn AI đang chạy tại: http://${displayHost}:${PORT}`);
     });
 }
 

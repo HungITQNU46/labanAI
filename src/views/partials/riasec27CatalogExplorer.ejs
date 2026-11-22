@@ -1,0 +1,74 @@
+<!-- Retained catalog/Tier 2 UI for a separate future view; not included in the main survey. -->
+        <!-- PHẦN 3: TRA CỨU SỔ BỘ 33 NGÀNH -->
+        <section id="riasec27-catalog-panel" class="glass-card rounded-3xl p-6 sm:p-8 mb-10 shadow-sm border border-slate-200">
+            <div class="flex flex-wrap items-center justify-between gap-4 border-b border-slate-100 pb-4 mb-6">
+                <div>
+                    <h3 class="text-lg font-bold text-navy">3. Sổ bộ danh mục 33 ngành đại học</h3>
+                    <p class="text-xs text-muted mt-1">Minh bạch trạng thái dữ liệu khoa học, điều kiện tham gia xếp hạng tự động và nguồn minh chứng CTĐT.</p>
+                </div>
+                <!-- TABS LỌC -->
+                <div class="flex flex-wrap gap-2 text-xs font-semibold">
+                    <button type="button" class="catalog-filter-btn px-3 py-1.5 rounded-lg bg-navy text-white" data-filter="ALL">Tất cả (33)</button>
+                    <button type="button" class="catalog-filter-btn px-3 py-1.5 rounded-lg bg-slate-100 text-slate-700 hover:bg-slate-200" data-filter="READY">Đủ điều kiện ML (21 READY)</button>
+                    <button type="button" class="catalog-filter-btn px-3 py-1.5 rounded-lg bg-slate-100 text-slate-700 hover:bg-slate-200" data-filter="CONDITIONAL">Chờ minh chứng (10 CONDITIONAL)</button>
+                    <button type="button" class="catalog-filter-btn px-3 py-1.5 rounded-lg bg-slate-100 text-slate-700 hover:bg-slate-200" data-filter="UNRESOLVED">Chưa ánh xạ (2 UNRESOLVED)</button>
+                </div>
+            </div>
+
+            <div id="catalog-list" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div class="col-span-full py-8 text-center text-sm text-muted">Đang tải danh mục 33 ngành...</div>
+            </div>
+        </section>
+
+        <!-- PHẦN 4: KHÁM PHÁ ĐỊNH TÍNH TIER 2 (5 CHỦ ĐỀ) -->
+        <section id="riasec27-tier2-panel" class="glass-card rounded-3xl p-6 sm:p-8 mb-10 shadow-sm border border-slate-200">
+            <div class="flex flex-wrap items-center justify-between gap-4 border-b border-slate-100 pb-4 mb-6">
+                <div>
+                    <h3 class="text-lg font-bold text-navy">4. Khám phá định tính Tier 2 (5 Chủ đề chuyên môn)</h3>
+                    <p class="text-xs text-muted mt-1">Học sinh chủ động chọn hướng quan tâm để làm rõ sở thích học tập. Kết quả hoàn toàn mang tính định tính, không can thiệp hay thay đổi Top-3 ML.</p>
+                </div>
+                <span class="rounded-full bg-cyan/10 text-ocean px-3 py-1 text-xs font-bold">KHÔNG TÍNH ĐIỂM SỐ</span>
+            </div>
+
+            <!-- DANH SÁCH 5 CHỦ ĐỀ -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-6" id="themes-grid">
+                <!-- 5 theme cards -->
+            </div>
+
+            <!-- MODAL HOẶC KHU VỰC CÂU HỎI TIER 2 -->
+            <div id="tier2-question-box" class="hidden p-6 rounded-2xl bg-slate-50 border border-slate-200">
+                <div class="flex items-center justify-between mb-3">
+                    <span id="tier2-theme-title" class="text-xs font-bold text-ocean uppercase tracking-wider">Chủ đề phân hóa</span>
+                    <button type="button" id="btn-close-tier2" class="text-xs text-muted hover:text-navy font-semibold">Đóng / Quay lại</button>
+                </div>
+                <h4 id="tier2-question-text" class="text-base font-bold text-navy mb-4">Câu hỏi phân hóa chuyên sâu</h4>
+
+                <form id="tier2-form">
+                    <div id="tier2-options-container" class="space-y-3 mb-6">
+                        <!-- Options render tại đây -->
+                    </div>
+                    <div class="flex flex-wrap items-center justify-between gap-3 pt-4 border-t border-slate-200">
+                        <button type="button" id="btn-skip-tier2" class="px-4 py-2 rounded-xl border border-slate-200 text-xs font-semibold text-slate-600 hover:bg-slate-100">
+                            Bỏ qua câu hỏi này
+                        </button>
+                        <button type="submit" id="btn-submit-tier2" class="btn-gradient px-5 py-2 rounded-xl text-white text-xs font-bold shadow-sm">
+                            Xem thông tin khám phá
+                        </button>
+                    </div>
+                </form>
+
+                <!-- KHU VỰC HIỂN THỊ KẾT QUẢ ĐỊNH TÍNH TIER 2 -->
+                <div id="tier2-result-box" class="hidden mt-6 p-5 rounded-xl bg-white border border-slate-200 shadow-sm">
+                    <div class="flex items-center gap-2 mb-2">
+                        <span class="rounded-full bg-emerald-100 text-emerald-800 text-[11px] font-bold px-2.5 py-0.5">ĐỊNH HƯỚNG KHÁM PHÁ</span>
+                        <span id="tier2-focus-tag" class="text-xs font-bold text-navy"></span>
+                    </div>
+                    <p id="tier2-guidance-text" class="text-sm text-slate-700 leading-relaxed mb-4"></p>
+                    <div id="tier2-steps-container">
+                        <h5 class="text-xs font-bold text-navy uppercase tracking-wider mb-2">Gợi ý hoạt động trải nghiệm tiếp theo:</h5>
+                        <ul id="tier2-steps-list" class="list-disc list-inside text-xs text-slate-600 space-y-1"></ul>
+                    </div>
+                </div>
+            </div>
+        </section>
+
