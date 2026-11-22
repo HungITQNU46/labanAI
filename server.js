@@ -6,6 +6,10 @@ const { MongoStore } = require('connect-mongo');
 const crypto = require('crypto');
 const Admission = require('./src/models/admModel');
 const admissionSeedData = require('./data/admissionSeedData');
+const cron = require('node-cron');
+const { syncTuoiTreNews } = require('./src/services/newsRssService');
+
+
 require('dotenv').config({ path: path.join(__dirname, '.env') });
 
 const mongoUri = process.env.MONGO_URI?.trim();
@@ -112,6 +116,14 @@ async function startServer() {
     }
   );
   console.log(' Kết nối MongoDB Atlas thành công!');
+  // <<<TINTUC---
+  // //Chạy cào tin 1 lần sau khi đã kết nối DB thành công 
+  syncTuoiTreNews();
+  // Lên lịch tự động cào lại vào phút thứ 0 mỗi giờ
+  cron.schedule('0 * * * *', () => {
+    syncTuoiTreNews();
+  }); 
+  //  ---TINTUC>>>
   app.listen(PORT, () => {
     console.log(`🚀 Server La Bàn AI đang chạy tại: http://localhost:${PORT}`);
   });

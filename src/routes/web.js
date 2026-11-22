@@ -6,6 +6,9 @@ const homeController = require('../controllers/homeController');
 const chatbotController = require('../controllers/chatbotController');
 const evaluationController = require('../controllers/evaluationController');
 const adminController = require('../controllers/adminController');
+
+const newsController = require('../controllers/newsController');//tintuc
+
 const { requireAuth, requireAdmin } = require('../middleware/authMiddleware');
 
 // Xác thực tài khoản
@@ -42,3 +45,7 @@ module.exports = router;
 
 
 
+router.get('/api/news', newsController.getAllNews);//tintuc
+router.post('/api/news/sync', newsController.syncNews);//tintuc
+
+module.exports = router;
