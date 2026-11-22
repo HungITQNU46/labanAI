@@ -23,7 +23,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
-        window.AUTH_USER = <%- JSON.stringify(currentUser || null).replace(/</g, '\\u003c') %>;
+        window.AUTH_USER = JSON.parse('<%- JSON.stringify(currentUser || null).replace(/\\/g, "\\\\").replace(/\'/g, "\\\'").replace(/</g, "\\u003c") %>');
         tailwind.config = {
             darkMode: 'class',
             theme: {
