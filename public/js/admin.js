@@ -77,16 +77,17 @@ async function fetchRealtimeMetrics() {
         }
 
         // Cập nhật các Badge "+X mới từ lúc đăng nhập"
-        updateNewBadge('badge-new-users', data.newCounts.newUsers);
-        updateNewBadge('badge-new-evaluations', data.newCounts.newEvaluations);
+        updateNewBadge('badge-new-users', data.newCounts?.newUsers);
+        updateNewBadge('badge-new-evaluations', data.newCounts?.newEvaluations);
 
         // Cập nhật thanh Live Bar
         const timeDisplay = document.getElementById('admin-access-time-display');
         if (timeDisplay) {
             timeDisplay.innerText = `Theo dõi từ: ${formatClockTime(adminSessionStartTime)}`;
         }
+        const liveText = document.getElementById('admin-live-text');
         if (liveText) {
-            const sumNew = (data.newCounts.newUsers || 0) + (data.newCounts.newEvaluations || 0);
+            const sumNew = (data.newCounts?.newUsers || 0) + (data.newCounts?.newEvaluations || 0);
             if (sumNew > 0) {
                 liveText.innerHTML = `<span class="font-bold text-cyan">+${sumNew} bản ghi mới</span> từ lúc bạn mở phiên làm việc!`;
             } else {
@@ -129,7 +130,6 @@ function filterUserTable() {
         const role = row.getAttribute('data-role') || 'user';
         const status = row.getAttribute('data-status') || 'active';
 
-        // Đếm theo vai trò
         countAll++;
         if (role === 'user') countUsers++;
         if (role === 'admin') countAdmins++;
@@ -148,7 +148,6 @@ function filterUserTable() {
         }
     });
 
-    // Cập nhật số đếm trên 3 Tabs
     const elAll = document.getElementById('count-role-all');
     const elUser = document.getElementById('count-role-user');
     const elAdmin = document.getElementById('count-role-admin');
@@ -191,7 +190,7 @@ function handleUserSearch(keyword) {
 }
 
 // ==========================================
-// 5. KHÓA / MỞ KHÓA 1 TÀI KHOẢN (GỬI DATABASE VÀ LƯU VĨNH VIỄN)
+// 5. KHÓA / MỞ KHÓA 1 TÀI KHOẢN
 // ==========================================
 async function toggleUserStatus(button, userId) {
     if (!userId) return;
@@ -381,7 +380,7 @@ function exportSelectedAccountsExcel() {
 }
 
 // ==========================================
-// 7. BIỂU ĐỒ & CÁC CHỨC NĂNG CŨ
+// 7. BIỂU ĐỒ & CÁC CHỨC NĂNG THỐNG KÊ
 // ==========================================
 function renderChartBars(data) {
     const barsContainer = document.getElementById('chart-bars-container');
@@ -393,7 +392,6 @@ function renderChartBars(data) {
 
     const totalBars = data.length;
     const maxCount = Math.max(...data.map(d => d.count), 5);
-    const colors = ['bg-cyan/45', 'bg-violet/40', 'bg-cyan/35', 'bg-ocean', 'bg-cyan/55', 'bg-violet/45', 'bg-cyan/50'];
 
     if (totalBars > 20) {
         barsContainer.className = 'relative z-10 w-full h-full flex items-end justify-between gap-[3px] sm:gap-1 px-0.5';
@@ -410,7 +408,8 @@ function renderChartBars(data) {
         const heightPercent = item.count > 0
             ? Math.max(Math.round((item.count / maxCount) * 92), 12)
             : 6;
-        const color = item.count > 0 ? colors[idx % colors.length] : 'bg-slate-200/80';
+        // Áp dụng class Gradient Neon cho cột biểu đồ
+        const color = item.count > 0 ? 'cyber-chart-bar' : 'cyber-chart-bar-empty';
         const maxWidthClass = totalBars <= 8 ? 'max-w-[42px]' : (totalBars <= 16 ? 'max-w-[26px]' : 'max-w-[16px]');
         const radiusClass = totalBars > 20 ? 'rounded-t-sm' : 'rounded-t-md';
 
@@ -420,7 +419,7 @@ function renderChartBars(data) {
         const tooltipText = `${item.fullLabel || item.label}: ${item.count} lượt hoàn thành`;
 
         barCol.innerHTML = `
-            <div class="relative group w-full ${maxWidthClass} ${radiusClass} ${color} hover:bg-cyan hover:brightness-105 transition-all duration-300 cursor-pointer" style="height: ${heightPercent}%;">
+            <div class="relative group w-full ${maxWidthClass} ${radiusClass} ${color} hover:brightness-110 transition-all duration-300 cursor-pointer" style="height: ${heightPercent}%;">
                 <div class="absolute -top-10 left-1/2 -translate-x-1/2 px-2.5 py-1 bg-navy text-white text-[11px] font-bold rounded-lg opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none shadow-lg z-40 whitespace-nowrap">
                     ${tooltipText}
                 </div>
@@ -596,14 +595,13 @@ function exportDashboardExcel() {
         ['Chỉ số', 'Giá trị'],
         ...summaryCards.map((card) => [
             card.querySelector('.text-xs')?.textContent.trim() ?? '',
-            card.querySelector('.text-3xl')?.textContent.trim() ?? ''
+            card.querySelector('.text-3xl, .text-4xl')?.textContent.trim() ?? ''
         ])
     ];
     downloadCsv(rows, `bao-cao-dashboard-${new Date().toISOString().slice(0, 10)}.csv`);
 }
 
 function exportAccountsExcel() {
-    const table = document.querySelector('#accounts table');
     const headers = ['Tên', 'Email', 'Vai trò', 'Trạng thái'];
     const visibleRows = [...document.querySelectorAll('#user-table-tbody tr.user-row:not(.hidden)')];
 
@@ -899,12 +897,204 @@ function updateAdminTimeDisplay() {
 }
 
 // ==========================================
-// 8. KHỞI CHẠY KHI TẢI TRANG
+// 8. KHỞI TẠO LA BÀN 3D TẠI TRUNG TÂM ĐIỀU KHIỂN ADMIN
+// ==========================================
+function initAdmin3DCompass() {
+    const container = document.getElementById('admin-compass-canvas');
+    if (!container) return;
+
+    // Nếu trang chưa nạp thư viện Three.js thì tự động nạp từ CDN rồi vẽ ngay
+    if (typeof THREE === 'undefined') {
+        if (!document.getElementById('threejs-cdn-script')) {
+            const script = document.createElement('script');
+            script.id = 'threejs-cdn-script';
+            script.src = 'https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js';
+            script.onload = () => initAdmin3DCompass();
+            document.head.appendChild(script);
+        }
+        return;
+    }
+
+    container.innerHTML = '';
+    const width = container.clientWidth > 50 ? container.clientWidth : 208;
+    const height = container.clientHeight > 50 ? container.clientHeight : 208;
+
+    const scene = new THREE.Scene();
+    const camera = new THREE.PerspectiveCamera(45, width / height, 0.1, 1000);
+    camera.position.z = 9.5;
+
+    const renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
+    renderer.setSize(width, height);
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+    renderer.domElement.style.margin = '0 auto';
+    container.appendChild(renderer.domElement);
+
+    const compassGroup = new THREE.Group();
+
+    const ring1 = new THREE.Mesh(
+        new THREE.TorusGeometry(3, 0.055, 24, 120),
+        new THREE.MeshPhysicalMaterial({
+            color: 0x00D2FF,
+            emissive: 0x0077B6,
+            emissiveIntensity: 0.35,
+            metalness: 0.4,
+            roughness: 0.15,
+            clearcoat: 1.0,
+            transparent: true,
+            opacity: 0.92
+        })
+    );
+    ring1.rotation.x = Math.PI / 2;
+    compassGroup.add(ring1);
+
+    const ring2 = new THREE.Mesh(
+        new THREE.TorusGeometry(2.2, 0.04, 20, 100),
+        new THREE.MeshPhysicalMaterial({
+            color: 0xC084FC,
+            emissive: 0x7B2CBF,
+            emissiveIntensity: 0.4,
+            metalness: 0.35,
+            roughness: 0.2,
+            clearcoat: 1.0
+        })
+    );
+    ring2.rotation.x = Math.PI / 3;
+    compassGroup.add(ring2);
+
+    const needleGeo = new THREE.OctahedronGeometry(1.2, 0);
+    const posAttr = needleGeo.attributes.position;
+    const colors = [];
+    const colorTop = new THREE.Color(0x00F5A0);
+    const colorMid = new THREE.Color(0x00D2FF);
+    const colorBottom = new THREE.Color(0xA855F7);
+
+    for (let i = 0; i < posAttr.count; i++) {
+        const y = posAttr.getY(i);
+        const c = y > 0.1 ? colorTop : (y < -0.1 ? colorBottom : colorMid);
+        colors.push(c.r, c.g, c.b);
+    }
+    needleGeo.setAttribute('color', new THREE.Float32BufferAttribute(colors, 3));
+
+    const needle = new THREE.Mesh(
+        needleGeo,
+        new THREE.MeshPhysicalMaterial({
+            vertexColors: true,
+            emissive: 0x0A192F,
+            emissiveIntensity: 0.2,
+            metalness: 0.25,
+            roughness: 0.18,
+            clearcoat: 1.0,
+            clearcoatRoughness: 0.08,
+            flatShading: true
+        })
+    );
+    needle.scale.set(0.4, 2, 0.4);
+    compassGroup.add(needle);
+
+    // Các chấm tròn 3D li ti bay xung quanh la bàn
+    const particlesGroup = new THREE.Group();
+    const particleColors = [0x00F5D4, 0x38BDF8, 0xC084FC, 0x34D399, 0xFFFFFF];
+    const particlesData = [];
+
+    for (let i = 0; i < 36; i++) {
+        const radius = 0.035 + Math.random() * 0.055;
+        const color = particleColors[i % particleColors.length];
+        const dot = new THREE.Mesh(
+            new THREE.SphereGeometry(radius, 12, 12),
+            new THREE.MeshPhysicalMaterial({
+                color: color,
+                emissive: color,
+                emissiveIntensity: 0.65,
+                roughness: 0.1,
+                clearcoat: 1.0
+            })
+        );
+
+        const dist = 2.0 + Math.random() * 2.1;
+        const theta = Math.random() * Math.PI * 2;
+        const phi = Math.acos(2 * Math.random() - 1);
+
+        const x = dist * Math.sin(phi) * Math.cos(theta);
+        const y = dist * Math.sin(phi) * Math.sin(theta);
+        const z = dist * Math.cos(phi);
+
+        dot.position.set(x, y, z);
+        particlesGroup.add(dot);
+        particlesData.push({
+            mesh: dot,
+            baseY: y,
+            speed: 0.8 + Math.random() * 1.5,
+            phase: Math.random() * Math.PI * 2,
+            amp: 0.08 + Math.random() * 0.14
+        });
+    }
+    compassGroup.add(particlesGroup);
+    scene.add(compassGroup);
+
+    scene.add(new THREE.AmbientLight(0xffffff, 0.65));
+    const dirLight = new THREE.DirectionalLight(0xffffff, 1.35);
+    dirLight.position.set(6, 10, 8);
+    scene.add(dirLight);
+
+    const cyanLight = new THREE.PointLight(0x00E5FF, 1.5, 40);
+    cyanLight.position.set(-6, 3, 5);
+    scene.add(cyanLight);
+
+    const violetLight = new THREE.PointLight(0xA855F7, 1.5, 40);
+    violetLight.position.set(6, -4, 5);
+    scene.add(violetLight);
+
+    let mouseX = 0, mouseY = 0;
+    container.addEventListener('mousemove', (e) => {
+        const rect = container.getBoundingClientRect();
+        mouseX = ((e.clientX - rect.left) - rect.width / 2) * 0.003;
+        mouseY = ((e.clientY - rect.top) - rect.height / 2) * 0.003;
+    });
+    container.addEventListener('mouseleave', () => { mouseX = 0; mouseY = 0; });
+
+    function animateAdminCompass() {
+        requestAnimationFrame(animateAdminCompass);
+        const time = Date.now() * 0.001;
+
+        ring1.rotation.z -= 0.002;
+        ring2.rotation.y += 0.004;
+        needle.rotation.y -= 0.01;
+
+        particlesGroup.rotation.y += 0.0025;
+        particlesGroup.rotation.x -= 0.001;
+        for (let i = 0; i < particlesData.length; i++) {
+            const p = particlesData[i];
+            p.mesh.position.y = p.baseY + Math.sin(time * p.speed + p.phase) * p.amp;
+        }
+
+        compassGroup.rotation.y += 0.05 * (mouseX * 1.5 - compassGroup.rotation.y);
+        compassGroup.rotation.x += 0.05 * (mouseY * 1.5 - compassGroup.rotation.x);
+        compassGroup.position.y = Math.sin(time) * 0.25;
+
+        renderer.render(scene, camera);
+    }
+    animateAdminCompass();
+}
+// ==========================================
+// 9. KHỞI CHẠY KHI TẢI TRANG
 // ==========================================
 document.addEventListener('DOMContentLoaded', () => {
     if (!checkLoginState() || getCurrentUserRole() !== 'admin') {
         window.location.href = '/';
         return;
+    }
+
+    initVietnameseDatePickers();
+    fetchConsultationStats({ timeframe: '7days' });
+    initAdmin3DCompass();
+
+    // Kích hoạt Realtime Polling định kỳ mỗi 6 giây
+    fetchRealtimeMetrics();
+    setInterval(fetchRealtimeMetrics, 6000);
+
+    // Khởi tạo icons Lucide
+    if (typeof lucide !== 'undefined') {
+        lucide.createIcons();
     }
 
     const savedSidebarState = localStorage.getItem('sidebarCollapsed');
