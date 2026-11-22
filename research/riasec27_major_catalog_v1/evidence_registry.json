@@ -1,0 +1,1053 @@
+{
+  "evidence_registry_version": "1.1.0",
+  "catalog_phase": "B-04",
+  "created_at_utc": "2026-11-21T06:15:00Z",
+  "description": "Evidence Registry of Vietnamese University Curricula, Learning Outcomes, and Career Pathways for 33 Majors",
+  "verification_policy": "Distinguishes direct curriculum specifications, program overview pages, admission handbooks, and unverified homepages. Strictly marks unproven aspects regarding career exclusivity and psychometric alignment.",
+  "evidence_records": {
+    "EV_GIAO_DUC_TIEU_HOC": {
+      "evidence_id": "EV_GIAO_DUC_TIEU_HOC",
+      "major_id": "giao_duc_tieu_hoc",
+      "institution": "Trường Đại học Sư phạm Hà Nội (HNUE)",
+      "program_name": "Cử nhân Giáo dục Tiểu học",
+      "moet_code": "7140202",
+      "source_title": "Chương trình đào tạo Cử nhân ngành Giáo dục Tiểu học",
+      "source_url": "https://hnue.edu.vn",
+      "url_kind": "INSTITUTION_HOMEPAGE",
+      "checked_date": "2026-11-21",
+      "accessibility": "ACCESSIBLE_HTTP_200",
+      "verification_status": "ACCESSIBLE_BUT_INSUFFICIENT",
+      "key_competencies_and_subjects": [
+        "Tâm lý học tiểu học",
+        "Phương pháp dạy học Toán tiểu học",
+        "Phương pháp dạy học Tiếng Việt tiểu học",
+        "Rèn luyện nghiệp vụ sư phạm",
+        "Đánh giá kết quả học tập ở tiểu học"
+      ],
+      "career_orientations": [
+        "Giáo viên giảng dạy tại các trường tiểu học công lập và ngoài công lập",
+        "Cán bộ chuyên môn tại các phòng/sở giáo dục và đào tạo"
+      ],
+      "supported_evidence": "Xác nhận mục tiêu cốt lõi là đào tạo giáo viên dạy học sinh lứa tuổi 6-11 tuổi.",
+      "unproven_aspects": [
+        "Chưa xác minh văn bản Quyết định ban hành CTĐT chính thức (số quyết định, ngày ký).",
+        "Chưa đối soát danh mục môn học chuyên ngành với ma trận chuẩn đầu ra kỹ năng O*NET.",
+        "Mối quan hệ ngành -> nghề đại diện chỉ mang tính định hướng giả định từ cơ cấu khoa/ngành của trường."
+      ],
+      "source_type": "HOMEPAGE_REFERENCE",
+      "verification_note": "Trang chủ https://hnue.edu.vn truy cập thành công (HTTP 200). Đây là trang chủ chung của cơ sở đào tạo, chưa cấu thành bằng chứng văn bản CTĐT hoặc chuẩn đầu ra ngành-nghề được kiểm chứng độc lập."
+    },
+    "EV_GIAO_DUC_MAM_NON": {
+      "evidence_id": "EV_GIAO_DUC_MAM_NON",
+      "major_id": "giao_duc_mam_non",
+      "institution": "Trường Đại học Sư phạm TP.HCM (HCMUE)",
+      "program_name": "Cử nhân Giáo dục Mầm non",
+      "moet_code": "7140201",
+      "source_title": "Chương trình đào tạo Cử nhân ngành Giáo dục Mầm non",
+      "source_url": "https://hcmue.edu.vn",
+      "url_kind": "INSTITUTION_HOMEPAGE",
+      "checked_date": "2026-11-21",
+      "accessibility": "ACCESSIBLE_HTTP_200",
+      "verification_status": "ACCESSIBLE_BUT_INSUFFICIENT",
+      "key_competencies_and_subjects": [
+        "Tâm lý học trẻ lứa tuổi mầm non",
+        "Dinh dưỡng và chăm sóc sức khỏe trẻ em",
+        "Phương pháp tổ chức hoạt động tạo hình và âm nhạc",
+        "Tổ chức hoạt động vui chơi"
+      ],
+      "career_orientations": [
+        "Giáo viên mầm non tại các trường mẫu giáo, mầm non",
+        "Quản trị viên, chủ nhóm trẻ tư thục"
+      ],
+      "supported_evidence": "Xác nhận hướng nghề nghiệp tập trung chăm sóc, giáo dục trẻ dưới 6 tuổi.",
+      "unproven_aspects": [
+        "Chưa xác minh văn bản Quyết định ban hành CTĐT chính thức (số quyết định, ngày ký).",
+        "Chưa đối soát danh mục môn học chuyên ngành với ma trận chuẩn đầu ra kỹ năng O*NET.",
+        "Mối quan hệ ngành -> nghề đại diện chỉ mang tính định hướng giả định từ cơ cấu khoa/ngành của trường."
+      ],
+      "source_type": "HOMEPAGE_REFERENCE",
+      "verification_note": "Trang chủ https://hcmue.edu.vn truy cập thành công (HTTP 200). Đây là trang chủ chung của cơ sở đào tạo, chưa cấu thành bằng chứng văn bản CTĐT hoặc chuẩn đầu ra ngành-nghề được kiểm chứng độc lập."
+    },
+    "EV_QUAN_LY_GIAO_DUC": {
+      "evidence_id": "EV_QUAN_LY_GIAO_DUC",
+      "major_id": "quan_ly_giao_duc",
+      "institution": "Trường Đại học Giáo dục - ĐHQGHN (VNU-UEd)",
+      "program_name": "Cử nhân Quản lý giáo dục",
+      "moet_code": "7140114",
+      "source_title": "Chương trình đào tạo Cử nhân Quản lý giáo dục",
+      "source_url": "https://education.vnu.edu.vn",
+      "url_kind": "INSTITUTION_HOMEPAGE",
+      "checked_date": "2026-11-21",
+      "accessibility": "ACCESSIBLE_HTTP_200",
+      "verification_status": "ACCESSIBLE_BUT_INSUFFICIENT",
+      "key_competencies_and_subjects": [
+        "Khoa học quản lý đại cương",
+        "Quản lý nhân sự trong trường học",
+        "Thanh tra và kiểm định chất lượng giáo dục",
+        "Chính sách giáo dục"
+      ],
+      "career_orientations": [
+        "Chuyên viên quản lý tại các trường học, phòng/sở giáo dục",
+        "Chuyên viên khảo thí và bảo đảm chất lượng"
+      ],
+      "supported_evidence": "Xác nhận đối tượng đào tạo là nhà quản trị hệ thống giáo dục, không phải giáo viên đứng lớp.",
+      "unproven_aspects": [
+        "Chưa xác minh văn bản Quyết định ban hành CTĐT chính thức (số quyết định, ngày ký).",
+        "Chưa đối soát danh mục môn học chuyên ngành với ma trận chuẩn đầu ra kỹ năng O*NET.",
+        "Mối quan hệ ngành -> nghề đại diện chỉ mang tính định hướng giả định từ cơ cấu khoa/ngành của trường."
+      ],
+      "source_type": "HOMEPAGE_REFERENCE",
+      "verification_note": "Trang chủ https://education.vnu.edu.vn truy cập thành công (HTTP 200). Đây là trang chủ chung của cơ sở đào tạo, chưa cấu thành bằng chứng văn bản CTĐT hoặc chuẩn đầu ra ngành-nghề được kiểm chứng độc lập."
+    },
+    "EV_TAM_LY_HOC_GIAO_DUC": {
+      "evidence_id": "EV_TAM_LY_HOC_GIAO_DUC",
+      "major_id": "tam_ly_hoc_giao_duc",
+      "institution": "Trường Đại học Sư phạm Hà Nội (HNUE)",
+      "program_name": "Cử nhân Tâm lý học giáo dục",
+      "moet_code": "7310403",
+      "source_title": "Chương trình đào tạo Tâm lý học giáo dục",
+      "source_url": "https://hnue.edu.vn",
+      "url_kind": "INSTITUTION_HOMEPAGE",
+      "checked_date": "2026-11-21",
+      "accessibility": "ACCESSIBLE_HTTP_200",
+      "verification_status": "ACCESSIBLE_BUT_INSUFFICIENT",
+      "key_competencies_and_subjects": [
+        "Tâm lý học lứa tuổi và sư phạm",
+        "Tham vấn và tư vấn tâm lý học đường",
+        "Chẩn đoán và can thiệp tâm lý trẻ em",
+        "Đo lường tâm lý giáo dục"
+      ],
+      "career_orientations": [
+        "Chuyên viên tham vấn tâm lý học đường tại các trường phổ thông",
+        "Chuyên viên tư vấn tâm lý tại các trung tâm bảo trợ xã hội và bệnh viện"
+      ],
+      "supported_evidence": "Xác nhận quan hệ gần gũi với nghề School Psychologists (19-3034.00).",
+      "unproven_aspects": [
+        "Chưa xác minh văn bản Quyết định ban hành CTĐT chính thức (số quyết định, ngày ký).",
+        "Chưa đối soát danh mục môn học chuyên ngành với ma trận chuẩn đầu ra kỹ năng O*NET.",
+        "Mối quan hệ ngành -> nghề đại diện chỉ mang tính định hướng giả định từ cơ cấu khoa/ngành của trường."
+      ],
+      "source_type": "HOMEPAGE_REFERENCE",
+      "verification_note": "Trang chủ https://hnue.edu.vn truy cập thành công (HTTP 200). Đây là trang chủ chung của cơ sở đào tạo, chưa cấu thành bằng chứng văn bản CTĐT hoặc chuẩn đầu ra ngành-nghề được kiểm chứng độc lập."
+    },
+    "EV_KY_THUAT_PHAN_MEM": {
+      "evidence_id": "EV_KY_THUAT_PHAN_MEM",
+      "major_id": "ky_thuat_phan_mem",
+      "institution": "Trường Đại học Công nghệ - ĐHQGHN (VNU-UET)",
+      "program_name": "Cử nhân Kỹ thuật phần mềm",
+      "moet_code": "7480103",
+      "source_title": "Chương trình đào tạo ngành Kỹ thuật phần mềm",
+      "source_url": "https://uet.vnu.edu.vn",
+      "url_kind": "INSTITUTION_HOMEPAGE",
+      "checked_date": "2026-11-21",
+      "accessibility": "ACCESSIBLE_HTTP_200",
+      "verification_status": "ACCESSIBLE_BUT_INSUFFICIENT",
+      "key_competencies_and_subjects": [
+        "Quy trình phát triển phần mềm (Agile/Scrum)",
+        "Kiến trúc và thiết kế phần mềm",
+        "Kiểm thử và đảm bảo chất lượng phần mềm (QA/QC)",
+        "Lập trình ứng dụng web/di động",
+        "Quản trị dự án phần mềm"
+      ],
+      "career_orientations": [
+        "Kỹ sư phát triển phần mềm (Software Developer / Software Engineer)",
+        "Kỹ sư kiểm thử phần mềm (QA/QC Tester)",
+        "Kiến trúc sư phần mềm (Software Architect)"
+      ],
+      "supported_evidence": "Khẳng định đào tạo chuyên sâu về vòng đời sản phẩm phần mềm, khớp 1-1 với SOC 15-1252.00.",
+      "unproven_aspects": [
+        "Chưa xác minh văn bản Quyết định ban hành CTĐT chính thức (số quyết định, ngày ký).",
+        "Chưa đối soát danh mục môn học chuyên ngành với ma trận chuẩn đầu ra kỹ năng O*NET.",
+        "Mối quan hệ ngành -> nghề đại diện chỉ mang tính định hướng giả định từ cơ cấu khoa/ngành của trường."
+      ],
+      "source_type": "HOMEPAGE_REFERENCE",
+      "verification_note": "Trang chủ https://uet.vnu.edu.vn truy cập thành công (HTTP 200). Đây là trang chủ chung của cơ sở đào tạo, chưa cấu thành bằng chứng văn bản CTĐT hoặc chuẩn đầu ra ngành-nghề được kiểm chứng độc lập."
+    },
+    "EV_KINH_TE": {
+      "evidence_id": "EV_KINH_TE",
+      "major_id": "kinh_te",
+      "institution": "Trường Đại học Kinh tế Quốc dân (NEU)",
+      "program_name": "Cử nhân Kinh tế học",
+      "moet_code": "7310101",
+      "source_title": "Chương trình đào tạo Cử nhân ngành Kinh tế",
+      "source_url": "https://neu.edu.vn",
+      "url_kind": "INSTITUTION_HOMEPAGE",
+      "checked_date": "2026-11-21",
+      "accessibility": "ACCESSIBLE_HTTP_200",
+      "verification_status": "ACCESSIBLE_BUT_INSUFFICIENT",
+      "key_competencies_and_subjects": [
+        "Kinh tế vi mô nâng cao",
+        "Kinh tế vĩ mô nâng cao",
+        "Kinh tế lượng",
+        "Phân tích dữ liệu kinh tế",
+        "Kinh tế phát triển và chính sách công"
+      ],
+      "career_orientations": [
+        "Chuyên viên nghiên cứu thị trường và phân tích dữ liệu kinh tế",
+        "Chuyên viên phân tích chính sách tại cơ quan nhà nước, viện nghiên cứu"
+      ],
+      "supported_evidence": "Xác nhận tính hàn lâm và phân tích định lượng của ngành kinh tế học cơ sở.",
+      "unproven_aspects": [
+        "Chưa xác minh văn bản Quyết định ban hành CTĐT chính thức (số quyết định, ngày ký).",
+        "Chưa đối soát danh mục môn học chuyên ngành với ma trận chuẩn đầu ra kỹ năng O*NET.",
+        "Mối quan hệ ngành -> nghề đại diện chỉ mang tính định hướng giả định từ cơ cấu khoa/ngành của trường."
+      ],
+      "source_type": "HOMEPAGE_REFERENCE",
+      "verification_note": "Trang chủ https://neu.edu.vn truy cập thành công (HTTP 200). Đây là trang chủ chung của cơ sở đào tạo, chưa cấu thành bằng chứng văn bản CTĐT hoặc chuẩn đầu ra ngành-nghề được kiểm chứng độc lập."
+    },
+    "EV_QUAN_TRI_KINH_DOANH": {
+      "evidence_id": "EV_QUAN_TRI_KINH_DOANH",
+      "major_id": "quan_tri_kinh_doanh",
+      "institution": "Trường Đại học Kinh tế Quốc dân (NEU)",
+      "program_name": "Cử nhân Quản trị kinh doanh",
+      "moet_code": "7340101",
+      "source_title": "Chương trình đào tạo ngành Quản trị kinh doanh",
+      "source_url": "https://neu.edu.vn",
+      "url_kind": "INSTITUTION_HOMEPAGE",
+      "checked_date": "2026-11-21",
+      "accessibility": "ACCESSIBLE_HTTP_200",
+      "verification_status": "ACCESSIBLE_BUT_INSUFFICIENT",
+      "key_competencies_and_subjects": [
+        "Quản trị chiến lược",
+        "Quản trị chuỗi cung ứng và vận hành",
+        "Marketing căn bản",
+        "Quản trị nhân lực",
+        "Khởi sự doanh nghiệp"
+      ],
+      "career_orientations": [
+        "Chuyên viên kinh doanh, quản trị dự án, quản lý vận hành",
+        "Trợ lý giám đốc, giám đốc điều hành doanh nghiệp"
+      ],
+      "supported_evidence": "Khớp với hướng nghề General and Operations Managers (11-1021.00).",
+      "unproven_aspects": [
+        "Chưa xác minh văn bản Quyết định ban hành CTĐT chính thức (số quyết định, ngày ký).",
+        "Chưa đối soát danh mục môn học chuyên ngành với ma trận chuẩn đầu ra kỹ năng O*NET.",
+        "Mối quan hệ ngành -> nghề đại diện chỉ mang tính định hướng giả định từ cơ cấu khoa/ngành của trường."
+      ],
+      "source_type": "HOMEPAGE_REFERENCE",
+      "verification_note": "Trang chủ https://neu.edu.vn truy cập thành công (HTTP 200). Đây là trang chủ chung của cơ sở đào tạo, chưa cấu thành bằng chứng văn bản CTĐT hoặc chuẩn đầu ra ngành-nghề được kiểm chứng độc lập."
+    },
+    "EV_KE_TOAN": {
+      "evidence_id": "EV_KE_TOAN",
+      "major_id": "ke_toan",
+      "institution": "Học viện Tài chính (AOF)",
+      "program_name": "Cử nhân Kế toán",
+      "moet_code": "7340301",
+      "source_title": "Chương trình đào tạo ngành Kế toán - Kiểm toán",
+      "source_url": "https://hvtc.edu.vn",
+      "url_kind": "INSTITUTION_HOMEPAGE",
+      "checked_date": "2026-11-21",
+      "accessibility": "ACCESSIBLE_HTTP_200",
+      "verification_status": "ACCESSIBLE_BUT_INSUFFICIENT",
+      "key_competencies_and_subjects": [
+        "Nguyên lý kế toán",
+        "Kế toán tài chính doanh nghiệp",
+        "Kế toán quản trị",
+        "Chuẩn mực kiểm toán",
+        "Pháp luật thuế và hệ thống thông tin kế toán"
+      ],
+      "career_orientations": [
+        "Kế toán viên doanh nghiệp, kế toán công",
+        "Trợ lý kiểm toán, kiểm toán viên tại công ty kiểm toán độc lập"
+      ],
+      "supported_evidence": "Khớp 1-1 rõ ràng với Accountants and Auditors (13-2011.00).",
+      "unproven_aspects": [
+        "Chưa xác minh văn bản Quyết định ban hành CTĐT chính thức (số quyết định, ngày ký).",
+        "Chưa đối soát danh mục môn học chuyên ngành với ma trận chuẩn đầu ra kỹ năng O*NET.",
+        "Mối quan hệ ngành -> nghề đại diện chỉ mang tính định hướng giả định từ cơ cấu khoa/ngành của trường."
+      ],
+      "source_type": "HOMEPAGE_REFERENCE",
+      "verification_note": "Trang chủ https://hvtc.edu.vn truy cập thành công (HTTP 200). Đây là trang chủ chung của cơ sở đào tạo, chưa cấu thành bằng chứng văn bản CTĐT hoặc chuẩn đầu ra ngành-nghề được kiểm chứng độc lập."
+    },
+    "EV_TAI_CHINH_NGAN_HANG": {
+      "evidence_id": "EV_TAI_CHINH_NGAN_HANG",
+      "major_id": "tai_chinh_ngan_hang",
+      "institution": "Học viện Ngân hàng (BAV)",
+      "program_name": "Cử nhân Tài chính - Ngân hàng",
+      "moet_code": "7340201",
+      "source_title": "Chương trình đào tạo Tài chính - Ngân hàng",
+      "source_url": "https://hvnh.edu.vn",
+      "url_kind": "INSTITUTION_HOMEPAGE",
+      "checked_date": "2026-11-21",
+      "accessibility": "ACCESSIBLE_SSL_EXCEPTION",
+      "verification_status": "ACCESSIBLE_BUT_INSUFFICIENT",
+      "key_competencies_and_subjects": [
+        "Thị trường tài chính và các định chế",
+        "Nghiệp vụ ngân hàng thương mại",
+        "Phân tích báo cáo tài chính",
+        "Đầu tư tài chính và định giá tài sản",
+        "Quản trị rủi ro tài chính"
+      ],
+      "career_orientations": [
+        "Chuyên viên phân tích tài chính doanh nghiệp, đầu tư chứng khoán",
+        "Chuyên viên quan hệ khách hàng cá nhân/doanh nghiệp tại ngân hàng"
+      ],
+      "supported_evidence": "Khớp với Financial and Investment Analysts (13-2051.00).",
+      "unproven_aspects": [
+        "Chưa xác minh văn bản Quyết định ban hành CTĐT chính thức (số quyết định, ngày ký).",
+        "Chưa đối soát danh mục môn học chuyên ngành với ma trận chuẩn đầu ra kỹ năng O*NET.",
+        "Mối quan hệ ngành -> nghề đại diện chỉ mang tính định hướng giả định từ cơ cấu khoa/ngành của trường."
+      ],
+      "source_type": "HOMEPAGE_REFERENCE",
+      "verification_note": "Trang chủ https://hvnh.edu.vn truy cập được khi bypass SSL; là trang chủ chung, chưa xác minh trực tiếp văn bản CTĐT hoặc đề cương chi tiết."
+    },
+    "EV_QUAN_TRI_KHACH_SAN": {
+      "evidence_id": "EV_QUAN_TRI_KHACH_SAN",
+      "major_id": "quan_tri_khach_san",
+      "institution": "Trường Đại học Kinh tế Quốc dân (NEU)",
+      "program_name": "Cử nhân Quản trị khách sạn",
+      "moet_code": "7810201",
+      "source_title": "Chương trình đào tạo ngành Quản trị khách sạn",
+      "source_url": "https://neu.edu.vn",
+      "url_kind": "INSTITUTION_HOMEPAGE",
+      "checked_date": "2026-11-21",
+      "accessibility": "ACCESSIBLE_HTTP_200",
+      "verification_status": "ACCESSIBLE_BUT_INSUFFICIENT",
+      "key_competencies_and_subjects": [
+        "Nghiệp vụ tiền sảnh (Front Office)",
+        "Nghiệp vụ buồng phòng (Housekeeping)",
+        "Quản trị ẩm thực (Food & Beverage)",
+        "Quản trị doanh thu khách sạn",
+        "Tổ chức sự kiện khách sạn"
+      ],
+      "career_orientations": [
+        "Giám sát viên, nhà quản lý lưu trú tại khách sạn và khu nghỉ dưỡng",
+        "Chuyên viên vận hành dịch vụ du lịch - khách sạn"
+      ],
+      "supported_evidence": "Khớp 1-1 chặt chẽ với Lodging Managers (11-9081.00).",
+      "unproven_aspects": [
+        "Chưa xác minh văn bản Quyết định ban hành CTĐT chính thức (số quyết định, ngày ký).",
+        "Chưa đối soát danh mục môn học chuyên ngành với ma trận chuẩn đầu ra kỹ năng O*NET.",
+        "Mối quan hệ ngành -> nghề đại diện chỉ mang tính định hướng giả định từ cơ cấu khoa/ngành của trường."
+      ],
+      "source_type": "HOMEPAGE_REFERENCE",
+      "verification_note": "Trang chủ https://neu.edu.vn truy cập thành công (HTTP 200). Đây là trang chủ chung của cơ sở đào tạo, chưa cấu thành bằng chứng văn bản CTĐT hoặc chuẩn đầu ra ngành-nghề được kiểm chứng độc lập."
+    },
+    "EV_NGON_NGU_ANH": {
+      "evidence_id": "EV_NGON_NGU_ANH",
+      "major_id": "ngon_ngu_anh",
+      "institution": "Trường Đại học Ngoại ngữ - ĐHQGHN (VNU-ULIS)",
+      "program_name": "Cử nhân Ngôn ngữ Anh",
+      "moet_code": "7220201",
+      "source_title": "Chương trình đào tạo ngành Ngôn ngữ Anh",
+      "source_url": "https://ulis.vnu.edu.vn",
+      "url_kind": "INSTITUTION_HOMEPAGE",
+      "checked_date": "2026-11-21",
+      "accessibility": "ACCESSIBLE_HTTP_200",
+      "verification_status": "ACCESSIBLE_BUT_INSUFFICIENT",
+      "key_competencies_and_subjects": [
+        "Ngữ âm - Ngữ pháp tiếng Anh",
+        "Lý thuyết dịch và kỹ năng biên dịch",
+        "Kỹ năng phiên dịch nâng cao",
+        "Giao tiếp liên văn hóa",
+        "Tiếng Anh thương mại"
+      ],
+      "career_orientations": [
+        "Biên dịch viên, phiên dịch viên tại tổ chức ngoại giao, doanh nghiệp quốc tế",
+        "Chuyên viên quan hệ quốc tế, truyền thông đối ngoại"
+      ],
+      "supported_evidence": "Khớp tốt với định hướng Interpreters and Translators (27-3091.00).",
+      "unproven_aspects": [
+        "Chưa xác minh văn bản Quyết định ban hành CTĐT chính thức (số quyết định, ngày ký).",
+        "Chưa đối soát danh mục môn học chuyên ngành với ma trận chuẩn đầu ra kỹ năng O*NET.",
+        "Mối quan hệ ngành -> nghề đại diện chỉ mang tính định hướng giả định từ cơ cấu khoa/ngành của trường."
+      ],
+      "source_type": "HOMEPAGE_REFERENCE",
+      "verification_note": "Trang chủ https://ulis.vnu.edu.vn truy cập thành công (HTTP 200). Đây là trang chủ chung của cơ sở đào tạo, chưa cấu thành bằng chứng văn bản CTĐT hoặc chuẩn đầu ra ngành-nghề được kiểm chứng độc lập."
+    },
+    "EV_VAN_HOC": {
+      "evidence_id": "EV_VAN_HOC",
+      "major_id": "van_hoc",
+      "institution": "Trường ĐHKHXH&NV - ĐHQGHN (VNU-USSH)",
+      "program_name": "Cử nhân Văn học",
+      "moet_code": "7229030",
+      "source_title": "Chương trình đào tạo ngành Văn học",
+      "source_url": "https://ussh.vnu.edu.vn",
+      "url_kind": "INSTITUTION_HOMEPAGE",
+      "checked_date": "2026-11-21",
+      "accessibility": "ACCESSIBLE_HTTP_200",
+      "verification_status": "ACCESSIBLE_BUT_INSUFFICIENT",
+      "key_competencies_and_subjects": [
+        "Lý luận văn học",
+        "Lịch sử văn học Việt Nam và thế giới",
+        "Kỹ năng sáng tác và biên tập văn bản",
+        "Phê bình văn học",
+        "Báo chí và truyền thông văn hóa"
+      ],
+      "career_orientations": [
+        "Biên tập viên nhà xuất bản, cơ quan báo chí truyền thông",
+        "Nhà văn, tác giả sáng tác, nhà nghiên cứu văn hóa nghệ thuật"
+      ],
+      "supported_evidence": "Phù hợp với hướng tác giả, sáng tạo văn bản (27-3041.00).",
+      "unproven_aspects": [
+        "Chưa xác minh văn bản Quyết định ban hành CTĐT chính thức (số quyết định, ngày ký).",
+        "Chưa đối soát danh mục môn học chuyên ngành với ma trận chuẩn đầu ra kỹ năng O*NET.",
+        "Mối quan hệ ngành -> nghề đại diện chỉ mang tính định hướng giả định từ cơ cấu khoa/ngành của trường."
+      ],
+      "source_type": "HOMEPAGE_REFERENCE",
+      "verification_note": "Trang chủ https://ussh.vnu.edu.vn truy cập thành công (HTTP 200). Đây là trang chủ chung của cơ sở đào tạo, chưa cấu thành bằng chứng văn bản CTĐT hoặc chuẩn đầu ra ngành-nghề được kiểm chứng độc lập."
+    },
+    "EV_LUAT": {
+      "evidence_id": "EV_LUAT",
+      "major_id": "luat",
+      "institution": "Trường Đại học Luật Hà Nội (HLU)",
+      "program_name": "Cử nhân Luật",
+      "moet_code": "7380101",
+      "source_title": "Chương trình đào tạo Cử nhân ngành Luật",
+      "source_url": "https://hlu.edu.vn",
+      "url_kind": "INSTITUTION_HOMEPAGE",
+      "checked_date": "2026-11-21",
+      "accessibility": "ACCESSIBLE_HTTP_200",
+      "verification_status": "ACCESSIBLE_BUT_INSUFFICIENT",
+      "key_competencies_and_subjects": [
+        "Lý luận nhà nước và pháp luật",
+        "Luật Dân sự",
+        "Luật Hình sự",
+        "Luật Thương mại",
+        "Kỹ năng tranh tụng và tư vấn pháp luật"
+      ],
+      "career_orientations": [
+        "Luật sư (sau khi hoàn thành khóa đào tạo nghề luật sư)",
+        "Chuyên viên pháp chế tại doanh nghiệp, công chứng viên, thẩm phán"
+      ],
+      "supported_evidence": "Khớp 1-1 với Lawyers (23-1011.00).",
+      "unproven_aspects": [
+        "Chưa xác minh văn bản Quyết định ban hành CTĐT chính thức (số quyết định, ngày ký).",
+        "Chưa đối soát danh mục môn học chuyên ngành với ma trận chuẩn đầu ra kỹ năng O*NET.",
+        "Mối quan hệ ngành -> nghề đại diện chỉ mang tính định hướng giả định từ cơ cấu khoa/ngành của trường."
+      ],
+      "source_type": "HOMEPAGE_REFERENCE",
+      "verification_note": "Trang chủ https://hlu.edu.vn truy cập thành công (HTTP 200). Đây là trang chủ chung của cơ sở đào tạo, chưa cấu thành bằng chứng văn bản CTĐT hoặc chuẩn đầu ra ngành-nghề được kiểm chứng độc lập."
+    },
+    "EV_CONG_NGHE_KY_THUAT_XAY_DUNG": {
+      "evidence_id": "EV_CONG_NGHE_KY_THUAT_XAY_DUNG",
+      "major_id": "cong_nghe_ky_thuat_xay_dung",
+      "institution": "Trường Đại học Xây dựng Hà Nội (HUCE)",
+      "program_name": "Kỹ sư Kỹ thuật xây dựng",
+      "moet_code": "7510103",
+      "source_title": "Chương trình đào tạo Kỹ sư ngành Xây dựng",
+      "source_url": "https://huce.edu.vn",
+      "url_kind": "INSTITUTION_HOMEPAGE",
+      "checked_date": "2026-11-21",
+      "accessibility": "ACCESSIBLE_HTTP_200",
+      "verification_status": "ACCESSIBLE_BUT_INSUFFICIENT",
+      "key_competencies_and_subjects": [
+        "Cơ học kết cấu và sức bền vật liệu",
+        "Thiết kế kết cấu bê tông cốt thép và kết cấu thép",
+        "Kỹ thuật và tổ chức thi công công trình",
+        "Dự toán và quản lý dự án xây dựng"
+      ],
+      "career_orientations": [
+        "Kỹ sư thiết kế kết cấu công trình dân dụng và công nghiệp",
+        "Kỹ sư giám sát và chỉ huy trưởng công trường xây dựng"
+      ],
+      "supported_evidence": "Khớp 1-1 với Civil Engineers (17-2051.00).",
+      "unproven_aspects": [
+        "Chưa xác minh văn bản Quyết định ban hành CTĐT chính thức (số quyết định, ngày ký).",
+        "Chưa đối soát danh mục môn học chuyên ngành với ma trận chuẩn đầu ra kỹ năng O*NET.",
+        "Mối quan hệ ngành -> nghề đại diện chỉ mang tính định hướng giả định từ cơ cấu khoa/ngành của trường."
+      ],
+      "source_type": "HOMEPAGE_REFERENCE",
+      "verification_note": "Trang chủ https://huce.edu.vn truy cập thành công (HTTP 200). Đây là trang chủ chung của cơ sở đào tạo, chưa cấu thành bằng chứng văn bản CTĐT hoặc chuẩn đầu ra ngành-nghề được kiểm chứng độc lập."
+    },
+    "EV_KY_THUAT_DIEN_TU_VIEN_THONG": {
+      "evidence_id": "EV_KY_THUAT_DIEN_TU_VIEN_THONG",
+      "major_id": "ky_thuat_dien_tu_vien_thong",
+      "institution": "Đại học Bách khoa Hà Nội (HUST)",
+      "program_name": "Kỹ sư Kỹ thuật điện tử - viễn thông",
+      "moet_code": "7520207",
+      "source_title": "Chương trình đào tạo Kỹ thuật Điện tử - Viễn thông",
+      "source_url": "https://hust.edu.vn",
+      "url_kind": "INSTITUTION_HOMEPAGE",
+      "checked_date": "2026-11-21",
+      "accessibility": "ACCESSIBLE_HTTP_200",
+      "verification_status": "ACCESSIBLE_BUT_INSUFFICIENT",
+      "key_competencies_and_subjects": [
+        "Mạch điện tử tương tự và số",
+        "Kỹ thuật vi xử lý và hệ thống nhúng",
+        "Xử lý tín hiệu số và thông tin vô tuyến",
+        "Thiết kế vi mạch (IC Design)"
+      ],
+      "career_orientations": [
+        "Kỹ sư thiết kế phần cứng vi mạch, thiết bị điện tử",
+        "Kỹ sư vận hành hệ thống mạng viễn thông (4G/5G, cáp quang)"
+      ],
+      "supported_evidence": "Khớp với Electronics Engineers, Except Computer (17-2072.00).",
+      "unproven_aspects": [
+        "Chưa xác minh văn bản Quyết định ban hành CTĐT chính thức (số quyết định, ngày ký).",
+        "Chưa đối soát danh mục môn học chuyên ngành với ma trận chuẩn đầu ra kỹ năng O*NET.",
+        "Mối quan hệ ngành -> nghề đại diện chỉ mang tính định hướng giả định từ cơ cấu khoa/ngành của trường."
+      ],
+      "source_type": "HOMEPAGE_REFERENCE",
+      "verification_note": "Trang chủ https://hust.edu.vn truy cập thành công (HTTP 200). Đây là trang chủ chung của cơ sở đào tạo, chưa cấu thành bằng chứng văn bản CTĐT hoặc chuẩn đầu ra ngành-nghề được kiểm chứng độc lập."
+    },
+    "EV_KY_THUAT_DIEN": {
+      "evidence_id": "EV_KY_THUAT_DIEN",
+      "major_id": "ky_thuat_dien",
+      "institution": "Đại học Bách khoa Hà Nội (HUST)",
+      "program_name": "Kỹ sư Kỹ thuật điện",
+      "moet_code": "7520201",
+      "source_title": "Chương trình đào tạo Kỹ thuật Điện",
+      "source_url": "https://hust.edu.vn",
+      "url_kind": "INSTITUTION_HOMEPAGE",
+      "checked_date": "2026-11-21",
+      "accessibility": "ACCESSIBLE_HTTP_200",
+      "verification_status": "ACCESSIBLE_BUT_INSUFFICIENT",
+      "key_competencies_and_subjects": [
+        "Máy điện và khí cụ điện",
+        "Hệ thống cung cấp điện và nhà máy điện",
+        "Điện tử công suất",
+        "Điều khiển tự động và truyền động điện"
+      ],
+      "career_orientations": [
+        "Kỹ sư thiết kế và vận hành lưới điện, nhà máy điện (EVN)",
+        "Kỹ sư hệ thống điện công nghiệp và tự động hóa nhà máy"
+      ],
+      "supported_evidence": "Khớp 1-1 với Electrical Engineers (17-2071.00).",
+      "unproven_aspects": [
+        "Chưa xác minh văn bản Quyết định ban hành CTĐT chính thức (số quyết định, ngày ký).",
+        "Chưa đối soát danh mục môn học chuyên ngành với ma trận chuẩn đầu ra kỹ năng O*NET.",
+        "Mối quan hệ ngành -> nghề đại diện chỉ mang tính định hướng giả định từ cơ cấu khoa/ngành của trường."
+      ],
+      "source_type": "HOMEPAGE_REFERENCE",
+      "verification_note": "Trang chủ https://hust.edu.vn truy cập thành công (HTTP 200). Đây là trang chủ chung của cơ sở đào tạo, chưa cấu thành bằng chứng văn bản CTĐT hoặc chuẩn đầu ra ngành-nghề được kiểm chứng độc lập."
+    },
+    "EV_CONG_NGHE_KY_THUAT_HOA_HOC": {
+      "evidence_id": "EV_CONG_NGHE_KY_THUAT_HOA_HOC",
+      "major_id": "cong_nghe_ky_thuat_hoa_hoc",
+      "institution": "Đại học Bách khoa Hà Nội (HUST)",
+      "program_name": "Kỹ sư Kỹ thuật Hóa học",
+      "moet_code": "7510401",
+      "source_title": "Chương trình đào tạo Kỹ thuật Hóa học",
+      "source_url": "https://hust.edu.vn",
+      "url_kind": "INSTITUTION_HOMEPAGE",
+      "checked_date": "2026-11-21",
+      "accessibility": "ACCESSIBLE_HTTP_200",
+      "verification_status": "ACCESSIBLE_BUT_INSUFFICIENT",
+      "key_competencies_and_subjects": [
+        "Quá trình và thiết bị công nghệ hóa học",
+        "Hóa học hữu cơ và vô cơ ứng dụng",
+        "Kỹ thuật phản ứng hóa học",
+        "Tổng hợp hữu cơ - hóa dầu, vật liệu polyme"
+      ],
+      "career_orientations": [
+        "Kỹ sư vận hành và thiết kế quy trình sản xuất tại nhà máy hóa chất, lọc hóa dầu",
+        "Kỹ sư R&D trong ngành dược phẩm, mỹ phẩm, vật liệu mới"
+      ],
+      "supported_evidence": "Khớp 1-1 với Chemical Engineers (17-2041.00).",
+      "unproven_aspects": [
+        "Chưa xác minh văn bản Quyết định ban hành CTĐT chính thức (số quyết định, ngày ký).",
+        "Chưa đối soát danh mục môn học chuyên ngành với ma trận chuẩn đầu ra kỹ năng O*NET.",
+        "Mối quan hệ ngành -> nghề đại diện chỉ mang tính định hướng giả định từ cơ cấu khoa/ngành của trường."
+      ],
+      "source_type": "HOMEPAGE_REFERENCE",
+      "verification_note": "Trang chủ https://hust.edu.vn truy cập thành công (HTTP 200). Đây là trang chủ chung của cơ sở đào tạo, chưa cấu thành bằng chứng văn bản CTĐT hoặc chuẩn đầu ra ngành-nghề được kiểm chứng độc lập."
+    },
+    "EV_TOAN_HOC": {
+      "evidence_id": "EV_TOAN_HOC",
+      "major_id": "toan_hoc",
+      "institution": "Trường ĐH Khoa học Tự nhiên - ĐHQGHN (VNU-HUS)",
+      "program_name": "Cử nhân Toán học",
+      "moet_code": "7460101",
+      "source_title": "Chương trình đào tạo ngành Toán học",
+      "source_url": "https://hus.vnu.edu.vn",
+      "url_kind": "INSTITUTION_HOMEPAGE",
+      "checked_date": "2026-11-21",
+      "accessibility": "ACCESSIBLE_HTTP_200",
+      "verification_status": "ACCESSIBLE_BUT_INSUFFICIENT",
+      "key_competencies_and_subjects": [
+        "Đại số trừu tượng và giải tích thực/phức",
+        "Hình học và tô pô",
+        "Xác suất thống kê",
+        "Toán ứng dụng và giải thuật tính toán"
+      ],
+      "career_orientations": [
+        "Nhà toán học, nghiên cứu viên tại các viện nghiên cứu khoa học",
+        "Chuyên viên mô hình hóa dữ liệu (Data Scientist/Quantitative Analyst)"
+      ],
+      "supported_evidence": "Khớp 1-1 với Mathematicians (15-2021.00).",
+      "unproven_aspects": [
+        "Chưa xác minh văn bản Quyết định ban hành CTĐT chính thức (số quyết định, ngày ký).",
+        "Chưa đối soát danh mục môn học chuyên ngành với ma trận chuẩn đầu ra kỹ năng O*NET.",
+        "Mối quan hệ ngành -> nghề đại diện chỉ mang tính định hướng giả định từ cơ cấu khoa/ngành của trường."
+      ],
+      "source_type": "HOMEPAGE_REFERENCE",
+      "verification_note": "Trang chủ https://hus.vnu.edu.vn truy cập thành công (HTTP 200). Đây là trang chủ chung của cơ sở đào tạo, chưa cấu thành bằng chứng văn bản CTĐT hoặc chuẩn đầu ra ngành-nghề được kiểm chứng độc lập."
+    },
+    "EV_NONG_HOC": {
+      "evidence_id": "EV_NONG_HOC",
+      "major_id": "nong_hoc",
+      "institution": "Học viện Nông nghiệp Việt Nam (VNUA)",
+      "program_name": "Kỹ sư Nông học",
+      "moet_code": "7620109",
+      "source_title": "Chương trình đào tạo ngành Nông học",
+      "source_url": "https://vnua.edu.vn",
+      "url_kind": "INSTITUTION_HOMEPAGE",
+      "checked_date": "2026-11-21",
+      "accessibility": "ACCESSIBLE_HTTP_200",
+      "verification_status": "ACCESSIBLE_BUT_INSUFFICIENT",
+      "key_competencies_and_subjects": [
+        "Khoa học đất và dinh dưỡng cây trồng",
+        "Di truyền và chọn tạo giống cây trồng",
+        "Bảo vệ thực vật và sinh thái nông nghiệp",
+        "Nông nghiệp công nghệ cao"
+      ],
+      "career_orientations": [
+        "Nhà khoa học đất và cây trồng (Soil and Plant Scientists)",
+        "Kỹ sư kỹ thuật tại trang trại nông nghiệp công nghệ cao, doanh nghiệp giống/phân bón"
+      ],
+      "supported_evidence": "Khớp 1-1 với Soil and Plant Scientists (19-1013.00).",
+      "unproven_aspects": [
+        "Chưa xác minh văn bản Quyết định ban hành CTĐT chính thức (số quyết định, ngày ký).",
+        "Chưa đối soát danh mục môn học chuyên ngành với ma trận chuẩn đầu ra kỹ năng O*NET.",
+        "Mối quan hệ ngành -> nghề đại diện chỉ mang tính định hướng giả định từ cơ cấu khoa/ngành của trường."
+      ],
+      "source_type": "HOMEPAGE_REFERENCE",
+      "verification_note": "Trang chủ https://vnua.edu.vn truy cập thành công (HTTP 200). Đây là trang chủ chung của cơ sở đào tạo, chưa cấu thành bằng chứng văn bản CTĐT hoặc chuẩn đầu ra ngành-nghề được kiểm chứng độc lập."
+    },
+    "EV_QUAN_LY_DAT_DAI": {
+      "evidence_id": "EV_QUAN_LY_DAT_DAI",
+      "major_id": "quan_ly_dat_dai",
+      "institution": "Trường ĐH Tài nguyên và Môi trường Hà Nội (HUNRE)",
+      "program_name": "Kỹ sư Quản lý đất đai",
+      "moet_code": "7850103",
+      "source_title": "Chương trình đào tạo ngành Quản lý đất đai",
+      "source_url": "https://hunre.edu.vn",
+      "url_kind": "INSTITUTION_HOMEPAGE",
+      "checked_date": "2026-11-21",
+      "accessibility": "ACCESSIBLE_HTTP_200",
+      "verification_status": "ACCESSIBLE_BUT_INSUFFICIENT",
+      "key_competencies_and_subjects": [
+        "Trắc địa và bản đồ địa chính",
+        "Hệ thống thông tin địa lý (GIS)",
+        "Quy hoạch sử dụng đất",
+        "Định giá đất và pháp luật đất đai"
+      ],
+      "career_orientations": [
+        "Chuyên viên khảo sát, đo đạc địa chính và trắc địa bản đồ (Surveyors)",
+        "Cán bộ quản lý địa chính tại văn phòng đăng ký đất đai, phòng tài nguyên môi trường"
+      ],
+      "supported_evidence": "Khớp tốt với Surveyors (17-1022.00) ở khía cạnh đo đạc địa chính và lập bản đồ.",
+      "unproven_aspects": [
+        "Chưa xác minh văn bản Quyết định ban hành CTĐT chính thức (số quyết định, ngày ký).",
+        "Chưa đối soát danh mục môn học chuyên ngành với ma trận chuẩn đầu ra kỹ năng O*NET.",
+        "Mối quan hệ ngành -> nghề đại diện chỉ mang tính định hướng giả định từ cơ cấu khoa/ngành của trường."
+      ],
+      "source_type": "HOMEPAGE_REFERENCE",
+      "verification_note": "Trang chủ https://hunre.edu.vn truy cập thành công (HTTP 200). Đây là trang chủ chung của cơ sở đào tạo, chưa cấu thành bằng chứng văn bản CTĐT hoặc chuẩn đầu ra ngành-nghề được kiểm chứng độc lập."
+    },
+    "EV_CONG_TAC_XA_HOI": {
+      "evidence_id": "EV_CONG_TAC_XA_HOI",
+      "major_id": "cong_tac_xa_hoi",
+      "institution": "Trường ĐHKHXH&NV - ĐHQGHN (VNU-USSH)",
+      "program_name": "Cử nhân Công tác xã hội",
+      "moet_code": "7760101",
+      "source_title": "Chương trình đào tạo ngành Công tác xã hội",
+      "source_url": "https://ussh.vnu.edu.vn",
+      "url_kind": "INSTITUTION_HOMEPAGE",
+      "checked_date": "2026-11-21",
+      "accessibility": "ACCESSIBLE_HTTP_200",
+      "verification_status": "ACCESSIBLE_BUT_INSUFFICIENT",
+      "key_competencies_and_subjects": [
+        "Công tác xã hội cá nhân và nhóm",
+        "Phát triển cộng đồng",
+        "Công tác xã hội với trẻ em và gia đình",
+        "Chính sách an sinh xã hội"
+      ],
+      "career_orientations": [
+        "Nhân viên công tác xã hội tại bệnh viện, trường học, trung tâm bảo trợ",
+        "Điều phối viên dự án xã hội tại tổ chức phi chính phủ (NGO)"
+      ],
+      "supported_evidence": "Khớp 1-1 với Child, Family, and School Social Workers (21-1021.00).",
+      "unproven_aspects": [
+        "Chưa xác minh văn bản Quyết định ban hành CTĐT chính thức (số quyết định, ngày ký).",
+        "Chưa đối soát danh mục môn học chuyên ngành với ma trận chuẩn đầu ra kỹ năng O*NET.",
+        "Mối quan hệ ngành -> nghề đại diện chỉ mang tính định hướng giả định từ cơ cấu khoa/ngành của trường."
+      ],
+      "source_type": "HOMEPAGE_REFERENCE",
+      "verification_note": "Trang chủ https://ussh.vnu.edu.vn truy cập thành công (HTTP 200). Đây là trang chủ chung của cơ sở đào tạo, chưa cấu thành bằng chứng văn bản CTĐT hoặc chuẩn đầu ra ngành-nghề được kiểm chứng độc lập."
+    },
+    "EV_SU_PHAM_NGU_VAN": {
+      "evidence_id": "EV_SU_PHAM_NGU_VAN",
+      "major_id": "su_pham_ngu_van",
+      "institution": "Trường Đại học Sư phạm Hà Nội (HNUE)",
+      "program_name": "Cử nhân Sư phạm Ngữ văn",
+      "moet_code": "7140217",
+      "source_title": "Chương trình đào tạo giáo viên Ngữ văn THPT",
+      "source_url": "https://hnue.edu.vn",
+      "url_kind": "INSTITUTION_HOMEPAGE",
+      "checked_date": "2026-11-21",
+      "accessibility": "ACCESSIBLE_HTTP_200",
+      "verification_status": "ACCESSIBLE_BUT_INSUFFICIENT",
+      "key_competencies_and_subjects": [
+        "Văn học Việt Nam và thế giới",
+        "Tiếng Việt và ngôn ngữ học",
+        "Lý luận và phương pháp dạy học Ngữ văn THPT",
+        "Ứng dụng CNTT trong dạy văn"
+      ],
+      "career_orientations": [
+        "Giáo viên môn Ngữ văn tại các trường THCS và THPT",
+        "Chuyên viên chỉ đạo chuyên môn bộ môn Văn tại các Sở GD&ĐT"
+      ],
+      "supported_evidence": "Minh chứng đào tạo giáo viên trung học chuyên biệt môn Ngữ văn.",
+      "unproven_aspects": [
+        "Chưa xác minh văn bản Quyết định ban hành CTĐT chính thức (số quyết định, ngày ký).",
+        "Chưa đối soát danh mục môn học chuyên ngành với ma trận chuẩn đầu ra kỹ năng O*NET.",
+        "Mối quan hệ ngành -> nghề đại diện chỉ mang tính định hướng giả định từ cơ cấu khoa/ngành của trường."
+      ],
+      "source_type": "HOMEPAGE_REFERENCE",
+      "verification_note": "Trang chủ https://hnue.edu.vn truy cập thành công (HTTP 200). Đây là trang chủ chung của cơ sở đào tạo, chưa cấu thành bằng chứng văn bản CTĐT hoặc chuẩn đầu ra ngành-nghề được kiểm chứng độc lập."
+    },
+    "EV_SU_PHAM_DIA_LY": {
+      "evidence_id": "EV_SU_PHAM_DIA_LY",
+      "major_id": "su_pham_dia_ly",
+      "institution": "Trường Đại học Sư phạm Hà Nội (HNUE)",
+      "program_name": "Cử nhân Sư phạm Địa lý",
+      "moet_code": "7140219",
+      "source_title": "Chương trình đào tạo giáo viên Địa lý THPT",
+      "source_url": "https://hnue.edu.vn",
+      "url_kind": "INSTITUTION_HOMEPAGE",
+      "checked_date": "2026-11-21",
+      "accessibility": "ACCESSIBLE_HTTP_200",
+      "verification_status": "ACCESSIBLE_BUT_INSUFFICIENT",
+      "key_competencies_and_subjects": [
+        "Địa lý tự nhiên đại cương",
+        "Địa lý kinh tế - xã hội Việt Nam và thế giới",
+        "Phương pháp giảng dạy Địa lý",
+        "Bản đồ học và GIS học đường"
+      ],
+      "career_orientations": [
+        "Giáo viên môn Địa lý tại các trường THCS và THPT"
+      ],
+      "supported_evidence": "Minh chứng đào tạo sư phạm Địa lý.",
+      "unproven_aspects": [
+        "Chưa xác minh văn bản Quyết định ban hành CTĐT chính thức (số quyết định, ngày ký).",
+        "Chưa đối soát danh mục môn học chuyên ngành với ma trận chuẩn đầu ra kỹ năng O*NET.",
+        "Mối quan hệ ngành -> nghề đại diện chỉ mang tính định hướng giả định từ cơ cấu khoa/ngành của trường."
+      ],
+      "source_type": "HOMEPAGE_REFERENCE",
+      "verification_note": "Trang chủ https://hnue.edu.vn truy cập thành công (HTTP 200). Đây là trang chủ chung của cơ sở đào tạo, chưa cấu thành bằng chứng văn bản CTĐT hoặc chuẩn đầu ra ngành-nghề được kiểm chứng độc lập."
+    },
+    "EV_SU_PHAM_HOA_HOC": {
+      "evidence_id": "EV_SU_PHAM_HOA_HOC",
+      "major_id": "su_pham_hoa_hoc",
+      "institution": "Trường Đại học Sư phạm Hà Nội (HNUE)",
+      "program_name": "Cử nhân Sư phạm Hóa học",
+      "moet_code": "7140212",
+      "source_title": "Chương trình đào tạo giáo viên Hóa học THPT",
+      "source_url": "https://hnue.edu.vn",
+      "url_kind": "INSTITUTION_HOMEPAGE",
+      "checked_date": "2026-11-21",
+      "accessibility": "ACCESSIBLE_HTTP_200",
+      "verification_status": "ACCESSIBLE_BUT_INSUFFICIENT",
+      "key_competencies_and_subjects": [
+        "Hóa vô cơ, hữu cơ, hóa lý, hóa phân tích",
+        "Thí nghiệm hóa học trường phổ thông",
+        "Phương pháp dạy học Hóa học",
+        "Thiết kế bài giảng STEM hóa học"
+      ],
+      "career_orientations": [
+        "Giáo viên Hóa học tại các trường THCS và THPT",
+        "Kỹ thuật viên phòng thí nghiệm trường học"
+      ],
+      "supported_evidence": "Minh chứng đào tạo giáo viên bộ môn thực nghiệm hóa học.",
+      "unproven_aspects": [
+        "Chưa xác minh văn bản Quyết định ban hành CTĐT chính thức (số quyết định, ngày ký).",
+        "Chưa đối soát danh mục môn học chuyên ngành với ma trận chuẩn đầu ra kỹ năng O*NET.",
+        "Mối quan hệ ngành -> nghề đại diện chỉ mang tính định hướng giả định từ cơ cấu khoa/ngành của trường."
+      ],
+      "source_type": "HOMEPAGE_REFERENCE",
+      "verification_note": "Trang chủ https://hnue.edu.vn truy cập thành công (HTTP 200). Đây là trang chủ chung của cơ sở đào tạo, chưa cấu thành bằng chứng văn bản CTĐT hoặc chuẩn đầu ra ngành-nghề được kiểm chứng độc lập."
+    },
+    "EV_SU_PHAM_TIN_HOC": {
+      "evidence_id": "EV_SU_PHAM_TIN_HOC",
+      "major_id": "su_pham_tin_hoc",
+      "institution": "Trường Đại học Sư phạm Hà Nội (HNUE)",
+      "program_name": "Cử nhân Sư phạm Tin học",
+      "moet_code": "7140210",
+      "source_title": "Chương trình đào tạo giáo viên Tin học THPT",
+      "source_url": "https://hnue.edu.vn",
+      "url_kind": "INSTITUTION_HOMEPAGE",
+      "checked_date": "2026-11-21",
+      "accessibility": "ACCESSIBLE_HTTP_200",
+      "verification_status": "ACCESSIBLE_BUT_INSUFFICIENT",
+      "key_competencies_and_subjects": [
+        "Cấu trúc dữ liệu và giải thuật",
+        "Lập trình ứng dụng (Python/C++)",
+        "Phương pháp dạy học Tin học",
+        "Khoa học máy tính và AI trong trường học"
+      ],
+      "career_orientations": [
+        "Giáo viên Tin học tại các trường phổ thông",
+        "Quản trị hệ thống công nghệ thông tin trường học"
+      ],
+      "supported_evidence": "Minh chứng kết hợp giữa sư phạm và kỹ năng lập trình.",
+      "unproven_aspects": [
+        "Chưa xác minh văn bản Quyết định ban hành CTĐT chính thức (số quyết định, ngày ký).",
+        "Chưa đối soát danh mục môn học chuyên ngành với ma trận chuẩn đầu ra kỹ năng O*NET.",
+        "Mối quan hệ ngành -> nghề đại diện chỉ mang tính định hướng giả định từ cơ cấu khoa/ngành của trường."
+      ],
+      "source_type": "HOMEPAGE_REFERENCE",
+      "verification_note": "Trang chủ https://hnue.edu.vn truy cập thành công (HTTP 200). Đây là trang chủ chung của cơ sở đào tạo, chưa cấu thành bằng chứng văn bản CTĐT hoặc chuẩn đầu ra ngành-nghề được kiểm chứng độc lập."
+    },
+    "EV_SU_PHAM_TOAN_HOC": {
+      "evidence_id": "EV_SU_PHAM_TOAN_HOC",
+      "major_id": "su_pham_toan_hoc",
+      "institution": "Trường Đại học Sư phạm Hà Nội (HNUE)",
+      "program_name": "Cử nhân Sư phạm Toán học",
+      "moet_code": "7140209",
+      "source_title": "Chương trình đào tạo giáo viên Toán học THPT",
+      "source_url": "https://hnue.edu.vn",
+      "url_kind": "INSTITUTION_HOMEPAGE",
+      "checked_date": "2026-11-21",
+      "accessibility": "ACCESSIBLE_HTTP_200",
+      "verification_status": "ACCESSIBLE_BUT_INSUFFICIENT",
+      "key_competencies_and_subjects": [
+        "Giải tích toán học",
+        "Đại số và hình học cao cấp",
+        "Phương pháp dạy học Toán THPT",
+        "Phát triển tư duy logic toán học cho học sinh"
+      ],
+      "career_orientations": [
+        "Giáo viên môn Toán tại các trường THCS và THPT"
+      ],
+      "supported_evidence": "Khẳng định chuyên môn sâu về giảng dạy toán học.",
+      "unproven_aspects": [
+        "Chưa xác minh văn bản Quyết định ban hành CTĐT chính thức (số quyết định, ngày ký).",
+        "Chưa đối soát danh mục môn học chuyên ngành với ma trận chuẩn đầu ra kỹ năng O*NET.",
+        "Mối quan hệ ngành -> nghề đại diện chỉ mang tính định hướng giả định từ cơ cấu khoa/ngành của trường."
+      ],
+      "source_type": "HOMEPAGE_REFERENCE",
+      "verification_note": "Trang chủ https://hnue.edu.vn truy cập thành công (HTTP 200). Đây là trang chủ chung của cơ sở đào tạo, chưa cấu thành bằng chứng văn bản CTĐT hoặc chuẩn đầu ra ngành-nghề được kiểm chứng độc lập."
+    },
+    "EV_SU_PHAM_TIENG_ANH": {
+      "evidence_id": "EV_SU_PHAM_TIENG_ANH",
+      "major_id": "su_pham_tieng_anh",
+      "institution": "Trường Đại học Ngoại ngữ - ĐHQGHN (VNU-ULIS)",
+      "program_name": "Cử nhân Sư phạm Tiếng Anh",
+      "moet_code": "7140231",
+      "source_title": "Chương trình đào tạo giáo viên Tiếng Anh",
+      "source_url": "https://ulis.vnu.edu.vn",
+      "url_kind": "INSTITUTION_HOMEPAGE",
+      "checked_date": "2026-11-21",
+      "accessibility": "ACCESSIBLE_HTTP_200",
+      "verification_status": "ACCESSIBLE_BUT_INSUFFICIENT",
+      "key_competencies_and_subjects": [
+        "Năng lực ngôn ngữ tiếng Anh C1",
+        "Phương pháp giảng dạy tiếng Anh (TESOL/ELT)",
+        "Thiết kế tài liệu và kiểm tra đánh giá ngoại ngữ"
+      ],
+      "career_orientations": [
+        "Giáo viên tiếng Anh tại các trường THCS, THPT, trung tâm ngoại ngữ"
+      ],
+      "supported_evidence": "Khẳng định tính sư phạm ngoại ngữ rõ rệt.",
+      "unproven_aspects": [
+        "Chưa xác minh văn bản Quyết định ban hành CTĐT chính thức (số quyết định, ngày ký).",
+        "Chưa đối soát danh mục môn học chuyên ngành với ma trận chuẩn đầu ra kỹ năng O*NET.",
+        "Mối quan hệ ngành -> nghề đại diện chỉ mang tính định hướng giả định từ cơ cấu khoa/ngành của trường."
+      ],
+      "source_type": "HOMEPAGE_REFERENCE",
+      "verification_note": "Trang chủ https://ulis.vnu.edu.vn truy cập thành công (HTTP 200). Đây là trang chủ chung của cơ sở đào tạo, chưa cấu thành bằng chứng văn bản CTĐT hoặc chuẩn đầu ra ngành-nghề được kiểm chứng độc lập."
+    },
+    "EV_GIAO_DUC_CHINH_TRI": {
+      "evidence_id": "EV_GIAO_DUC_CHINH_TRI",
+      "major_id": "giao_duc_chinh_tri",
+      "institution": "Trường Đại học Sư phạm Hà Nội (HNUE)",
+      "program_name": "Cử nhân Sư phạm Giáo dục Chính trị",
+      "moet_code": "7140205",
+      "source_title": "Chương trình đào tạo giáo viên Giáo dục Kinh tế và Pháp luật",
+      "source_url": "https://hnue.edu.vn",
+      "url_kind": "INSTITUTION_HOMEPAGE",
+      "checked_date": "2026-11-21",
+      "accessibility": "ACCESSIBLE_HTTP_200",
+      "verification_status": "ACCESSIBLE_BUT_INSUFFICIENT",
+      "key_competencies_and_subjects": [
+        "Triết học và chủ nghĩa xã hội khoa học",
+        "Pháp luật đại cương và chuyên ngành",
+        "Kinh tế chính trị",
+        "Phương pháp dạy học môn Giáo dục Kinh tế và Pháp luật"
+      ],
+      "career_orientations": [
+        "Giáo viên giảng dạy môn Giáo dục Kinh tế và Pháp luật tại các trường THPT"
+      ],
+      "supported_evidence": "Minh chứng gắn với môn học chính khóa trong chương trình GDPT 2018.",
+      "unproven_aspects": [
+        "Chưa xác minh văn bản Quyết định ban hành CTĐT chính thức (số quyết định, ngày ký).",
+        "Chưa đối soát danh mục môn học chuyên ngành với ma trận chuẩn đầu ra kỹ năng O*NET.",
+        "Mối quan hệ ngành -> nghề đại diện chỉ mang tính định hướng giả định từ cơ cấu khoa/ngành của trường."
+      ],
+      "source_type": "HOMEPAGE_REFERENCE",
+      "verification_note": "Trang chủ https://hnue.edu.vn truy cập thành công (HTTP 200). Đây là trang chủ chung của cơ sở đào tạo, chưa cấu thành bằng chứng văn bản CTĐT hoặc chuẩn đầu ra ngành-nghề được kiểm chứng độc lập."
+    },
+    "EV_CONG_NGHE_THONG_TIN": {
+      "evidence_id": "EV_CONG_NGHE_THONG_TIN",
+      "major_id": "cong_nghe_thong_tin",
+      "institution": "Trường Đại học Công nghệ - ĐHQGHN (VNU-UET)",
+      "program_name": "Cử nhân Công nghệ thông tin",
+      "moet_code": "7480201",
+      "source_title": "Chương trình đào tạo ngành Công nghệ thông tin",
+      "source_url": "https://uet.vnu.edu.vn",
+      "url_kind": "INSTITUTION_HOMEPAGE",
+      "checked_date": "2026-11-21",
+      "accessibility": "ACCESSIBLE_HTTP_200",
+      "verification_status": "ACCESSIBLE_BUT_INSUFFICIENT",
+      "key_competencies_and_subjects": [
+        "Cơ sở dữ liệu và hệ thống thông tin",
+        "Mạng máy tính và truyền thông dữ liệu",
+        "An toàn và an ninh thông tin",
+        "Trí tuệ nhân tạo",
+        "Phát triển phần mềm ứng dụng"
+      ],
+      "career_orientations": [
+        "Chuyên viên phân tích hệ thống (Computer Systems Analysts)",
+        "Quản trị mạng và hệ thống máy tính (Network/Systems Administrators)",
+        "Kỹ sư phát triển phần mềm và tích hợp giải pháp CNTT"
+      ],
+      "supported_evidence": "Minh chứng tính đa ngành và hướng phát triển hệ thống/hạ tầng mạng rộng hơn Kỹ thuật phần mềm.",
+      "unproven_aspects": [
+        "Chưa xác minh văn bản Quyết định ban hành CTĐT chính thức (số quyết định, ngày ký).",
+        "Chưa đối soát danh mục môn học chuyên ngành với ma trận chuẩn đầu ra kỹ năng O*NET.",
+        "Mối quan hệ ngành -> nghề đại diện chỉ mang tính định hướng giả định từ cơ cấu khoa/ngành của trường."
+      ],
+      "source_type": "HOMEPAGE_REFERENCE",
+      "verification_note": "Trang chủ https://uet.vnu.edu.vn truy cập thành công (HTTP 200). Đây là trang chủ chung của cơ sở đào tạo, chưa cấu thành bằng chứng văn bản CTĐT hoặc chuẩn đầu ra ngành-nghề được kiểm chứng độc lập."
+    },
+    "EV_DONG_PHUONG_HOC": {
+      "evidence_id": "EV_DONG_PHUONG_HOC",
+      "major_id": "dong_phuong_hoc",
+      "institution": "Trường ĐHKHXH&NV - ĐHQGHN (VNU-USSH)",
+      "program_name": "Cử nhân Đông phương học",
+      "moet_code": "7310608",
+      "source_title": "Chương trình đào tạo ngành Đông phương học",
+      "source_url": "https://ussh.vnu.edu.vn",
+      "url_kind": "INSTITUTION_HOMEPAGE",
+      "checked_date": "2026-11-21",
+      "accessibility": "ACCESSIBLE_HTTP_200",
+      "verification_status": "ACCESSIBLE_BUT_INSUFFICIENT",
+      "key_competencies_and_subjects": [
+        "Lịch sử, văn hóa, kinh tế, chính trị các quốc gia phương Đông",
+        "Ngoại ngữ chuyên ngành (Trung Quốc, Ấn Độ, Thái Lan...)",
+        "Giao tiếp liên văn hóa và chính sách đối ngoại khu vực"
+      ],
+      "career_orientations": [
+        "Chuyên viên đối ngoại, hợp tác quốc tế tại cơ quan nhà nước, đại sứ quán",
+        "Biên - phiên dịch, chuyên viên văn phòng doanh nghiệp FDI",
+        "Nghiên cứu viên về khu vực học"
+      ],
+      "supported_evidence": "Chứng minh bản chất là ngành khoa học xã hội khu vực học, không phải nghề phiên dịch đơn thuần.",
+      "unproven_aspects": [
+        "Chưa xác minh văn bản Quyết định ban hành CTĐT chính thức (số quyết định, ngày ký).",
+        "Chưa đối soát danh mục môn học chuyên ngành với ma trận chuẩn đầu ra kỹ năng O*NET.",
+        "Mối quan hệ ngành -> nghề đại diện chỉ mang tính định hướng giả định từ cơ cấu khoa/ngành của trường."
+      ],
+      "source_type": "HOMEPAGE_REFERENCE",
+      "verification_note": "Trang chủ https://ussh.vnu.edu.vn truy cập thành công (HTTP 200). Đây là trang chủ chung của cơ sở đào tạo, chưa cấu thành bằng chứng văn bản CTĐT hoặc chuẩn đầu ra ngành-nghề được kiểm chứng độc lập."
+    },
+    "EV_VIET_NAM_HOC": {
+      "evidence_id": "EV_VIET_NAM_HOC",
+      "major_id": "viet_nam_hoc",
+      "institution": "Trường ĐHKHXH&NV - ĐHQGHN (VNU-USSH)",
+      "program_name": "Cử nhân Việt Nam học",
+      "moet_code": "7310630",
+      "source_title": "Chương trình đào tạo ngành Việt Nam học",
+      "source_url": "https://ussh.vnu.edu.vn",
+      "url_kind": "INSTITUTION_HOMEPAGE",
+      "checked_date": "2026-11-21",
+      "accessibility": "ACCESSIBLE_HTTP_200",
+      "verification_status": "ACCESSIBLE_BUT_INSUFFICIENT",
+      "key_competencies_and_subjects": [
+        "Văn hóa và lịch sử văn minh Việt Nam",
+        "Địa lý và xã hội học Việt Nam",
+        "Phương pháp giảng dạy tiếng Việt như một ngoại ngữ",
+        "Truyền thông văn hóa đối ngoại"
+      ],
+      "career_orientations": [
+        "Giảng viên, giáo viên giảng dạy tiếng Việt cho người nước ngoài",
+        "Chuyên viên văn hóa, du lịch, truyền thông di sản văn hóa",
+        "Chuyên viên tại các tổ chức phi chính phủ (NGO), cơ quan ngoại giao"
+      ],
+      "supported_evidence": "Minh chứng bản chất hàn lâm văn hóa và giảng dạy tiếng Việt, bác bỏ việc chỉ giới hạn ở nghề Hướng dẫn viên du lịch.",
+      "unproven_aspects": [
+        "Chưa xác minh văn bản Quyết định ban hành CTĐT chính thức (số quyết định, ngày ký).",
+        "Chưa đối soát danh mục môn học chuyên ngành với ma trận chuẩn đầu ra kỹ năng O*NET.",
+        "Mối quan hệ ngành -> nghề đại diện chỉ mang tính định hướng giả định từ cơ cấu khoa/ngành của trường."
+      ],
+      "source_type": "HOMEPAGE_REFERENCE",
+      "verification_note": "Trang chủ https://ussh.vnu.edu.vn truy cập thành công (HTTP 200). Đây là trang chủ chung của cơ sở đào tạo, chưa cấu thành bằng chứng văn bản CTĐT hoặc chuẩn đầu ra ngành-nghề được kiểm chứng độc lập."
+    },
+    "EV_QUAN_LY_DU_LICH_LU_HANH": {
+      "evidence_id": "EV_QUAN_LY_DU_LICH_LU_HANH",
+      "major_id": "quan_ly_du_lich_lu_hanh",
+      "institution": "Trường Đại học Kinh tế Quốc dân (NEU)",
+      "program_name": "Cử nhân Quản trị dịch vụ du lịch và lữ hành",
+      "moet_code": "7810103",
+      "source_title": "Chương trình đào tạo ngành Quản trị dịch vụ du lịch và lữ hành",
+      "source_url": "https://neu.edu.vn",
+      "url_kind": "INSTITUTION_HOMEPAGE",
+      "checked_date": "2026-11-21",
+      "accessibility": "ACCESSIBLE_HTTP_200",
+      "verification_status": "ACCESSIBLE_BUT_INSUFFICIENT",
+      "key_competencies_and_subjects": [
+        "Kinh tế và marketing du lịch",
+        "Quản trị lữ hành (thiết kế và điều hành tour)",
+        "Quản trị điểm đến du lịch",
+        "Quản trị sự kiện du lịch",
+        "Nghiệp vụ hướng dẫn du lịch"
+      ],
+      "career_orientations": [
+        "Nhà quản lý, điều hành tour tại các doanh nghiệp lữ hành",
+        "Chuyên viên tổ chức sự kiện, hội nghị du lịch (MICE)",
+        "Chuyên viên quản lý điểm đến tại các sở du lịch"
+      ],
+      "supported_evidence": "Minh chứng chương trình đào tạo tập trung vào quản trị kinh doanh dịch vụ lữ hành và sự kiện.",
+      "unproven_aspects": [
+        "Chưa xác minh văn bản Quyết định ban hành CTĐT chính thức (số quyết định, ngày ký).",
+        "Chưa đối soát danh mục môn học chuyên ngành với ma trận chuẩn đầu ra kỹ năng O*NET.",
+        "Mối quan hệ ngành -> nghề đại diện chỉ mang tính định hướng giả định từ cơ cấu khoa/ngành của trường."
+      ],
+      "source_type": "HOMEPAGE_REFERENCE",
+      "verification_note": "Trang chủ https://neu.edu.vn truy cập thành công (HTTP 200). Đây là trang chủ chung của cơ sở đào tạo, chưa cấu thành bằng chứng văn bản CTĐT hoặc chuẩn đầu ra ngành-nghề được kiểm chứng độc lập."
+    },
+    "EV_QUAN_LY_NHA_NUOC": {
+      "evidence_id": "EV_QUAN_LY_NHA_NUOC",
+      "major_id": "quan_ly_nha_nuoc",
+      "institution": "Học viện Hành chính Quốc gia (NAPA)",
+      "program_name": "Cử nhân Quản lý nhà nước",
+      "moet_code": "7310205",
+      "source_title": "Chương trình đào tạo đại học ngành Quản lý nhà nước",
+      "source_url": "https://napa.vn",
+      "url_kind": "INSTITUTION_HOMEPAGE",
+      "checked_date": "2026-11-21",
+      "accessibility": "FAILED_DNS",
+      "verification_status": "NOT_ACCESSIBLE",
+      "key_competencies_and_subjects": [
+        "Hành chính học và luật hành chính",
+        "Quy trình xây dựng và phân tích chính sách công",
+        "Quản lý nhân lực khu vực công",
+        "Tổ chức và điều hành công vụ",
+        "Cải cách hành chính và chính phủ số"
+      ],
+      "career_orientations": [
+        "Công chức, viên chức trong cơ quan nhà nước các cấp (UBND, bộ, ngành)",
+        "Chuyên viên phân tích chính sách, tổ chức cán bộ, văn phòng hành chính"
+      ],
+      "supported_evidence": "Minh chứng bản chất đào tạo cán bộ quản lý hành chính công và chính sách.",
+      "unproven_aspects": [
+        "Chưa xác minh văn bản Quyết định ban hành CTĐT chính thức (số quyết định, ngày ký).",
+        "Chưa đối soát danh mục môn học chuyên ngành với ma trận chuẩn đầu ra kỹ năng O*NET.",
+        "Mối quan hệ ngành -> nghề đại diện chỉ mang tính định hướng giả định từ cơ cấu khoa/ngành của trường."
+      ],
+      "source_type": "HOMEPAGE_REFERENCE",
+      "verification_note": "Domain https://napa.vn không phân giải được DNS qua mạng công cộng; cần rà soát cập nhật sang tên miền chính thức hiện hành của Học viện Hành chính Quốc gia."
+    }
+  },
+  "updated_at_utc": "2026-11-21T06:45:00Z",
+  "audit_round": "B-04-R1",
+  "summary_status": {
+    "total_records": 33,
+    "accessible_but_insufficient": 32,
+    "not_accessible": 1,
+    "verified_official_direct": 0,
+    "policy_enforcement": "Zero simulated VERIFIED statuses. Real HTTP inspection enforces rigorous distinction between university homepages and official program decrees."
+  }
+}

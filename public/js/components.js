@@ -39,10 +39,10 @@ function toggleSidebar() {
 function applySidebarState() {
     const sidebar = document.getElementById('sidebar');
     const mainWrapper = document.getElementById('main-wrapper');
-    const topHeader = document.getElementById('top-header'); 
-    const bottomNav = document.getElementById('bottom-nav-bar');
-    const chatBottomBar = document.getElementById('chat-bottom-bar');
-    
+    const topHeader = document.getElementById('top-header');
+    const bottomNav = document.getElementById('bottom-nav-bar'); // Thanh đáy trang Đánh giá
+    const chatBottomBar = document.getElementById('chat-bottom-bar'); // Thanh đáy trang Chatbot
+
     if (!sidebar) return;
 
     if (isSidebarCollapsed) {
@@ -65,6 +65,9 @@ function renderLayout(activeMenuId) {
     const isLoggedIn = checkLoginState();
     const layoutContainer = document.getElementById('layout-container');
     if (!layoutContainer) return;
+    const menuItems = [['/', 'Trang chủ', 'nav-home'], ['/evaluation', 'Định hướng AI', 'nav-eval'],
+        ['/news', 'Tin tức', 'nav-news'], ['/guide', 'Hướng dẫn', 'nav-guide'],
+        ['/about', 'Về chúng tôi', 'nav-about'], ['/chatbot', 'ChatBot AI', 'nav-chat']];
 
     if (!isLoggedIn) {
         layoutContainer.innerHTML = `
@@ -81,22 +84,38 @@ function renderLayout(activeMenuId) {
                             <div class="text-[8.5px] font-bold text-slate-400 uppercase tracking-widest leading-[1.25] mt-1">CHỌN NGÀNH, CHỌN TƯƠNG LAI<br></div>
                         </div>
                     </div>
-                    
+
                     <div class="flex items-center gap-6 sm:gap-8">
-                        <nav class="hidden md:flex items-center gap-7 text-sm font-semibold text-slate-600">
+                        <nav aria-label="Điều hướng chính" class="hidden lg:flex items-center gap-6 text-sm font-semibold text-slate-600">
                             <a href="/" class="${activeMenuId === 'nav-home' ? 'text-cyan font-bold' : 'hover:text-cyan transition-colors'}">Trang chủ</a>
+                            <a href="/evaluation" class="${activeMenuId === 'nav-eval' || activeMenuId === 'nav-riasec27' ? 'text-cyan font-bold' : 'text-ocean font-bold hover:text-cyan transition-colors flex items-center gap-1'}"><i data-lucide="sparkles" class="w-3.5 h-3.5 text-cyan"></i>Định hướng AI</a>
                             <a href="/news" class="${activeMenuId === 'nav-news' ? 'text-cyan font-bold' : 'hover:text-cyan transition-colors'}">Tin tức</a>
                             <a href="/guide" class="${activeMenuId === 'nav-guide' ? 'text-cyan font-bold' : 'hover:text-cyan transition-colors'}">Hướng dẫn</a>
                             <a href="/about" class="${activeMenuId === 'nav-about' ? 'text-cyan font-bold' : 'hover:text-cyan transition-colors'}">Về chúng tôi</a>
+                       <a href="/chatbot" class="${activeMenuId === 'nav-chat' ? 'text-cyan font-bold' : 'hover:text-cyan transition-colors'}">ChatBot AI</a>
                         </nav>
                         <div class="flex items-center gap-2">
                             <button type="button" onclick="openAuthModal('login')" class="rounded-xl px-3 py-2 text-sm font-bold text-cyan hover:bg-cyan/10 transition-colors">Đăng nhập</button>
                             <button type="button" onclick="openAuthModal('register')" class="btn-gradient rounded-xl px-4 py-2 text-sm font-bold text-white">Đăng ký</button>
+                            <button id="site-menu-toggle" type="button" aria-label="Mở menu" aria-expanded="false" aria-controls="site-mobile-menu" class="lg:hidden w-11 h-11 rounded-xl border border-slate-200 bg-white text-navy flex items-center justify-center"><i data-lucide="menu" class="w-5 h-5" aria-hidden="true"></i></button>
                         </div>
                     </div>
                 </div>
+                <nav id="site-mobile-menu" hidden aria-label="Điều hướng trên thiết bị nhỏ" class="site-mobile-menu">
+                    ${menuItems.map(([href, label, id]) => `<a href="${href}" ${id === activeMenuId ? 'aria-current="page"' : ''}>${label}</a>`).join('')}
+                </nav>
             </header>
         `;
+        const menuButton = document.getElementById('site-menu-toggle');
+        const mobileMenu = document.getElementById('site-mobile-menu');
+        const closeMenu = () => { mobileMenu.hidden = true; menuButton.setAttribute('aria-expanded', 'false'); };
+        menuButton.addEventListener('click', () => {
+            mobileMenu.hidden = !mobileMenu.hidden;
+            menuButton.setAttribute('aria-expanded', String(!mobileMenu.hidden));
+        });
+        layoutContainer.querySelector('header').addEventListener('keydown', event => {
+            if (event.key === 'Escape') { closeMenu(); menuButton.focus(); }
+        });
     } else {
         let loggedInHTML = `
             <div id="brand-logo" onclick="toggleSidebar()" class="fixed top-3.5 left-6 sm:left-8 z-[70] cursor-pointer flex items-center gap-3 select-none group bg-transparent border-0 shadow-none p-0" title="Nhấn vào logo để ẩn hoặc hiện menu điều hướng">
@@ -115,7 +134,9 @@ function renderLayout(activeMenuId) {
             <aside id="sidebar" class="fixed top-0 left-0 h-screen w-64 glass-card border-r border-navy/10 z-[60] flex flex-col bg-surface/95 backdrop-blur-xl shadow-2xl transition-transform duration-300 ease-out pt-24">
                 <nav class="flex-1 p-4 flex flex-col gap-2 overflow-y-auto">
                     <a href="/" class="flex items-center gap-3 p-3 rounded-xl text-sm transition-colors ${activeMenuId === 'nav-home' ? 'font-bold bg-cyan/10 text-cyan' : 'font-semibold text-muted hover:bg-navy/5'}"><i data-lucide="home" class="w-5 h-5"></i> Trang chủ</a>
-                    <a href="/evaluation" class="flex items-center gap-3 p-3 rounded-xl text-sm transition-colors ${activeMenuId === 'nav-eval' ? 'font-bold bg-cyan/10 text-cyan' : 'font-semibold text-muted hover:bg-navy/5'}"><i data-lucide="target" class="w-5 h-5"></i> Đánh giá hướng nghiệp</a>
+                    <a href="/evaluation" class="flex items-center justify-between p-3 rounded-xl text-sm transition-colors ${activeMenuId === 'nav-eval' || activeMenuId === 'nav-riasec27' ? 'font-bold bg-cyan/10 text-cyan' : 'font-semibold text-muted hover:bg-navy/5'}">
+                        <span class="flex items-center gap-3"><i data-lucide="sparkles" class="w-5 h-5 text-cyan"></i> Đánh giá hướng nghiệp bằng AI</span>
+                    </a>
                     <a href="/chatbot" class="flex items-center gap-3 p-3 rounded-xl text-sm transition-colors ${activeMenuId === 'nav-chat' ? 'font-bold bg-cyan/10 text-cyan' : 'font-semibold text-muted hover:bg-navy/5'}"><i data-lucide="message-square" class="w-5 h-5"></i> ChatBot AI</a>
                     <div class="mt-6 pt-4 border-t border-navy/10">
                         <p class="text-xs text-muted mb-2 px-3 uppercase font-bold tracking-wider">Khám phá</p>
@@ -137,14 +158,14 @@ function renderLayout(activeMenuId) {
     if (typeof lucide !== 'undefined') lucide.createIcons();
 }
 
+// Bắt đầu hành động chính từ trang chủ, đưa người dùng đến trang đánh giá RIASEC27 AI.
 function handleStartAction() {
-    if (!checkLoginState()) openAuthModal(); 
-    else window.location.href = '/evaluation'; 
+    window.location.href = '/evaluation';
 }
 
 function handleChatbotAction() {
-    if (!checkLoginState()) openAuthModal(); 
-    else window.location.href = '/chatbot'; 
+    if (!checkLoginState()) openAuthModal();
+    else window.location.href = '/chatbot';
 }
 
 // POPUP ĐĂNG NHẬP / ĐĂNG KÝ
@@ -313,7 +334,6 @@ function switchAuthTab(tab) {
         title.innerText = "Tạo tài khoản mới"; subtitle.innerText = "Tham gia cùng hàng ngàn học sinh định hướng tương lai.";
     }
 }
-
 let passwordResetEmail = '';
 let passwordResetToken = '';
 let resetCodeResendTimer = null;

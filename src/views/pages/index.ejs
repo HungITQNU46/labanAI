@@ -31,21 +31,16 @@
         <div class="absolute bottom-[2%] left-[45%] animate-float opacity-15 -z-10"><i data-lucide="star" class="w-6 h-10 text-navy"></i></div>
 
         <div class="container mx-auto px-6 grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
-            <div class="space-y-8 relative z-10">
-                <div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full glass-effect border border-cyan/20 text-cyan text-sm font-semibold mb-2">
-                    <span class="relative flex h-3 w-3"><span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-cyan opacity-75"></span><span class="relative inline-flex rounded-full h-3 w-3 bg-cyan"></span></span>
-                    Sẵn sàng định hướng
-                </div>
-                <h1 class="text-5xl lg:text-6xl font-bold leading-tight text-navy">
-                    Định vị tương lai, <br><span class="text-transparent bg-clip-text bg-gradient-to-r from-cyan to-violet">chọn đúng ngành học.</span>
+            <div class="space-y-7 relative z-10">
+                <h1 class="text-4xl sm:text-5xl lg:text-6xl font-bold leading-tight tracking-tight text-navy">
+                    Khám phá bản thân, <br><span class="text-transparent bg-clip-text bg-gradient-to-r from-cyan to-violet">định hướng tương lai</span>
                 </h1>
-                <p class="text-lg text-muted max-w-lg leading-relaxed">Hệ thống AI phân tích năng lực, sở thích và điểm số của bạn để đưa ra lộ trình trúng tuyển tối ưu nhất.</p>
-                
-                <div class="flex flex-col sm:flex-row gap-4 pt-4">
-                    <button onclick="handleStartAction()" class="btn-gradient px-8 py-4 rounded-2xl text-white font-semibold flex items-center justify-center gap-2 shadow-[0_8px_25px_rgba(0,180,216,0.3)] hover-glow transition-all hover:-translate-y-1">
-                        <i data-lucide="target" class="w-5 h-5"></i> Bắt đầu ngay
-                    </button>
-                </div>
+                <p class="max-w-xl text-base sm:text-lg text-slate-600 leading-relaxed">
+                    LabanAI giúp bạn khám phá sở thích cá nhân, tìm hiểu các ngành đại học và có thêm thông tin tham khảo để lựa chọn hướng đi phù hợp với bản thân.
+                </p>
+                <a href="/evaluation" id="btn-hero-riasec27" class="btn-gradient inline-flex w-fit items-center justify-center gap-3 rounded-2xl px-7 py-3.5 text-sm sm:text-base font-bold text-white shadow-md hover-glow transition-all hover:-translate-y-0.5 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-ocean">
+                    Khám phá ngay <i data-lucide="arrow-right" class="w-4 h-4" aria-hidden="true"></i>
+                </a>
             </div>
 
             <div class="relative h-[400px] lg:h-[550px] w-full flex items-center justify-center">
@@ -55,9 +50,9 @@
     </main>
 </div>
 
-<%- include('../partials/footer', { 
+<%- include('../partials/footer', {
     extraScripts: `
         <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
         <script src="/js/app.js"></script>
-    ` 
+    `
 }) %>

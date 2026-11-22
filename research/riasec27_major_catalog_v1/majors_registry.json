@@ -1,0 +1,1868 @@
+{
+  "catalog_version": "1.1.0",
+  "updated_at": "2026-11-21T06:45:00+07:00",
+  "phase": "B-04-R1",
+  "total_majors": 33,
+  "ready_count": 21,
+  "conditional_count": 10,
+  "unresolved_count": 2,
+  "eligible_count": 21,
+  "visible_count": 33,
+  "policy_note": "Baseline reference mappings preserved for reproducibility. All alternative or refined mappings are quarantined in proposed_mappings with status PENDING_REVIEW.",
+  "majors": [
+    {
+      "major_id": "giao_duc_tieu_hoc",
+      "major_name_vi": "Giáo dục Tiểu học",
+      "moet_code": "7140202",
+      "catalog_visibility": true,
+      "automatic_ranking_eligibility": true,
+      "status": "READY_FOR_PROTOTYPE",
+      "status_reason": "Ánh xạ 1-1 rõ ràng với giáo viên tiểu học O*NET, vector OI chuyên biệt.",
+      "baseline_reference_mapping": {
+        "soc_code": "25-2021.00",
+        "occupation_title_en": "Elementary School Teachers, Except Special Education",
+        "ih_code": "S",
+        "oi_vector": [
+          2.64,
+          3.35,
+          3.87,
+          7.0,
+          2.57,
+          3.78
+        ],
+        "source": "LabanAI Baseline reference.json"
+      },
+      "onet_30_2_verification": {
+        "soc_code": "25-2021.00",
+        "official_title": "Elementary School Teachers, Except Special Education",
+        "official_oi_vector": [
+          2.64,
+          3.35,
+          3.87,
+          7.0,
+          2.57,
+          3.78
+        ],
+        "verification_status": "MATCHED",
+        "checked_date": "2026-11-21"
+      },
+      "primary_soc_code": "25-2021.00",
+      "occupation_title_en": "Elementary School Teachers, Except Special Education",
+      "ih_code": "S",
+      "oi_vector": [
+        2.64,
+        3.35,
+        3.87,
+        7.0,
+        2.57,
+        3.78
+      ],
+      "differentiation_tier": "TIER_1_ML",
+      "differentiation_cluster": null,
+      "evidence_id": "EV_GIAO_DUC_TIEU_HOC",
+      "proposed_mappings": []
+    },
+    {
+      "major_id": "giao_duc_mam_non",
+      "major_name_vi": "Giáo dục Mầm non",
+      "moet_code": "7140201",
+      "catalog_visibility": true,
+      "automatic_ranking_eligibility": true,
+      "status": "READY_FOR_PROTOTYPE",
+      "status_reason": "Ánh xạ 1-1 rõ ràng với giáo viên mầm non O*NET, vector OI chuyên biệt.",
+      "baseline_reference_mapping": {
+        "soc_code": "25-2011.00",
+        "occupation_title_en": "Preschool Teachers, Except Special Education",
+        "ih_code": "SA",
+        "oi_vector": [
+          2.94,
+          2.76,
+          3.98,
+          7.0,
+          2.49,
+          3.61
+        ],
+        "source": "LabanAI Baseline reference.json"
+      },
+      "onet_30_2_verification": {
+        "soc_code": "25-2011.00",
+        "official_title": "Preschool Teachers, Except Special Education",
+        "official_oi_vector": [
+          2.94,
+          2.76,
+          3.98,
+          7.0,
+          2.49,
+          3.61
+        ],
+        "verification_status": "MATCHED",
+        "checked_date": "2026-11-21"
+      },
+      "primary_soc_code": "25-2011.00",
+      "occupation_title_en": "Preschool Teachers, Except Special Education",
+      "ih_code": "SA",
+      "oi_vector": [
+        2.94,
+        2.76,
+        3.98,
+        7.0,
+        2.49,
+        3.61
+      ],
+      "differentiation_tier": "TIER_1_ML",
+      "differentiation_cluster": null,
+      "evidence_id": "EV_GIAO_DUC_MAM_NON",
+      "proposed_mappings": []
+    },
+    {
+      "major_id": "quan_ly_giao_duc",
+      "major_name_vi": "Quản lý giáo dục",
+      "moet_code": "7140114",
+      "catalog_visibility": true,
+      "automatic_ranking_eligibility": true,
+      "status": "READY_FOR_PROTOTYPE",
+      "status_reason": "Ánh xạ 1-1 với nhà quản lý giáo dục tiểu học và trung học O*NET.",
+      "baseline_reference_mapping": {
+        "soc_code": "11-9032.00",
+        "occupation_title_en": "Education Administrators, Kindergarten through Secondary",
+        "ih_code": "SEC",
+        "oi_vector": [
+          1.31,
+          3.06,
+          2.84,
+          5.72,
+          5.34,
+          4.68
+        ],
+        "source": "LabanAI Baseline reference.json"
+      },
+      "onet_30_2_verification": {
+        "soc_code": "11-9032.00",
+        "official_title": "Education Administrators, Kindergarten through Secondary",
+        "official_oi_vector": [
+          1.31,
+          3.06,
+          2.84,
+          5.72,
+          5.34,
+          4.68
+        ],
+        "verification_status": "MATCHED",
+        "checked_date": "2026-11-21"
+      },
+      "primary_soc_code": "11-9032.00",
+      "occupation_title_en": "Education Administrators, Kindergarten through Secondary",
+      "ih_code": "SEC",
+      "oi_vector": [
+        1.31,
+        3.06,
+        2.84,
+        5.72,
+        5.34,
+        4.68
+      ],
+      "differentiation_tier": "TIER_1_ML",
+      "differentiation_cluster": null,
+      "evidence_id": "EV_QUAN_LY_GIAO_DUC",
+      "proposed_mappings": []
+    },
+    {
+      "major_id": "tam_ly_hoc_giao_duc",
+      "major_name_vi": "Tâm lý học giáo dục",
+      "moet_code": "7310403",
+      "catalog_visibility": true,
+      "automatic_ranking_eligibility": true,
+      "status": "READY_FOR_PROTOTYPE",
+      "status_reason": "Ánh xạ 1-1 với chuyên gia tâm lý học trường học O*NET.",
+      "baseline_reference_mapping": {
+        "soc_code": "19-3034.00",
+        "occupation_title_en": "School Psychologists",
+        "ih_code": "SIC",
+        "oi_vector": [
+          1.0,
+          5.0,
+          3.31,
+          6.77,
+          2.82,
+          4.01
+        ],
+        "source": "LabanAI Baseline reference.json"
+      },
+      "onet_30_2_verification": {
+        "soc_code": "19-3034.00",
+        "official_title": "School Psychologists",
+        "official_oi_vector": [
+          1.0,
+          5.0,
+          3.31,
+          6.77,
+          2.82,
+          4.01
+        ],
+        "verification_status": "MATCHED",
+        "checked_date": "2026-11-21"
+      },
+      "primary_soc_code": "19-3034.00",
+      "occupation_title_en": "School Psychologists",
+      "ih_code": "SIC",
+      "oi_vector": [
+        1.0,
+        5.0,
+        3.31,
+        6.77,
+        2.82,
+        4.01
+      ],
+      "differentiation_tier": "TIER_1_ML",
+      "differentiation_cluster": null,
+      "evidence_id": "EV_TAM_LY_HOC_GIAO_DUC",
+      "proposed_mappings": []
+    },
+    {
+      "major_id": "ky_thuat_phan_mem",
+      "major_name_vi": "Kỹ thuật phần mềm",
+      "moet_code": "7480103",
+      "catalog_visibility": true,
+      "automatic_ranking_eligibility": true,
+      "status": "READY_FOR_PROTOTYPE",
+      "status_reason": "Ánh xạ 1-1 chặt chẽ với Software Developers O*NET.",
+      "baseline_reference_mapping": {
+        "soc_code": "15-1252.00",
+        "occupation_title_en": "Software Developers",
+        "ih_code": "IC",
+        "oi_vector": [
+          3.61,
+          6.05,
+          2.37,
+          1.81,
+          1.87,
+          5.62
+        ],
+        "source": "LabanAI Baseline reference.json"
+      },
+      "onet_30_2_verification": {
+        "soc_code": "15-1252.00",
+        "official_title": "Software Developers",
+        "official_oi_vector": [
+          3.61,
+          6.05,
+          2.37,
+          1.81,
+          1.87,
+          5.62
+        ],
+        "verification_status": "MATCHED",
+        "checked_date": "2026-11-21"
+      },
+      "primary_soc_code": "15-1252.00",
+      "occupation_title_en": "Software Developers",
+      "ih_code": "IC",
+      "oi_vector": [
+        3.61,
+        6.05,
+        2.37,
+        1.81,
+        1.87,
+        5.62
+      ],
+      "differentiation_tier": "TIER_1_ML",
+      "differentiation_cluster": "CLUSTER_B_IT_SOFTWARE",
+      "evidence_id": "EV_KY_THUAT_PHAN_MEM",
+      "proposed_mappings": []
+    },
+    {
+      "major_id": "kinh_te",
+      "major_name_vi": "Kinh tế",
+      "moet_code": "7310101",
+      "catalog_visibility": true,
+      "automatic_ranking_eligibility": true,
+      "status": "READY_FOR_PROTOTYPE",
+      "status_reason": "Ánh xạ đại diện với chuyên viên nghiên cứu thị trường O*NET.",
+      "baseline_reference_mapping": {
+        "soc_code": "13-1161.00",
+        "occupation_title_en": "Market Research Analysts and Marketing Specialists",
+        "ih_code": "ECI",
+        "oi_vector": [
+          1.08,
+          4.6,
+          2.56,
+          2.47,
+          5.52,
+          4.62
+        ],
+        "source": "LabanAI Baseline reference.json"
+      },
+      "onet_30_2_verification": {
+        "soc_code": "13-1161.00",
+        "official_title": "Market Research Analysts and Marketing Specialists",
+        "official_oi_vector": [
+          1.08,
+          4.6,
+          2.56,
+          2.47,
+          5.52,
+          4.62
+        ],
+        "verification_status": "MATCHED",
+        "checked_date": "2026-11-21"
+      },
+      "primary_soc_code": "13-1161.00",
+      "occupation_title_en": "Market Research Analysts and Marketing Specialists",
+      "ih_code": "ECI",
+      "oi_vector": [
+        1.08,
+        4.6,
+        2.56,
+        2.47,
+        5.52,
+        4.62
+      ],
+      "differentiation_tier": "TIER_1_ML",
+      "differentiation_cluster": null,
+      "evidence_id": "EV_KINH_TE",
+      "proposed_mappings": [
+        {
+          "soc_code": "19-3011.00",
+          "occupation_title_en": "Economists",
+          "oi_vector": [
+            1.35,
+            7.0,
+            2.43,
+            2.4,
+            3.93,
+            4.53
+          ],
+          "status": "PENDING_REVIEW",
+          "rationale": "Đề xuất chuyển từ Chuyên viên nghiên cứu thị trường (13-1161.00) sang Nhà kinh tế học (19-3011.00) để sát với chương trình cử nhân kinh tế lý thuyết/kinh tế học ứng dụng.",
+          "source": "O*NET 30.2"
+        }
+      ]
+    },
+    {
+      "major_id": "quan_tri_kinh_doanh",
+      "major_name_vi": "Quản trị kinh doanh",
+      "moet_code": "7340101",
+      "catalog_visibility": true,
+      "automatic_ranking_eligibility": true,
+      "status": "READY_FOR_PROTOTYPE",
+      "status_reason": "Ánh xạ 1-1 với nhà quản lý chung và điều hành O*NET.",
+      "baseline_reference_mapping": {
+        "soc_code": "11-1021.00",
+        "occupation_title_en": "General and Operations Managers",
+        "ih_code": "EC",
+        "oi_vector": [
+          2.2,
+          2.37,
+          1.29,
+          3.38,
+          7.0,
+          5.34
+        ],
+        "source": "LabanAI Baseline reference.json"
+      },
+      "onet_30_2_verification": {
+        "soc_code": "11-1021.00",
+        "official_title": "General and Operations Managers",
+        "official_oi_vector": [
+          2.2,
+          2.37,
+          1.29,
+          3.38,
+          7.0,
+          5.34
+        ],
+        "verification_status": "MATCHED",
+        "checked_date": "2026-11-21"
+      },
+      "primary_soc_code": "11-1021.00",
+      "occupation_title_en": "General and Operations Managers",
+      "ih_code": "EC",
+      "oi_vector": [
+        2.2,
+        2.37,
+        1.29,
+        3.38,
+        7.0,
+        5.34
+      ],
+      "differentiation_tier": "TIER_1_ML",
+      "differentiation_cluster": null,
+      "evidence_id": "EV_QUAN_TRI_KINH_DOANH",
+      "proposed_mappings": []
+    },
+    {
+      "major_id": "ke_toan",
+      "major_name_vi": "Kế toán",
+      "moet_code": "7340301",
+      "catalog_visibility": true,
+      "automatic_ranking_eligibility": true,
+      "status": "READY_FOR_PROTOTYPE",
+      "status_reason": "Ánh xạ 1-1 rõ ràng với kế toán viên và kiểm toán viên O*NET.",
+      "baseline_reference_mapping": {
+        "soc_code": "13-2011.00",
+        "occupation_title_en": "Accountants and Auditors",
+        "ih_code": "CEI",
+        "oi_vector": [
+          1.14,
+          3.57,
+          1.08,
+          2.13,
+          3.87,
+          7.0
+        ],
+        "source": "LabanAI Baseline reference.json"
+      },
+      "onet_30_2_verification": {
+        "soc_code": "13-2011.00",
+        "official_title": "Accountants and Auditors",
+        "official_oi_vector": [
+          1.14,
+          3.57,
+          1.08,
+          2.13,
+          3.87,
+          7.0
+        ],
+        "verification_status": "MATCHED",
+        "checked_date": "2026-11-21"
+      },
+      "primary_soc_code": "13-2011.00",
+      "occupation_title_en": "Accountants and Auditors",
+      "ih_code": "CEI",
+      "oi_vector": [
+        1.14,
+        3.57,
+        1.08,
+        2.13,
+        3.87,
+        7.0
+      ],
+      "differentiation_tier": "TIER_1_ML",
+      "differentiation_cluster": null,
+      "evidence_id": "EV_KE_TOAN",
+      "proposed_mappings": []
+    },
+    {
+      "major_id": "tai_chinh_ngan_hang",
+      "major_name_vi": "Tài chính - Ngân hàng",
+      "moet_code": "7340201",
+      "catalog_visibility": true,
+      "automatic_ranking_eligibility": true,
+      "status": "READY_FOR_PROTOTYPE",
+      "status_reason": "Ánh xạ 1-1 với chuyên gia phân tích tài chính O*NET.",
+      "baseline_reference_mapping": {
+        "soc_code": "13-2051.00",
+        "occupation_title_en": "Financial and Investment Analysts",
+        "ih_code": "CEI",
+        "oi_vector": [
+          1.0,
+          5.06,
+          1.78,
+          2.25,
+          5.09,
+          5.54
+        ],
+        "source": "LabanAI Baseline reference.json"
+      },
+      "onet_30_2_verification": {
+        "soc_code": "13-2051.00",
+        "official_title": "Financial and Investment Analysts",
+        "official_oi_vector": [
+          1.0,
+          5.06,
+          1.78,
+          2.25,
+          5.09,
+          5.54
+        ],
+        "verification_status": "MATCHED",
+        "checked_date": "2026-11-21"
+      },
+      "primary_soc_code": "13-2051.00",
+      "occupation_title_en": "Financial and Investment Analysts",
+      "ih_code": "CEI",
+      "oi_vector": [
+        1.0,
+        5.06,
+        1.78,
+        2.25,
+        5.09,
+        5.54
+      ],
+      "differentiation_tier": "TIER_1_ML",
+      "differentiation_cluster": null,
+      "evidence_id": "EV_TAI_CHINH_NGAN_HANG",
+      "proposed_mappings": []
+    },
+    {
+      "major_id": "quan_tri_khach_san",
+      "major_name_vi": "Quản trị khách sạn",
+      "moet_code": "7810201",
+      "catalog_visibility": true,
+      "automatic_ranking_eligibility": true,
+      "status": "READY_FOR_PROTOTYPE",
+      "status_reason": "Ánh xạ 1-1 rõ ràng với nhà quản lý lưu trú O*NET.",
+      "baseline_reference_mapping": {
+        "soc_code": "11-9081.00",
+        "occupation_title_en": "Lodging Managers",
+        "ih_code": "ECS",
+        "oi_vector": [
+          2.69,
+          1.1,
+          1.43,
+          4.31,
+          6.21,
+          5.22
+        ],
+        "source": "LabanAI Baseline reference.json"
+      },
+      "onet_30_2_verification": {
+        "soc_code": "11-9081.00",
+        "official_title": "Lodging Managers",
+        "official_oi_vector": [
+          2.69,
+          1.1,
+          1.43,
+          4.31,
+          6.21,
+          5.22
+        ],
+        "verification_status": "MATCHED",
+        "checked_date": "2026-11-21"
+      },
+      "primary_soc_code": "11-9081.00",
+      "occupation_title_en": "Lodging Managers",
+      "ih_code": "ECS",
+      "oi_vector": [
+        2.69,
+        1.1,
+        1.43,
+        4.31,
+        6.21,
+        5.22
+      ],
+      "differentiation_tier": "TIER_1_ML",
+      "differentiation_cluster": null,
+      "evidence_id": "EV_QUAN_TRI_KHACH_SAN",
+      "proposed_mappings": []
+    },
+    {
+      "major_id": "ngon_ngu_anh",
+      "major_name_vi": "Ngôn ngữ Anh",
+      "moet_code": "7220201",
+      "catalog_visibility": true,
+      "automatic_ranking_eligibility": true,
+      "status": "READY_FOR_PROTOTYPE",
+      "status_reason": "Ánh xạ đại diện với biên dịch và phiên dịch viên O*NET.",
+      "baseline_reference_mapping": {
+        "soc_code": "27-3091.00",
+        "occupation_title_en": "Interpreters and Translators",
+        "ih_code": "CAS",
+        "oi_vector": [
+          1.89,
+          3.19,
+          4.28,
+          3.48,
+          1.9,
+          4.79
+        ],
+        "source": "LabanAI Baseline reference.json"
+      },
+      "onet_30_2_verification": {
+        "soc_code": "27-3091.00",
+        "official_title": "Interpreters and Translators",
+        "official_oi_vector": [
+          1.89,
+          3.19,
+          4.28,
+          3.48,
+          1.9,
+          4.79
+        ],
+        "verification_status": "MATCHED",
+        "checked_date": "2026-11-21"
+      },
+      "primary_soc_code": "27-3091.00",
+      "occupation_title_en": "Interpreters and Translators",
+      "ih_code": "CAS",
+      "oi_vector": [
+        1.89,
+        3.19,
+        4.28,
+        3.48,
+        1.9,
+        4.79
+      ],
+      "differentiation_tier": "TIER_1_ML",
+      "differentiation_cluster": "CLUSTER_C_REGIONAL_CULTURAL",
+      "evidence_id": "EV_NGON_NGU_ANH",
+      "proposed_mappings": []
+    },
+    {
+      "major_id": "van_hoc",
+      "major_name_vi": "Văn học",
+      "moet_code": "7229030",
+      "catalog_visibility": true,
+      "automatic_ranking_eligibility": true,
+      "status": "READY_FOR_PROTOTYPE",
+      "status_reason": "Ánh xạ đại diện với nhà văn và tác giả O*NET.",
+      "baseline_reference_mapping": {
+        "soc_code": "27-3041.00",
+        "occupation_title_en": "Editors",
+        "ih_code": "ACE",
+        "oi_vector": [
+          1.03,
+          2.9,
+          5.39,
+          2.56,
+          4.13,
+          4.68
+        ],
+        "source": "LabanAI Baseline reference.json"
+      },
+      "onet_30_2_verification": {
+        "soc_code": "27-3041.00",
+        "official_title": "Editors",
+        "official_oi_vector": [
+          1.03,
+          2.9,
+          5.39,
+          2.56,
+          4.13,
+          4.68
+        ],
+        "verification_status": "MATCHED",
+        "checked_date": "2026-11-21"
+      },
+      "primary_soc_code": "27-3041.00",
+      "occupation_title_en": "Editors",
+      "ih_code": "ACE",
+      "oi_vector": [
+        1.03,
+        2.9,
+        5.39,
+        2.56,
+        4.13,
+        4.68
+      ],
+      "differentiation_tier": "TIER_1_ML",
+      "differentiation_cluster": null,
+      "evidence_id": "EV_VAN_HOC",
+      "proposed_mappings": [
+        {
+          "soc_code": "27-3043.05",
+          "occupation_title_en": "Poets, Lyricists and Creative Writers",
+          "oi_vector": [
+            1.17,
+            3.58,
+            7.0,
+            2.83,
+            3.17,
+            2.88
+          ],
+          "status": "PENDING_REVIEW",
+          "rationale": "Đề xuất ứng viên Nhà văn, nhà thơ, sáng tác văn học (27-3043.05) bên cạnh nghề Biên tập viên (27-3041.00).",
+          "source": "O*NET 30.2"
+        }
+      ]
+    },
+    {
+      "major_id": "luat",
+      "major_name_vi": "Luật",
+      "moet_code": "7380101",
+      "catalog_visibility": true,
+      "automatic_ranking_eligibility": true,
+      "status": "READY_FOR_PROTOTYPE",
+      "status_reason": "Ánh xạ 1-1 rõ ràng với luật sư O*NET.",
+      "baseline_reference_mapping": {
+        "soc_code": "23-1011.00",
+        "occupation_title_en": "Lawyers",
+        "ih_code": "ECI",
+        "oi_vector": [
+          1.12,
+          4.38,
+          2.4,
+          3.48,
+          5.51,
+          4.59
+        ],
+        "source": "LabanAI Baseline reference.json"
+      },
+      "onet_30_2_verification": {
+        "soc_code": "23-1011.00",
+        "official_title": "Lawyers",
+        "official_oi_vector": [
+          1.12,
+          4.38,
+          2.4,
+          3.48,
+          5.51,
+          4.59
+        ],
+        "verification_status": "MATCHED",
+        "checked_date": "2026-11-21"
+      },
+      "primary_soc_code": "23-1011.00",
+      "occupation_title_en": "Lawyers",
+      "ih_code": "ECI",
+      "oi_vector": [
+        1.12,
+        4.38,
+        2.4,
+        3.48,
+        5.51,
+        4.59
+      ],
+      "differentiation_tier": "TIER_1_ML",
+      "differentiation_cluster": null,
+      "evidence_id": "EV_LUAT",
+      "proposed_mappings": []
+    },
+    {
+      "major_id": "cong_nghe_ky_thuat_xay_dung",
+      "major_name_vi": "Công nghệ kỹ thuật xây dựng",
+      "moet_code": "7510103",
+      "catalog_visibility": true,
+      "automatic_ranking_eligibility": true,
+      "status": "READY_FOR_PROTOTYPE",
+      "status_reason": "Ánh xạ 1-1 với kỹ sư xây dựng O*NET.",
+      "baseline_reference_mapping": {
+        "soc_code": "17-2051.00",
+        "occupation_title_en": "Civil Engineers",
+        "ih_code": "RIC",
+        "oi_vector": [
+          6.43,
+          5.15,
+          2.21,
+          1.69,
+          2.66,
+          4.61
+        ],
+        "source": "LabanAI Baseline reference.json"
+      },
+      "onet_30_2_verification": {
+        "soc_code": "17-2051.00",
+        "official_title": "Civil Engineers",
+        "official_oi_vector": [
+          6.43,
+          5.15,
+          2.21,
+          1.69,
+          2.66,
+          4.61
+        ],
+        "verification_status": "MATCHED",
+        "checked_date": "2026-11-21"
+      },
+      "primary_soc_code": "17-2051.00",
+      "occupation_title_en": "Civil Engineers",
+      "ih_code": "RIC",
+      "oi_vector": [
+        6.43,
+        5.15,
+        2.21,
+        1.69,
+        2.66,
+        4.61
+      ],
+      "differentiation_tier": "TIER_1_ML",
+      "differentiation_cluster": null,
+      "evidence_id": "EV_CONG_NGHE_KY_THUAT_XAY_DUNG",
+      "proposed_mappings": []
+    },
+    {
+      "major_id": "ky_thuat_dien_tu_vien_thong",
+      "major_name_vi": "Kỹ thuật điện tử - viễn thông",
+      "moet_code": "7520207",
+      "catalog_visibility": true,
+      "automatic_ranking_eligibility": true,
+      "status": "READY_FOR_PROTOTYPE",
+      "status_reason": "Ánh xạ 1-1 với kỹ sư điện tử (trừ máy tính) O*NET.",
+      "baseline_reference_mapping": {
+        "soc_code": "17-2072.00",
+        "occupation_title_en": "Electronics Engineers, Except Computer",
+        "ih_code": "RIC",
+        "oi_vector": [
+          6.24,
+          5.81,
+          2.03,
+          1.59,
+          1.62,
+          4.68
+        ],
+        "source": "LabanAI Baseline reference.json"
+      },
+      "onet_30_2_verification": {
+        "soc_code": "17-2072.00",
+        "official_title": "Electronics Engineers, Except Computer",
+        "official_oi_vector": [
+          6.24,
+          5.81,
+          2.03,
+          1.59,
+          1.62,
+          4.68
+        ],
+        "verification_status": "MATCHED",
+        "checked_date": "2026-11-21"
+      },
+      "primary_soc_code": "17-2072.00",
+      "occupation_title_en": "Electronics Engineers, Except Computer",
+      "ih_code": "RIC",
+      "oi_vector": [
+        6.24,
+        5.81,
+        2.03,
+        1.59,
+        1.62,
+        4.68
+      ],
+      "differentiation_tier": "TIER_1_ML",
+      "differentiation_cluster": null,
+      "evidence_id": "EV_KY_THUAT_DIEN_TU_VIEN_THONG",
+      "proposed_mappings": []
+    },
+    {
+      "major_id": "ky_thuat_dien",
+      "major_name_vi": "Kỹ thuật điện",
+      "moet_code": "7520201",
+      "catalog_visibility": true,
+      "automatic_ranking_eligibility": true,
+      "status": "READY_FOR_PROTOTYPE",
+      "status_reason": "Ánh xạ 1-1 với kỹ sư điện O*NET.",
+      "baseline_reference_mapping": {
+        "soc_code": "17-2071.00",
+        "occupation_title_en": "Electrical Engineers",
+        "ih_code": "RIC",
+        "oi_vector": [
+          6.02,
+          5.45,
+          2.12,
+          1.72,
+          2.44,
+          4.43
+        ],
+        "source": "LabanAI Baseline reference.json"
+      },
+      "onet_30_2_verification": {
+        "soc_code": "17-2071.00",
+        "official_title": "Electrical Engineers",
+        "official_oi_vector": [
+          6.02,
+          5.45,
+          2.12,
+          1.72,
+          2.44,
+          4.43
+        ],
+        "verification_status": "MATCHED",
+        "checked_date": "2026-11-21"
+      },
+      "primary_soc_code": "17-2071.00",
+      "occupation_title_en": "Electrical Engineers",
+      "ih_code": "RIC",
+      "oi_vector": [
+        6.02,
+        5.45,
+        2.12,
+        1.72,
+        2.44,
+        4.43
+      ],
+      "differentiation_tier": "TIER_1_ML",
+      "differentiation_cluster": null,
+      "evidence_id": "EV_KY_THUAT_DIEN",
+      "proposed_mappings": []
+    },
+    {
+      "major_id": "cong_nghe_ky_thuat_hoa_hoc",
+      "major_name_vi": "Công nghệ kỹ thuật hóa học",
+      "moet_code": "7510401",
+      "catalog_visibility": true,
+      "automatic_ranking_eligibility": true,
+      "status": "READY_FOR_PROTOTYPE",
+      "status_reason": "Ánh xạ 1-1 với kỹ sư hóa học O*NET.",
+      "baseline_reference_mapping": {
+        "soc_code": "17-2041.00",
+        "occupation_title_en": "Chemical Engineers",
+        "ih_code": "RIC",
+        "oi_vector": [
+          6.27,
+          5.75,
+          1.8,
+          1.02,
+          1.85,
+          4.54
+        ],
+        "source": "LabanAI Baseline reference.json"
+      },
+      "onet_30_2_verification": {
+        "soc_code": "17-2041.00",
+        "official_title": "Chemical Engineers",
+        "official_oi_vector": [
+          6.27,
+          5.75,
+          1.8,
+          1.02,
+          1.85,
+          4.54
+        ],
+        "verification_status": "MATCHED",
+        "checked_date": "2026-11-21"
+      },
+      "primary_soc_code": "17-2041.00",
+      "occupation_title_en": "Chemical Engineers",
+      "ih_code": "RIC",
+      "oi_vector": [
+        6.27,
+        5.75,
+        1.8,
+        1.02,
+        1.85,
+        4.54
+      ],
+      "differentiation_tier": "TIER_1_ML",
+      "differentiation_cluster": null,
+      "evidence_id": "EV_CONG_NGHE_KY_THUAT_HOA_HOC",
+      "proposed_mappings": []
+    },
+    {
+      "major_id": "toan_hoc",
+      "major_name_vi": "Toán học",
+      "moet_code": "7460101",
+      "catalog_visibility": true,
+      "automatic_ranking_eligibility": true,
+      "status": "READY_FOR_PROTOTYPE",
+      "status_reason": "Ánh xạ 1-1 rõ ràng với nhà toán học O*NET.",
+      "baseline_reference_mapping": {
+        "soc_code": "15-2021.00",
+        "occupation_title_en": "Mathematicians",
+        "ih_code": "IC",
+        "oi_vector": [
+          3.22,
+          7.0,
+          3.23,
+          1.95,
+          1.11,
+          5.03
+        ],
+        "source": "LabanAI Baseline reference.json"
+      },
+      "onet_30_2_verification": {
+        "soc_code": "15-2021.00",
+        "official_title": "Mathematicians",
+        "official_oi_vector": [
+          3.22,
+          7.0,
+          3.23,
+          1.95,
+          1.11,
+          5.03
+        ],
+        "verification_status": "MATCHED",
+        "checked_date": "2026-11-21"
+      },
+      "primary_soc_code": "15-2021.00",
+      "occupation_title_en": "Mathematicians",
+      "ih_code": "IC",
+      "oi_vector": [
+        3.22,
+        7.0,
+        3.23,
+        1.95,
+        1.11,
+        5.03
+      ],
+      "differentiation_tier": "TIER_1_ML",
+      "differentiation_cluster": null,
+      "evidence_id": "EV_TOAN_HOC",
+      "proposed_mappings": []
+    },
+    {
+      "major_id": "nong_hoc",
+      "major_name_vi": "Nông học",
+      "moet_code": "7620109",
+      "catalog_visibility": true,
+      "automatic_ranking_eligibility": true,
+      "status": "READY_FOR_PROTOTYPE",
+      "status_reason": "Ánh xạ 1-1 với nhà khoa học đất và cây trồng O*NET.",
+      "baseline_reference_mapping": {
+        "soc_code": "19-1013.00",
+        "occupation_title_en": "Soil and Plant Scientists",
+        "ih_code": "IR",
+        "oi_vector": [
+          6.43,
+          6.71,
+          2.11,
+          1.67,
+          1.71,
+          3.41
+        ],
+        "source": "LabanAI Baseline reference.json"
+      },
+      "onet_30_2_verification": {
+        "soc_code": "19-1013.00",
+        "official_title": "Soil and Plant Scientists",
+        "official_oi_vector": [
+          6.43,
+          6.71,
+          2.11,
+          1.67,
+          1.71,
+          3.41
+        ],
+        "verification_status": "MATCHED",
+        "checked_date": "2026-11-21"
+      },
+      "primary_soc_code": "19-1013.00",
+      "occupation_title_en": "Soil and Plant Scientists",
+      "ih_code": "IR",
+      "oi_vector": [
+        6.43,
+        6.71,
+        2.11,
+        1.67,
+        1.71,
+        3.41
+      ],
+      "differentiation_tier": "TIER_1_ML",
+      "differentiation_cluster": null,
+      "evidence_id": "EV_NONG_HOC",
+      "proposed_mappings": [
+        {
+          "soc_code": "19-1011.00",
+          "occupation_title_en": "Animal Scientists",
+          "oi_vector": [
+            5.24,
+            6.93,
+            1.96,
+            1.97,
+            2.4,
+            3.36
+          ],
+          "status": "PENDING_REVIEW",
+          "rationale": "Khảo sát nghề Nhà khoa học chăn nuôi (19-1011.00) so với Nhà khoa học đất và cây trồng (19-1013.00).",
+          "source": "O*NET 30.2"
+        }
+      ]
+    },
+    {
+      "major_id": "quan_ly_dat_dai",
+      "major_name_vi": "Quản lý đất đai",
+      "moet_code": "7850103",
+      "catalog_visibility": true,
+      "automatic_ranking_eligibility": true,
+      "status": "READY_FOR_PROTOTYPE",
+      "status_reason": "Ánh xạ 1-1 với chuyên viên khảo sát đất đai O*NET.",
+      "baseline_reference_mapping": {
+        "soc_code": "17-1022.00",
+        "occupation_title_en": "Surveyors",
+        "ih_code": "CRI",
+        "oi_vector": [
+          5.25,
+          4.73,
+          2.12,
+          1.63,
+          1.88,
+          5.29
+        ],
+        "source": "LabanAI Baseline reference.json"
+      },
+      "onet_30_2_verification": {
+        "soc_code": "17-1022.00",
+        "official_title": "Surveyors",
+        "official_oi_vector": [
+          5.25,
+          4.73,
+          2.12,
+          1.63,
+          1.88,
+          5.29
+        ],
+        "verification_status": "MATCHED",
+        "checked_date": "2026-11-21"
+      },
+      "primary_soc_code": "17-1022.00",
+      "occupation_title_en": "Surveyors",
+      "ih_code": "CRI",
+      "oi_vector": [
+        5.25,
+        4.73,
+        2.12,
+        1.63,
+        1.88,
+        5.29
+      ],
+      "differentiation_tier": "TIER_1_ML",
+      "differentiation_cluster": null,
+      "evidence_id": "EV_QUAN_LY_DAT_DAI",
+      "proposed_mappings": [
+        {
+          "soc_code": "19-1031.02",
+          "occupation_title_en": "Range Managers",
+          "oi_vector": [
+            5.76,
+            5.02,
+            1.47,
+            2.42,
+            4.39,
+            3.68
+          ],
+          "status": "PENDING_REVIEW",
+          "rationale": "Đề xuất ứng viên Quản lý đồng cỏ/tài nguyên đất (19-1031.02) bên cạnh nghề Đo đạc địa chính (17-1022.00).",
+          "source": "O*NET 30.2"
+        }
+      ]
+    },
+    {
+      "major_id": "cong_tac_xa_hoi",
+      "major_name_vi": "Công tác xã hội",
+      "moet_code": "7760101",
+      "catalog_visibility": true,
+      "automatic_ranking_eligibility": true,
+      "status": "READY_FOR_PROTOTYPE",
+      "status_reason": "Ánh xạ 1-1 rõ ràng với nhân viên công tác xã hội O*NET.",
+      "baseline_reference_mapping": {
+        "soc_code": "21-1021.00",
+        "occupation_title_en": "Child, Family, and School Social Workers",
+        "ih_code": "S",
+        "oi_vector": [
+          1.7,
+          3.32,
+          2.9,
+          6.85,
+          2.94,
+          3.57
+        ],
+        "source": "LabanAI Baseline reference.json"
+      },
+      "onet_30_2_verification": {
+        "soc_code": "21-1021.00",
+        "official_title": "Child, Family, and School Social Workers",
+        "official_oi_vector": [
+          1.7,
+          3.32,
+          2.9,
+          6.85,
+          2.94,
+          3.57
+        ],
+        "verification_status": "MATCHED",
+        "checked_date": "2026-11-21"
+      },
+      "primary_soc_code": "21-1021.00",
+      "occupation_title_en": "Child, Family, and School Social Workers",
+      "ih_code": "S",
+      "oi_vector": [
+        1.7,
+        3.32,
+        2.9,
+        6.85,
+        2.94,
+        3.57
+      ],
+      "differentiation_tier": "TIER_1_ML",
+      "differentiation_cluster": null,
+      "evidence_id": "EV_CONG_TAC_XA_HOI",
+      "proposed_mappings": [
+        {
+          "soc_code": "21-1029.00",
+          "occupation_title_en": "Social Workers, All Other",
+          "oi_vector": null,
+          "status": "PENDING_REVIEW",
+          "rationale": "Đề xuất khảo sát mã nhóm nghề Công tác xã hội nói chung (21-1029.00 - lưu ý mã này không có vector OI riêng trong O*NET 30.2).",
+          "source": "O*NET 30.2"
+        }
+      ]
+    },
+    {
+      "major_id": "su_pham_ngu_van",
+      "major_name_vi": "Sư phạm Ngữ văn",
+      "moet_code": "7140217",
+      "catalog_visibility": true,
+      "automatic_ranking_eligibility": false,
+      "status": "CONDITIONAL",
+      "status_reason": "Trùng SOC 25-2031.00 và vector OI với 6 ngành sư phạm THPT khác; không thể phân biệt bằng 6 đầu ra ML.",
+      "baseline_reference_mapping": {
+        "soc_code": "25-2031.00",
+        "occupation_title_en": "Secondary School Teachers, Except Special and Career/Technical Education",
+        "ih_code": "SA",
+        "oi_vector": [
+          2.73,
+          3.19,
+          3.77,
+          7.0,
+          2.9,
+          3.61
+        ],
+        "source": "LabanAI Baseline reference.json"
+      },
+      "onet_30_2_verification": {
+        "soc_code": "25-2031.00",
+        "official_title": "Secondary School Teachers, Except Special and Career/Technical Education",
+        "official_oi_vector": [
+          2.73,
+          3.19,
+          3.77,
+          7.0,
+          2.9,
+          3.61
+        ],
+        "verification_status": "MATCHED",
+        "checked_date": "2026-11-21"
+      },
+      "primary_soc_code": "25-2031.00",
+      "occupation_title_en": "Secondary School Teachers, Except Special and Career/Technical Education",
+      "ih_code": "SA",
+      "oi_vector": [
+        2.73,
+        3.19,
+        3.77,
+        7.0,
+        2.9,
+        3.61
+      ],
+      "differentiation_tier": "TIER_2_SUPPLEMENTARY",
+      "differentiation_cluster": "CLUSTER_A_SECONDARY_TEACHERS",
+      "evidence_id": "EV_SU_PHAM_NGU_VAN",
+      "proposed_mappings": []
+    },
+    {
+      "major_id": "su_pham_dia_ly",
+      "major_name_vi": "Sư phạm Địa lý",
+      "moet_code": "7140219",
+      "catalog_visibility": true,
+      "automatic_ranking_eligibility": false,
+      "status": "CONDITIONAL",
+      "status_reason": "Trùng SOC 25-2031.00 và vector OI với 6 ngành sư phạm THPT khác; không thể phân biệt bằng 6 đầu ra ML.",
+      "baseline_reference_mapping": {
+        "soc_code": "25-2031.00",
+        "occupation_title_en": "Secondary School Teachers, Except Special and Career/Technical Education",
+        "ih_code": "SA",
+        "oi_vector": [
+          2.73,
+          3.19,
+          3.77,
+          7.0,
+          2.9,
+          3.61
+        ],
+        "source": "LabanAI Baseline reference.json"
+      },
+      "onet_30_2_verification": {
+        "soc_code": "25-2031.00",
+        "official_title": "Secondary School Teachers, Except Special and Career/Technical Education",
+        "official_oi_vector": [
+          2.73,
+          3.19,
+          3.77,
+          7.0,
+          2.9,
+          3.61
+        ],
+        "verification_status": "MATCHED",
+        "checked_date": "2026-11-21"
+      },
+      "primary_soc_code": "25-2031.00",
+      "occupation_title_en": "Secondary School Teachers, Except Special and Career/Technical Education",
+      "ih_code": "SA",
+      "oi_vector": [
+        2.73,
+        3.19,
+        3.77,
+        7.0,
+        2.9,
+        3.61
+      ],
+      "differentiation_tier": "TIER_2_SUPPLEMENTARY",
+      "differentiation_cluster": "CLUSTER_A_SECONDARY_TEACHERS",
+      "evidence_id": "EV_SU_PHAM_DIA_LY",
+      "proposed_mappings": []
+    },
+    {
+      "major_id": "su_pham_hoa_hoc",
+      "major_name_vi": "Sư phạm Hóa học",
+      "moet_code": "7140212",
+      "catalog_visibility": true,
+      "automatic_ranking_eligibility": false,
+      "status": "CONDITIONAL",
+      "status_reason": "Trùng SOC 25-2031.00 và vector OI với 6 ngành sư phạm THPT khác; không thể phân biệt bằng 6 đầu ra ML.",
+      "baseline_reference_mapping": {
+        "soc_code": "25-2031.00",
+        "occupation_title_en": "Secondary School Teachers, Except Special and Career/Technical Education",
+        "ih_code": "SA",
+        "oi_vector": [
+          2.73,
+          3.19,
+          3.77,
+          7.0,
+          2.9,
+          3.61
+        ],
+        "source": "LabanAI Baseline reference.json"
+      },
+      "onet_30_2_verification": {
+        "soc_code": "25-2031.00",
+        "official_title": "Secondary School Teachers, Except Special and Career/Technical Education",
+        "official_oi_vector": [
+          2.73,
+          3.19,
+          3.77,
+          7.0,
+          2.9,
+          3.61
+        ],
+        "verification_status": "MATCHED",
+        "checked_date": "2026-11-21"
+      },
+      "primary_soc_code": "25-2031.00",
+      "occupation_title_en": "Secondary School Teachers, Except Special and Career/Technical Education",
+      "ih_code": "SA",
+      "oi_vector": [
+        2.73,
+        3.19,
+        3.77,
+        7.0,
+        2.9,
+        3.61
+      ],
+      "differentiation_tier": "TIER_2_SUPPLEMENTARY",
+      "differentiation_cluster": "CLUSTER_A_SECONDARY_TEACHERS",
+      "evidence_id": "EV_SU_PHAM_HOA_HOC",
+      "proposed_mappings": []
+    },
+    {
+      "major_id": "su_pham_tin_hoc",
+      "major_name_vi": "Sư phạm Tin học",
+      "moet_code": "7140210",
+      "catalog_visibility": true,
+      "automatic_ranking_eligibility": false,
+      "status": "CONDITIONAL",
+      "status_reason": "Trùng SOC 25-2031.00 và vector OI với 6 ngành sư phạm THPT khác; không thể phân biệt bằng 6 đầu ra ML.",
+      "baseline_reference_mapping": {
+        "soc_code": "25-2031.00",
+        "occupation_title_en": "Secondary School Teachers, Except Special and Career/Technical Education",
+        "ih_code": "SA",
+        "oi_vector": [
+          2.73,
+          3.19,
+          3.77,
+          7.0,
+          2.9,
+          3.61
+        ],
+        "source": "LabanAI Baseline reference.json"
+      },
+      "onet_30_2_verification": {
+        "soc_code": "25-2031.00",
+        "official_title": "Secondary School Teachers, Except Special and Career/Technical Education",
+        "official_oi_vector": [
+          2.73,
+          3.19,
+          3.77,
+          7.0,
+          2.9,
+          3.61
+        ],
+        "verification_status": "MATCHED",
+        "checked_date": "2026-11-21"
+      },
+      "primary_soc_code": "25-2031.00",
+      "occupation_title_en": "Secondary School Teachers, Except Special and Career/Technical Education",
+      "ih_code": "SA",
+      "oi_vector": [
+        2.73,
+        3.19,
+        3.77,
+        7.0,
+        2.9,
+        3.61
+      ],
+      "differentiation_tier": "TIER_2_SUPPLEMENTARY",
+      "differentiation_cluster": "CLUSTER_A_SECONDARY_TEACHERS",
+      "evidence_id": "EV_SU_PHAM_TIN_HOC",
+      "proposed_mappings": []
+    },
+    {
+      "major_id": "su_pham_toan_hoc",
+      "major_name_vi": "Sư phạm Toán học",
+      "moet_code": "7140209",
+      "catalog_visibility": true,
+      "automatic_ranking_eligibility": false,
+      "status": "CONDITIONAL",
+      "status_reason": "Trùng SOC 25-2031.00 và vector OI với 6 ngành sư phạm THPT khác; không thể phân biệt bằng 6 đầu ra ML.",
+      "baseline_reference_mapping": {
+        "soc_code": "25-2031.00",
+        "occupation_title_en": "Secondary School Teachers, Except Special and Career/Technical Education",
+        "ih_code": "SA",
+        "oi_vector": [
+          2.73,
+          3.19,
+          3.77,
+          7.0,
+          2.9,
+          3.61
+        ],
+        "source": "LabanAI Baseline reference.json"
+      },
+      "onet_30_2_verification": {
+        "soc_code": "25-2031.00",
+        "official_title": "Secondary School Teachers, Except Special and Career/Technical Education",
+        "official_oi_vector": [
+          2.73,
+          3.19,
+          3.77,
+          7.0,
+          2.9,
+          3.61
+        ],
+        "verification_status": "MATCHED",
+        "checked_date": "2026-11-21"
+      },
+      "primary_soc_code": "25-2031.00",
+      "occupation_title_en": "Secondary School Teachers, Except Special and Career/Technical Education",
+      "ih_code": "SA",
+      "oi_vector": [
+        2.73,
+        3.19,
+        3.77,
+        7.0,
+        2.9,
+        3.61
+      ],
+      "differentiation_tier": "TIER_2_SUPPLEMENTARY",
+      "differentiation_cluster": "CLUSTER_A_SECONDARY_TEACHERS",
+      "evidence_id": "EV_SU_PHAM_TOAN_HOC",
+      "proposed_mappings": []
+    },
+    {
+      "major_id": "su_pham_tieng_anh",
+      "major_name_vi": "Sư phạm Tiếng Anh",
+      "moet_code": "7140231",
+      "catalog_visibility": true,
+      "automatic_ranking_eligibility": false,
+      "status": "CONDITIONAL",
+      "status_reason": "Trùng SOC 25-2031.00 và vector OI với 6 ngành sư phạm THPT khác; không thể phân biệt bằng 6 đầu ra ML.",
+      "baseline_reference_mapping": {
+        "soc_code": "25-2031.00",
+        "occupation_title_en": "Secondary School Teachers, Except Special and Career/Technical Education",
+        "ih_code": "SA",
+        "oi_vector": [
+          2.73,
+          3.19,
+          3.77,
+          7.0,
+          2.9,
+          3.61
+        ],
+        "source": "LabanAI Baseline reference.json"
+      },
+      "onet_30_2_verification": {
+        "soc_code": "25-2031.00",
+        "official_title": "Secondary School Teachers, Except Special and Career/Technical Education",
+        "official_oi_vector": [
+          2.73,
+          3.19,
+          3.77,
+          7.0,
+          2.9,
+          3.61
+        ],
+        "verification_status": "MATCHED",
+        "checked_date": "2026-11-21"
+      },
+      "primary_soc_code": "25-2031.00",
+      "occupation_title_en": "Secondary School Teachers, Except Special and Career/Technical Education",
+      "ih_code": "SA",
+      "oi_vector": [
+        2.73,
+        3.19,
+        3.77,
+        7.0,
+        2.9,
+        3.61
+      ],
+      "differentiation_tier": "TIER_2_SUPPLEMENTARY",
+      "differentiation_cluster": "CLUSTER_A_SECONDARY_TEACHERS",
+      "evidence_id": "EV_SU_PHAM_TIENG_ANH",
+      "proposed_mappings": []
+    },
+    {
+      "major_id": "giao_duc_chinh_tri",
+      "major_name_vi": "Giáo dục Chính trị",
+      "moet_code": "7140205",
+      "catalog_visibility": true,
+      "automatic_ranking_eligibility": false,
+      "status": "CONDITIONAL",
+      "status_reason": "Trùng SOC 25-2031.00 và vector OI với 6 ngành sư phạm THPT khác; không thể phân biệt bằng 6 đầu ra ML.",
+      "baseline_reference_mapping": {
+        "soc_code": "25-2031.00",
+        "occupation_title_en": "Secondary School Teachers, Except Special and Career/Technical Education",
+        "ih_code": "SA",
+        "oi_vector": [
+          2.73,
+          3.19,
+          3.77,
+          7.0,
+          2.9,
+          3.61
+        ],
+        "source": "LabanAI Baseline reference.json"
+      },
+      "onet_30_2_verification": {
+        "soc_code": "25-2031.00",
+        "official_title": "Secondary School Teachers, Except Special and Career/Technical Education",
+        "official_oi_vector": [
+          2.73,
+          3.19,
+          3.77,
+          7.0,
+          2.9,
+          3.61
+        ],
+        "verification_status": "MATCHED",
+        "checked_date": "2026-11-21"
+      },
+      "primary_soc_code": "25-2031.00",
+      "occupation_title_en": "Secondary School Teachers, Except Special and Career/Technical Education",
+      "ih_code": "SA",
+      "oi_vector": [
+        2.73,
+        3.19,
+        3.77,
+        7.0,
+        2.9,
+        3.61
+      ],
+      "differentiation_tier": "TIER_2_SUPPLEMENTARY",
+      "differentiation_cluster": "CLUSTER_A_SECONDARY_TEACHERS",
+      "evidence_id": "EV_GIAO_DUC_CHINH_TRI",
+      "proposed_mappings": []
+    },
+    {
+      "major_id": "cong_nghe_thong_tin",
+      "major_name_vi": "Công nghệ thông tin",
+      "moet_code": "7480201",
+      "catalog_visibility": true,
+      "automatic_ranking_eligibility": false,
+      "status": "CONDITIONAL",
+      "status_reason": "Trùng SOC 15-1252.00 với Kỹ thuật phần mềm; cần giải pháp biểu diễn đa nghề (Hạ tầng, Mạng, An toàn thông tin, Hệ thống).",
+      "baseline_reference_mapping": {
+        "soc_code": "15-1252.00",
+        "occupation_title_en": "Software Developers",
+        "ih_code": "IC",
+        "oi_vector": [
+          3.61,
+          6.05,
+          2.37,
+          1.81,
+          1.87,
+          5.62
+        ],
+        "source": "LabanAI Baseline reference.json"
+      },
+      "onet_30_2_verification": {
+        "soc_code": "15-1252.00",
+        "official_title": "Software Developers",
+        "official_oi_vector": [
+          3.61,
+          6.05,
+          2.37,
+          1.81,
+          1.87,
+          5.62
+        ],
+        "verification_status": "MATCHED",
+        "checked_date": "2026-11-21"
+      },
+      "primary_soc_code": "15-1252.00",
+      "occupation_title_en": "Software Developers",
+      "ih_code": "IC",
+      "oi_vector": [
+        3.61,
+        6.05,
+        2.37,
+        1.81,
+        1.87,
+        5.62
+      ],
+      "differentiation_tier": "TIER_2_SUPPLEMENTARY",
+      "differentiation_cluster": "CLUSTER_B_IT_SOFTWARE",
+      "evidence_id": "EV_CONG_NGHE_THONG_TIN",
+      "proposed_mappings": [
+        {
+          "soc_code": "15-1211.00",
+          "occupation_title_en": "Computer Systems Analysts",
+          "oi_vector": [
+            3.27,
+            6.39,
+            1.98,
+            1.91,
+            2.23,
+            5.93
+          ],
+          "status": "PENDING_REVIEW",
+          "rationale": "Các phân luồng chuyên môn của ngành CNTT tổng quát (Phân tích hệ thống, Quản trị mạng, An ninh thông tin).",
+          "source": "O*NET 30.2"
+        },
+        {
+          "soc_code": "15-1244.00",
+          "occupation_title_en": "Network and Computer Systems Administrators",
+          "oi_vector": [
+            4.19,
+            4.04,
+            1.0,
+            2.22,
+            3.46,
+            6.18
+          ],
+          "status": "PENDING_REVIEW",
+          "rationale": "Các phân luồng chuyên môn của ngành CNTT tổng quát (Phân tích hệ thống, Quản trị mạng, An ninh thông tin).",
+          "source": "O*NET 30.2"
+        },
+        {
+          "soc_code": "15-1212.00",
+          "occupation_title_en": "Information Security Analysts",
+          "oi_vector": [
+            3.56,
+            5.4,
+            1.34,
+            2.11,
+            2.85,
+            6.08
+          ],
+          "status": "PENDING_REVIEW",
+          "rationale": "Các phân luồng chuyên môn của ngành CNTT tổng quát (Phân tích hệ thống, Quản trị mạng, An ninh thông tin).",
+          "source": "O*NET 30.2"
+        }
+      ]
+    },
+    {
+      "major_id": "dong_phuong_hoc",
+      "major_name_vi": "Đông phương học",
+      "moet_code": "7310608",
+      "catalog_visibility": true,
+      "automatic_ranking_eligibility": false,
+      "status": "CONDITIONAL",
+      "status_reason": "Trùng SOC 27-3091.00 với Ngôn ngữ Anh; bản chất đào tạo là nghiên cứu khu vực học (lịch sử, văn hóa, chính trị), không phải chỉ phiên dịch.",
+      "baseline_reference_mapping": {
+        "soc_code": "27-3091.00",
+        "occupation_title_en": "Interpreters and Translators",
+        "ih_code": "CAS",
+        "oi_vector": [
+          1.89,
+          3.19,
+          4.28,
+          3.48,
+          1.9,
+          4.79
+        ],
+        "source": "LabanAI Baseline reference.json"
+      },
+      "onet_30_2_verification": {
+        "soc_code": "27-3091.00",
+        "official_title": "Interpreters and Translators",
+        "official_oi_vector": [
+          1.89,
+          3.19,
+          4.28,
+          3.48,
+          1.9,
+          4.79
+        ],
+        "verification_status": "MATCHED",
+        "checked_date": "2026-11-21"
+      },
+      "primary_soc_code": "27-3091.00",
+      "occupation_title_en": "Interpreters and Translators",
+      "ih_code": "CAS",
+      "oi_vector": [
+        1.89,
+        3.19,
+        4.28,
+        3.48,
+        1.9,
+        4.79
+      ],
+      "differentiation_tier": "TIER_2_SUPPLEMENTARY",
+      "differentiation_cluster": "CLUSTER_C_REGIONAL_CULTURAL",
+      "evidence_id": "EV_DONG_PHUONG_HOC",
+      "proposed_mappings": [
+        {
+          "soc_code": "19-3094.00",
+          "occupation_title_en": "Political Scientists",
+          "oi_vector": [
+            1.0,
+            6.71,
+            3.87,
+            3.42,
+            3.61,
+            3.52
+          ],
+          "status": "PENDING_REVIEW",
+          "rationale": "Đề xuất chuyển từ Biên phiên dịch (27-3091.00) sang Chuyên gia phân tích chính trị / khu vực học (19-3094.00).",
+          "source": "O*NET 30.2"
+        }
+      ]
+    },
+    {
+      "major_id": "viet_nam_hoc",
+      "major_name_vi": "Việt Nam học",
+      "moet_code": "7310630",
+      "catalog_visibility": true,
+      "automatic_ranking_eligibility": false,
+      "status": "CONDITIONAL",
+      "status_reason": "Lệch bản chất khi ánh xạ sang Hướng dẫn viên du lịch (SOC 39-7011.00); bản chất đào tạo là văn hóa, giảng dạy tiếng Việt cho người nước ngoài, đối ngoại văn hóa.",
+      "baseline_reference_mapping": {
+        "soc_code": "39-7011.00",
+        "occupation_title_en": "Tour Guides and Escorts",
+        "ih_code": "EAS",
+        "oi_vector": [
+          2.63,
+          2.47,
+          4.39,
+          4.19,
+          5.64,
+          2.8
+        ],
+        "source": "LabanAI Baseline reference.json"
+      },
+      "onet_30_2_verification": {
+        "soc_code": "39-7011.00",
+        "official_title": "Tour Guides and Escorts",
+        "official_oi_vector": [
+          3.33,
+          2.4,
+          3.46,
+          5.35,
+          3.64,
+          2.85
+        ],
+        "verification_status": "MISMATCH_HISTORICAL_VECTOR",
+        "checked_date": "2026-11-21"
+      },
+      "primary_soc_code": "39-7011.00",
+      "occupation_title_en": "Tour Guides and Escorts",
+      "ih_code": "EAS",
+      "oi_vector": [
+        2.63,
+        2.47,
+        4.39,
+        4.19,
+        5.64,
+        2.8
+      ],
+      "differentiation_tier": "TIER_2_SUPPLEMENTARY",
+      "differentiation_cluster": "CLUSTER_C_REGIONAL_CULTURAL",
+      "evidence_id": "EV_VIET_NAM_HOC",
+      "proposed_mappings": [
+        {
+          "soc_code": "25-1123.00",
+          "occupation_title_en": "English Language and Literature Teachers, Postsecondary",
+          "oi_vector": [
+            2.28,
+            4.78,
+            4.19,
+            7.0,
+            2.43,
+            3.49
+          ],
+          "status": "PENDING_REVIEW",
+          "rationale": "Đề xuất ứng viên Giảng viên ngôn ngữ và văn hóa (25-1123.00) thay thế mã Hướng dẫn viên du lịch (39-7011.00).",
+          "source": "O*NET 30.2"
+        }
+      ]
+    },
+    {
+      "major_id": "quan_ly_du_lich_lu_hanh",
+      "major_name_vi": "Quản trị dịch vụ du lịch và lữ hành",
+      "moet_code": "7810103",
+      "catalog_visibility": true,
+      "automatic_ranking_eligibility": false,
+      "status": "UNRESOLVED",
+      "status_reason": "Bằng chứng cấp C, chưa có mã SOC 1-1 đại diện đơn lẻ phù hợp; cần cấu hình hồ sơ đa nghề (Quản lý tour, Điều hành đại lý, Tổ chức sự kiện).",
+      "baseline_reference_mapping": {
+        "soc_code": null,
+        "occupation_title_en": null,
+        "ih_code": null,
+        "oi_vector": null,
+        "source": "LabanAI Baseline reference.json"
+      },
+      "onet_30_2_verification": {
+        "soc_code": null,
+        "official_title": null,
+        "official_oi_vector": null,
+        "verification_status": "MATCHED",
+        "checked_date": "2026-11-21"
+      },
+      "primary_soc_code": null,
+      "occupation_title_en": null,
+      "ih_code": null,
+      "oi_vector": null,
+      "differentiation_tier": "TIER_2_SUPPLEMENTARY",
+      "differentiation_cluster": "CLUSTER_D_TOURISM_PUBLIC_ADMIN",
+      "evidence_id": "EV_QUAN_LY_DU_LICH_LU_HANH",
+      "composite_candidate_socs": [
+        {
+          "soc_code": "13-1121.00",
+          "title": "Meeting, Convention, and Event Planners",
+          "status": "PENDING_REVIEW"
+        },
+        {
+          "soc_code": "41-3041.00",
+          "title": "Travel Agents",
+          "status": "PENDING_REVIEW"
+        },
+        {
+          "soc_code": "11-9081.00",
+          "title": "Lodging Managers",
+          "status": "PENDING_REVIEW"
+        }
+      ],
+      "proposed_mappings": []
+    },
+    {
+      "major_id": "quan_ly_nha_nuoc",
+      "major_name_vi": "Quản lý nhà nước",
+      "moet_code": "7310205",
+      "catalog_visibility": true,
+      "automatic_ranking_eligibility": false,
+      "status": "UNRESOLVED",
+      "status_reason": "Bằng chứng cấp B nhưng phân mảnh giữa 4 SOC; cần hồ sơ đa nghề hành chính công và phân tích chính sách.",
+      "baseline_reference_mapping": {
+        "soc_code": null,
+        "occupation_title_en": null,
+        "ih_code": null,
+        "oi_vector": null,
+        "source": "LabanAI Baseline reference.json"
+      },
+      "onet_30_2_verification": {
+        "soc_code": null,
+        "official_title": null,
+        "official_oi_vector": null,
+        "verification_status": "MATCHED",
+        "checked_date": "2026-11-21"
+      },
+      "primary_soc_code": null,
+      "occupation_title_en": null,
+      "ih_code": null,
+      "oi_vector": null,
+      "differentiation_tier": "TIER_2_SUPPLEMENTARY",
+      "differentiation_cluster": "CLUSTER_D_TOURISM_PUBLIC_ADMIN",
+      "evidence_id": "EV_QUAN_LY_NHA_NUOC",
+      "composite_candidate_socs": [
+        {
+          "soc_code": "11-3012.00",
+          "title": "Administrative Services Managers",
+          "status": "PENDING_REVIEW"
+        },
+        {
+          "soc_code": "13-1111.00",
+          "title": "Management Analysts",
+          "status": "PENDING_REVIEW"
+        }
+      ],
+      "proposed_mappings": []
+    }
+  ]
+}

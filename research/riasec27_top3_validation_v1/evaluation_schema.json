@@ -1,0 +1,411 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "B12 synthetic offline evaluation envelope",
+  "description": "SYNTHETIC_DEMO_ONLY — NOT_SCIENTIFIC_VALIDATION; self-reported interest labels, never objective suitability.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "data_kind",
+    "records"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "1.0.0"
+    },
+    "data_kind": {
+      "const": "SYNTHETIC_DEMO_ONLY — NOT_SCIENTIFIC_VALIDATION"
+    },
+    "records": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/record"
+      }
+    }
+  },
+  "$defs": {
+    "record": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "participant_id",
+        "answers",
+        "major_interest_labels"
+      ],
+      "properties": {
+        "participant_id": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$"
+        },
+        "answers": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "R1",
+            "I1",
+            "A1",
+            "R2",
+            "I2",
+            "A2",
+            "S1",
+            "S2",
+            "R3",
+            "A3",
+            "S3",
+            "E1",
+            "R4",
+            "S4",
+            "E2",
+            "R5",
+            "I3",
+            "A4",
+            "E3",
+            "I4",
+            "A5",
+            "E4",
+            "C1",
+            "E5",
+            "C2",
+            "C3",
+            "C4"
+          ],
+          "properties": {
+            "R1": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 5
+            },
+            "I1": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 5
+            },
+            "A1": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 5
+            },
+            "R2": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 5
+            },
+            "I2": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 5
+            },
+            "A2": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 5
+            },
+            "S1": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 5
+            },
+            "S2": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 5
+            },
+            "R3": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 5
+            },
+            "A3": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 5
+            },
+            "S3": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 5
+            },
+            "E1": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 5
+            },
+            "R4": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 5
+            },
+            "S4": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 5
+            },
+            "E2": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 5
+            },
+            "R5": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 5
+            },
+            "I3": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 5
+            },
+            "A4": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 5
+            },
+            "E3": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 5
+            },
+            "I4": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 5
+            },
+            "A5": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 5
+            },
+            "E4": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 5
+            },
+            "C1": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 5
+            },
+            "E5": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 5
+            },
+            "C2": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 5
+            },
+            "C3": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 5
+            },
+            "C4": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 5
+            }
+          }
+        },
+        "major_interest_labels": {
+          "type": "object",
+          "additionalProperties": false,
+          "description": "Exactly 21 keys; use null for an unobserved/unknown label, never zero-fill.",
+          "required": [
+            "giao_duc_tieu_hoc",
+            "giao_duc_mam_non",
+            "quan_ly_giao_duc",
+            "tam_ly_hoc_giao_duc",
+            "ky_thuat_phan_mem",
+            "kinh_te",
+            "quan_tri_kinh_doanh",
+            "ke_toan",
+            "tai_chinh_ngan_hang",
+            "quan_tri_khach_san",
+            "ngon_ngu_anh",
+            "van_hoc",
+            "luat",
+            "cong_nghe_ky_thuat_xay_dung",
+            "ky_thuat_dien_tu_vien_thong",
+            "ky_thuat_dien",
+            "cong_nghe_ky_thuat_hoa_hoc",
+            "toan_hoc",
+            "nong_hoc",
+            "quan_ly_dat_dai",
+            "cong_tac_xa_hoi"
+          ],
+          "properties": {
+            "giao_duc_tieu_hoc": {
+              "type": [
+                "integer",
+                "null"
+              ],
+              "minimum": 0,
+              "maximum": 3
+            },
+            "giao_duc_mam_non": {
+              "type": [
+                "integer",
+                "null"
+              ],
+              "minimum": 0,
+              "maximum": 3
+            },
+            "quan_ly_giao_duc": {
+              "type": [
+                "integer",
+                "null"
+              ],
+              "minimum": 0,
+              "maximum": 3
+            },
+            "tam_ly_hoc_giao_duc": {
+              "type": [
+                "integer",
+                "null"
+              ],
+              "minimum": 0,
+              "maximum": 3
+            },
+            "ky_thuat_phan_mem": {
+              "type": [
+                "integer",
+                "null"
+              ],
+              "minimum": 0,
+              "maximum": 3
+            },
+            "kinh_te": {
+              "type": [
+                "integer",
+                "null"
+              ],
+              "minimum": 0,
+              "maximum": 3
+            },
+            "quan_tri_kinh_doanh": {
+              "type": [
+                "integer",
+                "null"
+              ],
+              "minimum": 0,
+              "maximum": 3
+            },
+            "ke_toan": {
+              "type": [
+                "integer",
+                "null"
+              ],
+              "minimum": 0,
+              "maximum": 3
+            },
+            "tai_chinh_ngan_hang": {
+              "type": [
+                "integer",
+                "null"
+              ],
+              "minimum": 0,
+              "maximum": 3
+            },
+            "quan_tri_khach_san": {
+              "type": [
+                "integer",
+                "null"
+              ],
+              "minimum": 0,
+              "maximum": 3
+            },
+            "ngon_ngu_anh": {
+              "type": [
+                "integer",
+                "null"
+              ],
+              "minimum": 0,
+              "maximum": 3
+            },
+            "van_hoc": {
+              "type": [
+                "integer",
+                "null"
+              ],
+              "minimum": 0,
+              "maximum": 3
+            },
+            "luat": {
+              "type": [
+                "integer",
+                "null"
+              ],
+              "minimum": 0,
+              "maximum": 3
+            },
+            "cong_nghe_ky_thuat_xay_dung": {
+              "type": [
+                "integer",
+                "null"
+              ],
+              "minimum": 0,
+              "maximum": 3
+            },
+            "ky_thuat_dien_tu_vien_thong": {
+              "type": [
+                "integer",
+                "null"
+              ],
+              "minimum": 0,
+              "maximum": 3
+            },
+            "ky_thuat_dien": {
+              "type": [
+                "integer",
+                "null"
+              ],
+              "minimum": 0,
+              "maximum": 3
+            },
+            "cong_nghe_ky_thuat_hoa_hoc": {
+              "type": [
+                "integer",
+                "null"
+              ],
+              "minimum": 0,
+              "maximum": 3
+            },
+            "toan_hoc": {
+              "type": [
+                "integer",
+                "null"
+              ],
+              "minimum": 0,
+              "maximum": 3
+            },
+            "nong_hoc": {
+              "type": [
+                "integer",
+                "null"
+              ],
+              "minimum": 0,
+              "maximum": 3
+            },
+            "quan_ly_dat_dai": {
+              "type": [
+                "integer",
+                "null"
+              ],
+              "minimum": 0,
+              "maximum": 3
+            },
+            "cong_tac_xa_hoi": {
+              "type": [
+                "integer",
+                "null"
+              ],
+              "minimum": 0,
+              "maximum": 3
+            }
+          }
+        }
+      }
+    }
+  }
+}

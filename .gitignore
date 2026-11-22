@@ -10,3 +10,40 @@ npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 .DS_Store
+
+# Local ML input; contains personal data
+/data_AI_1000_rows.xlsx
+*.xlsx
+*.xls
+
+# Jupyter and Python test caches
+/data/ml_pipeline/**/.ipynb_checkpoints/**
+/data/ml_pipeline/**/__pycache__/
+/data/ml_pipeline/**/.pytest_cache/
+/.pytest_cache/
+**/__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Serialized ML artifacts; do not commit binary models
+/data/ml_pipeline/artifacts/**/*.joblib
+/data/ml_pipeline/artifacts/**/*.pkl
+
+# Python virtual environments
+.venv/
+venv/
+env/
+
+# General logs and coverage
+*.log
+.coverage
+coverage/
+.nyc_output/
+
+# OS and IDE files
+Thumbs.db
+Desktop.ini
+.vscode/
+.idea/
+*.code-workspace

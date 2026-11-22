@@ -1,20 +1,21 @@
-<%- include('../partials/header', { 
-    extraHead: `<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>` 
+<%- include('../partials/header', {
+    extraHead: `<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>`
 }) %>
 
 <!-- KHU VỰC NỘI DUNG CHÍNH -->
 <div id="main-wrapper" class="transition-all duration-300 w-full h-screen flex flex-col items-center relative overflow-hidden pt-20 pb-28">
-    
+
     <main class="w-full max-w-3xl flex-1 overflow-y-auto px-4 sm:px-6 py-6 space-y-6" id="chat-messages-container">
         <!-- WELCOME SCREEN -->
         <div id="welcome-screen" class="w-full flex flex-col items-center justify-center min-h-[62vh] text-center my-auto">
             <div class="relative w-44 h-44 mb-3 flex items-center justify-center cursor-grab active:cursor-grabbing">
                 <div id="compass-canvas-container" class="w-full h-full absolute inset-0"></div>
             </div>
-            <h3 class="text-3xl sm:text-4xl font-black text-navy tracking-tight mb-2 select-none">
+            <h1 class="text-3xl sm:text-4xl font-black text-navy tracking-tight mb-2 select-none">
                 Chào bạn! Mình là <span class="brand-welcome-text cursor-pointer font-black text-navy hover:text-cyan transition-colors duration-200">la bàn<span class="text-cyan">.ai</span></span>
-            </h3>
-            <p class="text-sm text-muted max-w-md mx-auto mb-8 leading-relaxed">Bạn đang băn khoăn về ngành học, khối thi hay xu hướng nghề nghiệp tương lai? Hãy chia sẻ cùng mình nhé!</p>
+            </h1>
+            <p class="text-sm text-muted max-w-md mx-auto mb-3 leading-relaxed">Một không gian để bạn thử đặt câu hỏi và tìm hiểu cách trò chuyện về hướng nghiệp.</p>
+            <p id="chat-demo-note" class="text-xs text-slate-600 bg-slate-50 border border-slate-200 rounded-2xl p-3 max-w-lg mb-6" role="note">ChatBot này hiện là bản minh họa với phản hồi có sẵn, chưa kết nối dịch vụ AI trực tuyến. Đây là tính năng riêng, không phải Groq giải thích kết quả khảo sát.</p>
 
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-3.5 w-full text-left">
                 <div onclick="sendSuggestedPrompt(this)" class="p-4 rounded-2xl glass-card bg-white/80 hover:border-cyan hover:shadow-md cursor-pointer transition-all border border-navy/5 group">

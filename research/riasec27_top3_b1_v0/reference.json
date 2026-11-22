@@ -1,0 +1,1169 @@
+{
+  "metadata": {
+    "version": "1.0.0",
+    "description": "LabanAI Reference Catalog for 33 Majors - Phase 8.5a",
+    "onet_version": "30.2",
+    "moet_standard": "Circular 09/2022/TT-BGDDT",
+    "scale": "1.0-7.0",
+    "vector_dimensions": [
+      "R",
+      "I",
+      "A",
+      "S",
+      "E",
+      "C"
+    ],
+    "total_majors": 33,
+    "ready_count": 21,
+    "conditional_count": 10,
+    "unresolved_count": 2,
+    "notes": "Chỉ 21 ngành READY_FOR_PROTOTYPE được đưa vào tính toán xếp hạng Pearson 1-1 độc lập. 10 ngành CONDITIONAL và 2 ngành UNRESOLVED được giữ trong danh mục để bảo toàn cấu trúc dữ liệu nhưng bị loại khỏi tập ứng viên gợi ý.",
+    "revision": "8.5a-R1",
+    "verification_audit": {
+      "checked_on": "2026-11-21",
+      "onet_ready_matched": 21,
+      "curriculum_program_verified": 0,
+      "curriculum_homepage_only": 21,
+      "notice": "READY là trạng thái chạy nguyên mẫu, không chứng nhận đầy đủ bằng chứng CTĐT hoặc tính phù hợp nghề nghiệp.",
+      "outside_ready_findings": [
+        {
+          "soc_code": "25-2031.00",
+          "catalog_ih": "SA",
+          "source_ih": "S",
+          "action": "PENDING_OWNER_REVIEW; không sửa CONDITIONAL trong lần này"
+        },
+        {
+          "soc_code": "39-7011.00",
+          "catalog_ih": "EAS",
+          "source_ih": "SE",
+          "action": "PENDING_OWNER_REVIEW; không sửa CONDITIONAL trong lần này"
+        }
+      ]
+    }
+  },
+  "majors": [
+    {
+      "major_id": "giao_duc_tieu_hoc",
+      "major_name_vi": "Giáo dục Tiểu học",
+      "moet_code": "7140202",
+      "status": "READY_FOR_PROTOTYPE",
+      "soc_code": "25-2021.00",
+      "occupation_title_en": "Elementary School Teachers, Except Special Education",
+      "ih_code": "S",
+      "oi_vector": [
+        2.64,
+        3.35,
+        3.87,
+        7.0,
+        2.57,
+        3.78
+      ],
+      "curriculum_evidence": {
+        "institution": "Trường Đại học Sư phạm Hà Nội (HNUE)",
+        "url": "https://hnue.edu.vn",
+        "program_name": "Cử nhân Giáo dục Tiểu học",
+        "url_kind": "INSTITUTION_HOMEPAGE",
+        "verification_status": "HOMEPAGE_ONLY",
+        "verification_note": "URL chỉ trỏ trang chủ; chưa xác minh trực tiếp CTĐT và quan hệ ngành-nghề tại URL này."
+      },
+      "status_reason": "Ánh xạ 1-1 rõ ràng với giáo viên tiểu học O*NET, vector OI chuyên biệt.",
+      "onet_evidence": {
+        "version": "30.2",
+        "verification_status": "MATCHED_ONET_30_2",
+        "checked_on": "2026-11-21",
+        "occupation_url": "https://www.onetcenter.org/dl_files/database/db_30_2_text/Occupation%20Data.txt",
+        "interests_url": "https://www.onetcenter.org/dl_files/database/db_30_2_text/Interests.txt",
+        "matched_fields": [
+          "soc_code",
+          "occupation_title_en",
+          "ih_code",
+          "oi_vector"
+        ],
+        "data_date": "02/2026",
+        "domain_source": "Machine Learning/Expert"
+      }
+    },
+    {
+      "major_id": "giao_duc_mam_non",
+      "major_name_vi": "Giáo dục Mầm non",
+      "moet_code": "7140201",
+      "status": "READY_FOR_PROTOTYPE",
+      "soc_code": "25-2011.00",
+      "occupation_title_en": "Preschool Teachers, Except Special Education",
+      "ih_code": "SA",
+      "oi_vector": [
+        2.94,
+        2.76,
+        3.98,
+        7.0,
+        2.49,
+        3.61
+      ],
+      "curriculum_evidence": {
+        "institution": "Trường Đại học Sư phạm TP.HCM (HCMUE)",
+        "url": "https://hcmue.edu.vn",
+        "program_name": "Cử nhân Giáo dục Mầm non",
+        "url_kind": "INSTITUTION_HOMEPAGE",
+        "verification_status": "HOMEPAGE_ONLY",
+        "verification_note": "URL chỉ trỏ trang chủ; chưa xác minh trực tiếp CTĐT và quan hệ ngành-nghề tại URL này."
+      },
+      "status_reason": "Ánh xạ 1-1 chuẩn xác với giáo viên mầm non O*NET.",
+      "onet_evidence": {
+        "version": "30.2",
+        "verification_status": "MATCHED_ONET_30_2",
+        "checked_on": "2026-11-21",
+        "occupation_url": "https://www.onetcenter.org/dl_files/database/db_30_2_text/Occupation%20Data.txt",
+        "interests_url": "https://www.onetcenter.org/dl_files/database/db_30_2_text/Interests.txt",
+        "matched_fields": [
+          "soc_code",
+          "occupation_title_en",
+          "ih_code",
+          "oi_vector"
+        ],
+        "data_date": "02/2026",
+        "domain_source": "Machine Learning/Expert"
+      }
+    },
+    {
+      "major_id": "quan_ly_giao_duc",
+      "major_name_vi": "Quản lý giáo dục",
+      "moet_code": "7140114",
+      "status": "READY_FOR_PROTOTYPE",
+      "soc_code": "11-9032.00",
+      "occupation_title_en": "Education Administrators, Kindergarten through Secondary",
+      "ih_code": "SEC",
+      "oi_vector": [
+        1.31,
+        3.06,
+        2.84,
+        5.72,
+        5.34,
+        4.68
+      ],
+      "curriculum_evidence": {
+        "institution": "Trường Đại học Giáo dục - ĐHQGHN (UEd-VNU)",
+        "url": "https://education.vnu.edu.vn",
+        "program_name": "Cử nhân Quản lý giáo dục",
+        "url_kind": "INSTITUTION_HOMEPAGE",
+        "verification_status": "HOMEPAGE_ONLY",
+        "verification_note": "URL chỉ trỏ trang chủ; chưa xác minh trực tiếp CTĐT và quan hệ ngành-nghề tại URL này."
+      },
+      "status_reason": "Ánh xạ nhà quản lý cơ sở giáo dục phổ thông K-12.",
+      "onet_evidence": {
+        "version": "30.2",
+        "verification_status": "MATCHED_ONET_30_2",
+        "checked_on": "2026-11-21",
+        "occupation_url": "https://www.onetcenter.org/dl_files/database/db_30_2_text/Occupation%20Data.txt",
+        "interests_url": "https://www.onetcenter.org/dl_files/database/db_30_2_text/Interests.txt",
+        "matched_fields": [
+          "soc_code",
+          "occupation_title_en",
+          "ih_code",
+          "oi_vector"
+        ],
+        "data_date": "02/2026",
+        "domain_source": "Machine Learning/Expert"
+      }
+    },
+    {
+      "major_id": "tam_ly_hoc_giao_duc",
+      "major_name_vi": "Tâm lý học giáo dục",
+      "moet_code": "7310403",
+      "status": "READY_FOR_PROTOTYPE",
+      "soc_code": "19-3034.00",
+      "occupation_title_en": "School Psychologists",
+      "ih_code": "SIC",
+      "oi_vector": [
+        1.0,
+        5.0,
+        3.31,
+        6.77,
+        2.82,
+        4.01
+      ],
+      "curriculum_evidence": {
+        "institution": "Trường Đại học Sư phạm Hà Nội (HNUE)",
+        "url": "https://hnue.edu.vn",
+        "program_name": "Cử nhân Tâm lý học giáo dục",
+        "url_kind": "INSTITUTION_HOMEPAGE",
+        "verification_status": "HOMEPAGE_ONLY",
+        "verification_note": "URL chỉ trỏ trang chủ; chưa xác minh trực tiếp CTĐT và quan hệ ngành-nghề tại URL này."
+      },
+      "status_reason": "Ánh xạ 1-1 chuyên gia tâm lý học đường.",
+      "onet_evidence": {
+        "version": "30.2",
+        "verification_status": "MATCHED_ONET_30_2",
+        "checked_on": "2026-11-21",
+        "occupation_url": "https://www.onetcenter.org/dl_files/database/db_30_2_text/Occupation%20Data.txt",
+        "interests_url": "https://www.onetcenter.org/dl_files/database/db_30_2_text/Interests.txt",
+        "matched_fields": [
+          "soc_code",
+          "occupation_title_en",
+          "ih_code",
+          "oi_vector"
+        ],
+        "data_date": "02/2026",
+        "domain_source": "Machine Learning/Expert"
+      }
+    },
+    {
+      "major_id": "ky_thuat_phan_mem",
+      "major_name_vi": "Kỹ thuật phần mềm",
+      "moet_code": "7480103",
+      "status": "READY_FOR_PROTOTYPE",
+      "soc_code": "15-1252.00",
+      "occupation_title_en": "Software Developers",
+      "ih_code": "IC",
+      "oi_vector": [
+        3.61,
+        6.05,
+        2.37,
+        1.81,
+        1.87,
+        5.62
+      ],
+      "curriculum_evidence": {
+        "institution": "Trường Đại học Công nghệ - ĐHQGHN (VNU-UET)",
+        "url": "https://uet.vnu.edu.vn",
+        "program_name": "Kỹ sư Kỹ thuật phần mềm",
+        "url_kind": "INSTITUTION_HOMEPAGE",
+        "verification_status": "HOMEPAGE_ONLY",
+        "verification_note": "URL chỉ trỏ trang chủ; chưa xác minh trực tiếp CTĐT và quan hệ ngành-nghề tại URL này."
+      },
+      "status_reason": "Nghề phát triển phần mềm chuẩn O*NET.",
+      "onet_evidence": {
+        "version": "30.2",
+        "verification_status": "MATCHED_ONET_30_2",
+        "checked_on": "2026-11-21",
+        "occupation_url": "https://www.onetcenter.org/dl_files/database/db_30_2_text/Occupation%20Data.txt",
+        "interests_url": "https://www.onetcenter.org/dl_files/database/db_30_2_text/Interests.txt",
+        "matched_fields": [
+          "soc_code",
+          "occupation_title_en",
+          "ih_code",
+          "oi_vector"
+        ],
+        "data_date": "02/2026",
+        "domain_source": "Machine Learning/Expert"
+      }
+    },
+    {
+      "major_id": "kinh_te",
+      "major_name_vi": "Kinh tế",
+      "moet_code": "7310101",
+      "status": "READY_FOR_PROTOTYPE",
+      "soc_code": "13-1161.00",
+      "occupation_title_en": "Market Research Analysts and Marketing Specialists",
+      "ih_code": "ECI",
+      "oi_vector": [
+        1.08,
+        4.6,
+        2.56,
+        2.47,
+        5.52,
+        4.62
+      ],
+      "curriculum_evidence": {
+        "institution": "Trường Đại học Kinh tế Quốc dân (NEU)",
+        "url": "https://neu.edu.vn",
+        "program_name": "Cử nhân Kinh tế học",
+        "url_kind": "INSTITUTION_HOMEPAGE",
+        "verification_status": "HOMEPAGE_ONLY",
+        "verification_note": "URL chỉ trỏ trang chủ; chưa xác minh trực tiếp CTĐT và quan hệ ngành-nghề tại URL này."
+      },
+      "status_reason": "Ánh xạ chuyên viên phân tích thị trường & kinh tế ứng dụng.",
+      "onet_evidence": {
+        "version": "30.2",
+        "verification_status": "MATCHED_ONET_30_2",
+        "checked_on": "2026-11-21",
+        "occupation_url": "https://www.onetcenter.org/dl_files/database/db_30_2_text/Occupation%20Data.txt",
+        "interests_url": "https://www.onetcenter.org/dl_files/database/db_30_2_text/Interests.txt",
+        "matched_fields": [
+          "soc_code",
+          "occupation_title_en",
+          "ih_code",
+          "oi_vector"
+        ],
+        "data_date": "02/2026",
+        "domain_source": "Machine Learning/Expert"
+      }
+    },
+    {
+      "major_id": "quan_tri_kinh_doanh",
+      "major_name_vi": "Quản trị kinh doanh",
+      "moet_code": "7340101",
+      "status": "READY_FOR_PROTOTYPE",
+      "soc_code": "11-1021.00",
+      "occupation_title_en": "General and Operations Managers",
+      "ih_code": "EC",
+      "oi_vector": [
+        2.2,
+        2.37,
+        1.29,
+        3.38,
+        7.0,
+        5.34
+      ],
+      "curriculum_evidence": {
+        "institution": "Trường Đại học Kinh tế Quốc dân (NEU)",
+        "url": "https://neu.edu.vn",
+        "program_name": "Cử nhân Quản trị kinh doanh",
+        "url_kind": "INSTITUTION_HOMEPAGE",
+        "verification_status": "HOMEPAGE_ONLY",
+        "verification_note": "URL chỉ trỏ trang chủ; chưa xác minh trực tiếp CTĐT và quan hệ ngành-nghề tại URL này."
+      },
+      "status_reason": "Ánh xạ nhà quản lý điều hành doanh nghiệp tổng quát.",
+      "onet_evidence": {
+        "version": "30.2",
+        "verification_status": "MATCHED_ONET_30_2",
+        "checked_on": "2026-11-21",
+        "occupation_url": "https://www.onetcenter.org/dl_files/database/db_30_2_text/Occupation%20Data.txt",
+        "interests_url": "https://www.onetcenter.org/dl_files/database/db_30_2_text/Interests.txt",
+        "matched_fields": [
+          "soc_code",
+          "occupation_title_en",
+          "ih_code",
+          "oi_vector"
+        ],
+        "data_date": "02/2026",
+        "domain_source": "Machine Learning/Expert"
+      }
+    },
+    {
+      "major_id": "ke_toan",
+      "major_name_vi": "Kế toán",
+      "moet_code": "7340301",
+      "status": "READY_FOR_PROTOTYPE",
+      "soc_code": "13-2011.00",
+      "occupation_title_en": "Accountants and Auditors",
+      "ih_code": "CEI",
+      "oi_vector": [
+        1.14,
+        3.57,
+        1.08,
+        2.13,
+        3.87,
+        7.0
+      ],
+      "curriculum_evidence": {
+        "institution": "Học viện Tài chính (AOF)",
+        "url": "https://hvtc.edu.vn",
+        "program_name": "Cử nhân Kế toán doanh nghiệp",
+        "url_kind": "INSTITUTION_HOMEPAGE",
+        "verification_status": "HOMEPAGE_ONLY",
+        "verification_note": "URL chỉ trỏ trang chủ; chưa xác minh trực tiếp CTĐT và quan hệ ngành-nghề tại URL này."
+      },
+      "status_reason": "Ánh xạ 1-1 chuyên viên kế toán và kiểm toán.",
+      "onet_evidence": {
+        "version": "30.2",
+        "verification_status": "MATCHED_ONET_30_2",
+        "checked_on": "2026-11-21",
+        "occupation_url": "https://www.onetcenter.org/dl_files/database/db_30_2_text/Occupation%20Data.txt",
+        "interests_url": "https://www.onetcenter.org/dl_files/database/db_30_2_text/Interests.txt",
+        "matched_fields": [
+          "soc_code",
+          "occupation_title_en",
+          "ih_code",
+          "oi_vector"
+        ],
+        "data_date": "02/2026",
+        "domain_source": "Machine Learning/Expert"
+      }
+    },
+    {
+      "major_id": "tai_chinh_ngan_hang",
+      "major_name_vi": "Tài chính - Ngân hàng",
+      "moet_code": "7340201",
+      "status": "READY_FOR_PROTOTYPE",
+      "soc_code": "13-2051.00",
+      "occupation_title_en": "Financial and Investment Analysts",
+      "ih_code": "CEI",
+      "oi_vector": [
+        1.0,
+        5.06,
+        1.78,
+        2.25,
+        5.09,
+        5.54
+      ],
+      "curriculum_evidence": {
+        "institution": "Học viện Ngân hàng (BAV)",
+        "url": "https://hvnh.edu.vn",
+        "program_name": "Cử nhân Tài chính - Ngân hàng",
+        "url_kind": "INSTITUTION_HOMEPAGE",
+        "verification_status": "HOMEPAGE_ONLY",
+        "verification_note": "URL chỉ trỏ trang chủ; chưa xác minh trực tiếp CTĐT và quan hệ ngành-nghề tại URL này."
+      },
+      "status_reason": "Ánh xạ chuyên viên phân tích tài chính và đầu tư.",
+      "onet_evidence": {
+        "version": "30.2",
+        "verification_status": "MATCHED_ONET_30_2",
+        "checked_on": "2026-11-21",
+        "occupation_url": "https://www.onetcenter.org/dl_files/database/db_30_2_text/Occupation%20Data.txt",
+        "interests_url": "https://www.onetcenter.org/dl_files/database/db_30_2_text/Interests.txt",
+        "matched_fields": [
+          "soc_code",
+          "occupation_title_en",
+          "ih_code",
+          "oi_vector"
+        ],
+        "data_date": "11/2023",
+        "domain_source": "Machine Learning"
+      }
+    },
+    {
+      "major_id": "quan_tri_khach_san",
+      "major_name_vi": "Quản trị khách sạn",
+      "moet_code": "7810201",
+      "status": "READY_FOR_PROTOTYPE",
+      "soc_code": "11-9081.00",
+      "occupation_title_en": "Lodging Managers",
+      "ih_code": "ECS",
+      "oi_vector": [
+        2.69,
+        1.1,
+        1.43,
+        4.31,
+        6.21,
+        5.22
+      ],
+      "curriculum_evidence": {
+        "institution": "Trường Đại học Kinh tế Quốc dân (NEU)",
+        "url": "https://neu.edu.vn",
+        "program_name": "Cử nhân Quản trị khách sạn",
+        "url_kind": "INSTITUTION_HOMEPAGE",
+        "verification_status": "HOMEPAGE_ONLY",
+        "verification_note": "URL chỉ trỏ trang chủ; chưa xác minh trực tiếp CTĐT và quan hệ ngành-nghề tại URL này."
+      },
+      "status_reason": "Ánh xạ 1-1 nhà quản lý cơ sở lưu trú và khách sạn.",
+      "onet_evidence": {
+        "version": "30.2",
+        "verification_status": "MATCHED_ONET_30_2",
+        "checked_on": "2026-11-21",
+        "occupation_url": "https://www.onetcenter.org/dl_files/database/db_30_2_text/Occupation%20Data.txt",
+        "interests_url": "https://www.onetcenter.org/dl_files/database/db_30_2_text/Interests.txt",
+        "matched_fields": [
+          "soc_code",
+          "occupation_title_en",
+          "ih_code",
+          "oi_vector"
+        ],
+        "data_date": "02/2026",
+        "domain_source": "Machine Learning/Expert"
+      }
+    },
+    {
+      "major_id": "ngon_ngu_anh",
+      "major_name_vi": "Ngôn ngữ Anh",
+      "moet_code": "7220201",
+      "status": "READY_FOR_PROTOTYPE",
+      "soc_code": "27-3091.00",
+      "occupation_title_en": "Interpreters and Translators",
+      "ih_code": "CAS",
+      "oi_vector": [
+        1.89,
+        3.19,
+        4.28,
+        3.48,
+        1.9,
+        4.79
+      ],
+      "curriculum_evidence": {
+        "institution": "Trường Đại học Ngoại ngữ - ĐHQGHN (ULIS)",
+        "url": "https://ulis.vnu.edu.vn",
+        "program_name": "Cử nhân Ngôn ngữ Anh",
+        "url_kind": "INSTITUTION_HOMEPAGE",
+        "verification_status": "HOMEPAGE_ONLY",
+        "verification_note": "URL chỉ trỏ trang chủ; chưa xác minh trực tiếp CTĐT và quan hệ ngành-nghề tại URL này."
+      },
+      "status_reason": "Ánh xạ chuyên viên biên phiên dịch.",
+      "onet_evidence": {
+        "version": "30.2",
+        "verification_status": "MATCHED_ONET_30_2",
+        "checked_on": "2026-11-21",
+        "occupation_url": "https://www.onetcenter.org/dl_files/database/db_30_2_text/Occupation%20Data.txt",
+        "interests_url": "https://www.onetcenter.org/dl_files/database/db_30_2_text/Interests.txt",
+        "matched_fields": [
+          "soc_code",
+          "occupation_title_en",
+          "ih_code",
+          "oi_vector"
+        ],
+        "data_date": "02/2026",
+        "domain_source": "Machine Learning/Expert"
+      }
+    },
+    {
+      "major_id": "van_hoc",
+      "major_name_vi": "Văn học",
+      "moet_code": "7229030",
+      "status": "READY_FOR_PROTOTYPE",
+      "soc_code": "27-3041.00",
+      "occupation_title_en": "Editors",
+      "ih_code": "ACE",
+      "oi_vector": [
+        1.03,
+        2.9,
+        5.39,
+        2.56,
+        4.13,
+        4.68
+      ],
+      "curriculum_evidence": {
+        "institution": "Trường ĐHKHXH&NV - ĐHQGHN (USSH)",
+        "url": "https://ussh.vnu.edu.vn",
+        "program_name": "Cử nhân Văn học",
+        "url_kind": "INSTITUTION_HOMEPAGE",
+        "verification_status": "HOMEPAGE_ONLY",
+        "verification_note": "URL chỉ trỏ trang chủ; chưa xác minh trực tiếp CTĐT và quan hệ ngành-nghề tại URL này."
+      },
+      "status_reason": "Ánh xạ biên tập viên xuất bản và báo chí.",
+      "onet_evidence": {
+        "version": "30.2",
+        "verification_status": "MATCHED_ONET_30_2",
+        "checked_on": "2026-11-21",
+        "occupation_url": "https://www.onetcenter.org/dl_files/database/db_30_2_text/Occupation%20Data.txt",
+        "interests_url": "https://www.onetcenter.org/dl_files/database/db_30_2_text/Interests.txt",
+        "matched_fields": [
+          "soc_code",
+          "occupation_title_en",
+          "ih_code",
+          "oi_vector"
+        ],
+        "data_date": "02/2026",
+        "domain_source": "Machine Learning/Expert"
+      }
+    },
+    {
+      "major_id": "luat",
+      "major_name_vi": "Luật",
+      "moet_code": "7380101",
+      "status": "READY_FOR_PROTOTYPE",
+      "soc_code": "23-1011.00",
+      "occupation_title_en": "Lawyers",
+      "ih_code": "ECI",
+      "oi_vector": [
+        1.12,
+        4.38,
+        2.4,
+        3.48,
+        5.51,
+        4.59
+      ],
+      "curriculum_evidence": {
+        "institution": "Trường Đại học Luật Hà Nội (HLU)",
+        "url": "https://hlu.edu.vn",
+        "program_name": "Cử nhân Luật học",
+        "url_kind": "INSTITUTION_HOMEPAGE",
+        "verification_status": "HOMEPAGE_ONLY",
+        "verification_note": "URL chỉ trỏ trang chủ; chưa xác minh trực tiếp CTĐT và quan hệ ngành-nghề tại URL này."
+      },
+      "status_reason": "Ánh xạ luật sư và chuyên gia tư vấn pháp lý.",
+      "onet_evidence": {
+        "version": "30.2",
+        "verification_status": "MATCHED_ONET_30_2",
+        "checked_on": "2026-11-21",
+        "occupation_url": "https://www.onetcenter.org/dl_files/database/db_30_2_text/Occupation%20Data.txt",
+        "interests_url": "https://www.onetcenter.org/dl_files/database/db_30_2_text/Interests.txt",
+        "matched_fields": [
+          "soc_code",
+          "occupation_title_en",
+          "ih_code",
+          "oi_vector"
+        ],
+        "data_date": "02/2026",
+        "domain_source": "Machine Learning/Expert"
+      }
+    },
+    {
+      "major_id": "cong_nghe_ky_thuat_xay_dung",
+      "major_name_vi": "Công nghệ kỹ thuật xây dựng",
+      "moet_code": "7510103",
+      "status": "READY_FOR_PROTOTYPE",
+      "soc_code": "17-2051.00",
+      "occupation_title_en": "Civil Engineers",
+      "ih_code": "RIC",
+      "oi_vector": [
+        6.43,
+        5.15,
+        2.21,
+        1.69,
+        2.66,
+        4.61
+      ],
+      "curriculum_evidence": {
+        "institution": "Trường Đại học Xây dựng Hà Nội (HUCE)",
+        "url": "https://huce.edu.vn",
+        "program_name": "Kỹ sư Kỹ thuật xây dựng",
+        "url_kind": "INSTITUTION_HOMEPAGE",
+        "verification_status": "HOMEPAGE_ONLY",
+        "verification_note": "URL chỉ trỏ trang chủ; chưa xác minh trực tiếp CTĐT và quan hệ ngành-nghề tại URL này."
+      },
+      "status_reason": "Ánh xạ kỹ sư công trình dân dụng.",
+      "onet_evidence": {
+        "version": "30.2",
+        "verification_status": "MATCHED_ONET_30_2",
+        "checked_on": "2026-11-21",
+        "occupation_url": "https://www.onetcenter.org/dl_files/database/db_30_2_text/Occupation%20Data.txt",
+        "interests_url": "https://www.onetcenter.org/dl_files/database/db_30_2_text/Interests.txt",
+        "matched_fields": [
+          "soc_code",
+          "occupation_title_en",
+          "ih_code",
+          "oi_vector"
+        ],
+        "data_date": "02/2026",
+        "domain_source": "Machine Learning/Expert"
+      }
+    },
+    {
+      "major_id": "ky_thuat_dien_tu_vien_thong",
+      "major_name_vi": "Kỹ thuật điện tử - viễn thông",
+      "moet_code": "7520207",
+      "status": "READY_FOR_PROTOTYPE",
+      "soc_code": "17-2072.00",
+      "occupation_title_en": "Electronics Engineers, Except Computer",
+      "ih_code": "RIC",
+      "oi_vector": [
+        6.24,
+        5.81,
+        2.03,
+        1.59,
+        1.62,
+        4.68
+      ],
+      "curriculum_evidence": {
+        "institution": "Đại học Bách khoa Hà Nội (HUST)",
+        "url": "https://hust.edu.vn",
+        "program_name": "Kỹ sư Kỹ thuật Điện tử - Viễn thông",
+        "url_kind": "INSTITUTION_HOMEPAGE",
+        "verification_status": "HOMEPAGE_ONLY",
+        "verification_note": "URL chỉ trỏ trang chủ; chưa xác minh trực tiếp CTĐT và quan hệ ngành-nghề tại URL này."
+      },
+      "status_reason": "Ánh xạ kỹ sư điện tử ngoài máy tính.",
+      "onet_evidence": {
+        "version": "30.2",
+        "verification_status": "MATCHED_ONET_30_2",
+        "checked_on": "2026-11-21",
+        "occupation_url": "https://www.onetcenter.org/dl_files/database/db_30_2_text/Occupation%20Data.txt",
+        "interests_url": "https://www.onetcenter.org/dl_files/database/db_30_2_text/Interests.txt",
+        "matched_fields": [
+          "soc_code",
+          "occupation_title_en",
+          "ih_code",
+          "oi_vector"
+        ],
+        "data_date": "02/2026",
+        "domain_source": "Machine Learning/Expert"
+      }
+    },
+    {
+      "major_id": "ky_thuat_dien",
+      "major_name_vi": "Kỹ thuật điện",
+      "moet_code": "7520201",
+      "status": "READY_FOR_PROTOTYPE",
+      "soc_code": "17-2071.00",
+      "occupation_title_en": "Electrical Engineers",
+      "ih_code": "RIC",
+      "oi_vector": [
+        6.02,
+        5.45,
+        2.12,
+        1.72,
+        2.44,
+        4.43
+      ],
+      "curriculum_evidence": {
+        "institution": "Đại học Bách khoa Hà Nội (HUST)",
+        "url": "https://hust.edu.vn",
+        "program_name": "Kỹ sư Kỹ thuật Điện",
+        "url_kind": "INSTITUTION_HOMEPAGE",
+        "verification_status": "HOMEPAGE_ONLY",
+        "verification_note": "URL chỉ trỏ trang chủ; chưa xác minh trực tiếp CTĐT và quan hệ ngành-nghề tại URL này."
+      },
+      "status_reason": "Ánh xạ kỹ sư điện lực và hệ thống điện.",
+      "onet_evidence": {
+        "version": "30.2",
+        "verification_status": "MATCHED_ONET_30_2",
+        "checked_on": "2026-11-21",
+        "occupation_url": "https://www.onetcenter.org/dl_files/database/db_30_2_text/Occupation%20Data.txt",
+        "interests_url": "https://www.onetcenter.org/dl_files/database/db_30_2_text/Interests.txt",
+        "matched_fields": [
+          "soc_code",
+          "occupation_title_en",
+          "ih_code",
+          "oi_vector"
+        ],
+        "data_date": "02/2026",
+        "domain_source": "Machine Learning/Expert"
+      }
+    },
+    {
+      "major_id": "cong_nghe_ky_thuat_hoa_hoc",
+      "major_name_vi": "Công nghệ kỹ thuật hóa học",
+      "moet_code": "7510401",
+      "status": "READY_FOR_PROTOTYPE",
+      "soc_code": "17-2041.00",
+      "occupation_title_en": "Chemical Engineers",
+      "ih_code": "RIC",
+      "oi_vector": [
+        6.27,
+        5.75,
+        1.8,
+        1.02,
+        1.85,
+        4.54
+      ],
+      "curriculum_evidence": {
+        "institution": "Đại học Bách khoa Hà Nội (HUST)",
+        "url": "https://hust.edu.vn",
+        "program_name": "Kỹ sư Kỹ thuật Hóa học",
+        "url_kind": "INSTITUTION_HOMEPAGE",
+        "verification_status": "HOMEPAGE_ONLY",
+        "verification_note": "URL chỉ trỏ trang chủ; chưa xác minh trực tiếp CTĐT và quan hệ ngành-nghề tại URL này."
+      },
+      "status_reason": "Ánh xạ kỹ sư công nghệ hóa chất.",
+      "onet_evidence": {
+        "version": "30.2",
+        "verification_status": "MATCHED_ONET_30_2",
+        "checked_on": "2026-11-21",
+        "occupation_url": "https://www.onetcenter.org/dl_files/database/db_30_2_text/Occupation%20Data.txt",
+        "interests_url": "https://www.onetcenter.org/dl_files/database/db_30_2_text/Interests.txt",
+        "matched_fields": [
+          "soc_code",
+          "occupation_title_en",
+          "ih_code",
+          "oi_vector"
+        ],
+        "data_date": "02/2026",
+        "domain_source": "Machine Learning/Expert"
+      }
+    },
+    {
+      "major_id": "toan_hoc",
+      "major_name_vi": "Toán học",
+      "moet_code": "7460101",
+      "status": "READY_FOR_PROTOTYPE",
+      "soc_code": "15-2021.00",
+      "occupation_title_en": "Mathematicians",
+      "ih_code": "IC",
+      "oi_vector": [
+        3.22,
+        7.0,
+        3.23,
+        1.95,
+        1.11,
+        5.03
+      ],
+      "curriculum_evidence": {
+        "institution": "Trường Đại học Khoa học Tự nhiên - ĐHQGHN (HUS)",
+        "url": "https://hus.vnu.edu.vn",
+        "program_name": "Cử nhân Toán học",
+        "url_kind": "INSTITUTION_HOMEPAGE",
+        "verification_status": "HOMEPAGE_ONLY",
+        "verification_note": "URL chỉ trỏ trang chủ; chưa xác minh trực tiếp CTĐT và quan hệ ngành-nghề tại URL này."
+      },
+      "status_reason": "Ánh xạ nhà toán học nghiên cứu và ứng dụng.",
+      "onet_evidence": {
+        "version": "30.2",
+        "verification_status": "MATCHED_ONET_30_2",
+        "checked_on": "2026-11-21",
+        "occupation_url": "https://www.onetcenter.org/dl_files/database/db_30_2_text/Occupation%20Data.txt",
+        "interests_url": "https://www.onetcenter.org/dl_files/database/db_30_2_text/Interests.txt",
+        "matched_fields": [
+          "soc_code",
+          "occupation_title_en",
+          "ih_code",
+          "oi_vector"
+        ],
+        "data_date": "02/2026",
+        "domain_source": "Machine Learning/Expert"
+      }
+    },
+    {
+      "major_id": "nong_hoc",
+      "major_name_vi": "Nông học",
+      "moet_code": "7620109",
+      "status": "READY_FOR_PROTOTYPE",
+      "soc_code": "19-1013.00",
+      "occupation_title_en": "Soil and Plant Scientists",
+      "ih_code": "IR",
+      "oi_vector": [
+        6.43,
+        6.71,
+        2.11,
+        1.67,
+        1.71,
+        3.41
+      ],
+      "curriculum_evidence": {
+        "institution": "Học viện Nông nghiệp Việt Nam (VNUA)",
+        "url": "https://vnua.edu.vn",
+        "program_name": "Kỹ sư Nông học",
+        "url_kind": "INSTITUTION_HOMEPAGE",
+        "verification_status": "HOMEPAGE_ONLY",
+        "verification_note": "URL chỉ trỏ trang chủ; chưa xác minh trực tiếp CTĐT và quan hệ ngành-nghề tại URL này."
+      },
+      "status_reason": "Ánh xạ nhà khoa học thổ nhưỡng và cây trồng.",
+      "onet_evidence": {
+        "version": "30.2",
+        "verification_status": "MATCHED_ONET_30_2",
+        "checked_on": "2026-11-21",
+        "occupation_url": "https://www.onetcenter.org/dl_files/database/db_30_2_text/Occupation%20Data.txt",
+        "interests_url": "https://www.onetcenter.org/dl_files/database/db_30_2_text/Interests.txt",
+        "matched_fields": [
+          "soc_code",
+          "occupation_title_en",
+          "ih_code",
+          "oi_vector"
+        ],
+        "data_date": "02/2026",
+        "domain_source": "Machine Learning/Expert"
+      }
+    },
+    {
+      "major_id": "quan_ly_dat_dai",
+      "major_name_vi": "Quản lý đất đai",
+      "moet_code": "7850103",
+      "status": "READY_FOR_PROTOTYPE",
+      "soc_code": "17-1022.00",
+      "occupation_title_en": "Surveyors",
+      "ih_code": "CRI",
+      "oi_vector": [
+        5.25,
+        4.73,
+        2.12,
+        1.63,
+        1.88,
+        5.29
+      ],
+      "curriculum_evidence": {
+        "institution": "Trường ĐH Tài nguyên và Môi trường Hà Nội (HUNRE)",
+        "url": "https://hunre.edu.vn",
+        "program_name": "Kỹ sư Quản lý đất đai",
+        "url_kind": "INSTITUTION_HOMEPAGE",
+        "verification_status": "HOMEPAGE_ONLY",
+        "verification_note": "URL chỉ trỏ trang chủ; chưa xác minh trực tiếp CTĐT và quan hệ ngành-nghề tại URL này."
+      },
+      "status_reason": "Ánh xạ chuyên gia đo đạc địa chính và trắc địa.",
+      "onet_evidence": {
+        "version": "30.2",
+        "verification_status": "MATCHED_ONET_30_2",
+        "checked_on": "2026-11-21",
+        "occupation_url": "https://www.onetcenter.org/dl_files/database/db_30_2_text/Occupation%20Data.txt",
+        "interests_url": "https://www.onetcenter.org/dl_files/database/db_30_2_text/Interests.txt",
+        "matched_fields": [
+          "soc_code",
+          "occupation_title_en",
+          "ih_code",
+          "oi_vector"
+        ],
+        "data_date": "02/2026",
+        "domain_source": "Machine Learning/Expert"
+      }
+    },
+    {
+      "major_id": "cong_tac_xa_hoi",
+      "major_name_vi": "Công tác xã hội",
+      "moet_code": "7760101",
+      "status": "READY_FOR_PROTOTYPE",
+      "soc_code": "21-1021.00",
+      "occupation_title_en": "Child, Family, and School Social Workers",
+      "ih_code": "S",
+      "oi_vector": [
+        1.7,
+        3.32,
+        2.9,
+        6.85,
+        2.94,
+        3.57
+      ],
+      "curriculum_evidence": {
+        "institution": "Trường ĐHKHXH&NV - ĐHQGHN (USSH)",
+        "url": "https://ussh.vnu.edu.vn",
+        "program_name": "Cử nhân Công tác xã hội",
+        "url_kind": "INSTITUTION_HOMEPAGE",
+        "verification_status": "HOMEPAGE_ONLY",
+        "verification_note": "URL chỉ trỏ trang chủ; chưa xác minh trực tiếp CTĐT và quan hệ ngành-nghề tại URL này."
+      },
+      "status_reason": "Ánh xạ nhân viên công tác xã hội trẻ em, gia đình và học đường.",
+      "onet_evidence": {
+        "version": "30.2",
+        "verification_status": "MATCHED_ONET_30_2",
+        "checked_on": "2026-11-21",
+        "occupation_url": "https://www.onetcenter.org/dl_files/database/db_30_2_text/Occupation%20Data.txt",
+        "interests_url": "https://www.onetcenter.org/dl_files/database/db_30_2_text/Interests.txt",
+        "matched_fields": [
+          "soc_code",
+          "occupation_title_en",
+          "ih_code",
+          "oi_vector"
+        ],
+        "data_date": "02/2026",
+        "domain_source": "Machine Learning/Expert"
+      }
+    },
+    {
+      "major_id": "su_pham_ngu_van",
+      "major_name_vi": "Sư phạm Ngữ văn",
+      "moet_code": "7140217",
+      "status": "CONDITIONAL",
+      "soc_code": "25-2031.00",
+      "occupation_title_en": "Secondary School Teachers, Except Special and Career/Technical Education",
+      "ih_code": "SA",
+      "oi_vector": [
+        2.73,
+        3.19,
+        3.77,
+        7.0,
+        2.9,
+        3.61
+      ],
+      "curriculum_evidence": {
+        "institution": "Trường Đại học Sư phạm Hà Nội (HNUE)",
+        "url": "https://hnue.edu.vn",
+        "program_name": "Cử nhân Sư phạm Ngữ văn"
+      },
+      "status_reason": "Trùng SOC 25-2031.00 và vector OI với 6 ngành sư phạm trung học khác."
+    },
+    {
+      "major_id": "su_pham_dia_ly",
+      "major_name_vi": "Sư phạm Địa lý",
+      "moet_code": "7140219",
+      "status": "CONDITIONAL",
+      "soc_code": "25-2031.00",
+      "occupation_title_en": "Secondary School Teachers, Except Special and Career/Technical Education",
+      "ih_code": "SA",
+      "oi_vector": [
+        2.73,
+        3.19,
+        3.77,
+        7.0,
+        2.9,
+        3.61
+      ],
+      "curriculum_evidence": {
+        "institution": "Trường Đại học Sư phạm Hà Nội (HNUE)",
+        "url": "https://hnue.edu.vn",
+        "program_name": "Cử nhân Sư phạm Địa lý"
+      },
+      "status_reason": "Trùng SOC 25-2031.00 và vector OI với 6 ngành sư phạm trung học khác."
+    },
+    {
+      "major_id": "su_pham_hoa_hoc",
+      "major_name_vi": "Sư phạm Hóa học",
+      "moet_code": "7140212",
+      "status": "CONDITIONAL",
+      "soc_code": "25-2031.00",
+      "occupation_title_en": "Secondary School Teachers, Except Special and Career/Technical Education",
+      "ih_code": "SA",
+      "oi_vector": [
+        2.73,
+        3.19,
+        3.77,
+        7.0,
+        2.9,
+        3.61
+      ],
+      "curriculum_evidence": {
+        "institution": "Trường Đại học Sư phạm Hà Nội (HNUE)",
+        "url": "https://hnue.edu.vn",
+        "program_name": "Cử nhân Sư phạm Hóa học"
+      },
+      "status_reason": "Trùng SOC 25-2031.00 và vector OI với 6 ngành sư phạm trung học khác."
+    },
+    {
+      "major_id": "su_pham_tin_hoc",
+      "major_name_vi": "Sư phạm Tin học",
+      "moet_code": "7140210",
+      "status": "CONDITIONAL",
+      "soc_code": "25-2031.00",
+      "occupation_title_en": "Secondary School Teachers, Except Special and Career/Technical Education",
+      "ih_code": "SA",
+      "oi_vector": [
+        2.73,
+        3.19,
+        3.77,
+        7.0,
+        2.9,
+        3.61
+      ],
+      "curriculum_evidence": {
+        "institution": "Trường Đại học Sư phạm Hà Nội (HNUE)",
+        "url": "https://hnue.edu.vn",
+        "program_name": "Cử nhân Sư phạm Tin học"
+      },
+      "status_reason": "Trùng SOC 25-2031.00 và vector OI với 6 ngành sư phạm trung học khác."
+    },
+    {
+      "major_id": "su_pham_toan_hoc",
+      "major_name_vi": "Sư phạm Toán học",
+      "moet_code": "7140209",
+      "status": "CONDITIONAL",
+      "soc_code": "25-2031.00",
+      "occupation_title_en": "Secondary School Teachers, Except Special and Career/Technical Education",
+      "ih_code": "SA",
+      "oi_vector": [
+        2.73,
+        3.19,
+        3.77,
+        7.0,
+        2.9,
+        3.61
+      ],
+      "curriculum_evidence": {
+        "institution": "Trường Đại học Sư phạm Hà Nội (HNUE)",
+        "url": "https://hnue.edu.vn",
+        "program_name": "Cử nhân Sư phạm Toán học"
+      },
+      "status_reason": "Trùng SOC 25-2031.00 và vector OI với 6 ngành sư phạm trung học khác."
+    },
+    {
+      "major_id": "su_pham_tieng_anh",
+      "major_name_vi": "Sư phạm Tiếng Anh",
+      "moet_code": "7140231",
+      "status": "CONDITIONAL",
+      "soc_code": "25-2031.00",
+      "occupation_title_en": "Secondary School Teachers, Except Special and Career/Technical Education",
+      "ih_code": "SA",
+      "oi_vector": [
+        2.73,
+        3.19,
+        3.77,
+        7.0,
+        2.9,
+        3.61
+      ],
+      "curriculum_evidence": {
+        "institution": "Trường Đại học Ngoại ngữ - ĐHQGHN (ULIS)",
+        "url": "https://ulis.vnu.edu.vn",
+        "program_name": "Cử nhân Sư phạm Tiếng Anh"
+      },
+      "status_reason": "Trùng SOC 25-2031.00 và vector OI với 6 ngành sư phạm trung học khác."
+    },
+    {
+      "major_id": "giao_duc_chinh_tri",
+      "major_name_vi": "Giáo dục Chính trị",
+      "moet_code": "7140205",
+      "status": "CONDITIONAL",
+      "soc_code": "25-2031.00",
+      "occupation_title_en": "Secondary School Teachers, Except Special and Career/Technical Education",
+      "ih_code": "SA",
+      "oi_vector": [
+        2.73,
+        3.19,
+        3.77,
+        7.0,
+        2.9,
+        3.61
+      ],
+      "curriculum_evidence": {
+        "institution": "Trường Đại học Sư phạm Hà Nội (HNUE)",
+        "url": "https://hnue.edu.vn",
+        "program_name": "Cử nhân Giáo dục Chính trị"
+      },
+      "status_reason": "Trùng SOC 25-2031.00 và vector OI với 6 ngành sư phạm trung học khác."
+    },
+    {
+      "major_id": "cong_nghe_thong_tin",
+      "major_name_vi": "Công nghệ thông tin",
+      "moet_code": "7480201",
+      "status": "CONDITIONAL",
+      "soc_code": "15-1252.00",
+      "occupation_title_en": "Software Developers",
+      "ih_code": "IC",
+      "oi_vector": [
+        3.61,
+        6.05,
+        2.37,
+        1.81,
+        1.87,
+        5.62
+      ],
+      "curriculum_evidence": {
+        "institution": "Trường Đại học Công nghệ - ĐHQGHN (VNU-UET)",
+        "url": "https://uet.vnu.edu.vn",
+        "program_name": "Kỹ sư Công nghệ thông tin"
+      },
+      "status_reason": "Trùng SOC 15-1252.00 với Kỹ thuật phần mềm; cần giải pháp phân tách chuyên ngành."
+    },
+    {
+      "major_id": "dong_phuong_hoc",
+      "major_name_vi": "Đông phương học",
+      "moet_code": "7310608",
+      "status": "CONDITIONAL",
+      "soc_code": "27-3091.00",
+      "occupation_title_en": "Interpreters and Translators",
+      "ih_code": "CAS",
+      "oi_vector": [
+        1.89,
+        3.19,
+        4.28,
+        3.48,
+        1.9,
+        4.79
+      ],
+      "curriculum_evidence": {
+        "institution": "Trường ĐHKHXH&NV - ĐHQGHN (USSH)",
+        "url": "https://ussh.vnu.edu.vn",
+        "program_name": "Cử nhân Đông phương học"
+      },
+      "status_reason": "Trùng SOC 27-3091.00 với Ngôn ngữ Anh; thiên về nghiên cứu khu vực học."
+    },
+    {
+      "major_id": "viet_nam_hoc",
+      "major_name_vi": "Việt Nam học",
+      "moet_code": "7310630",
+      "status": "CONDITIONAL",
+      "soc_code": "39-7011.00",
+      "occupation_title_en": "Tour Guides and Escorts",
+      "ih_code": "EAS",
+      "oi_vector": [
+        2.63,
+        2.47,
+        4.39,
+        4.19,
+        5.64,
+        2.8
+      ],
+      "curriculum_evidence": {
+        "institution": "Trường ĐHKHXH&NV - ĐHQGHN (USSH)",
+        "url": "https://ussh.vnu.edu.vn",
+        "program_name": "Cử nhân Việt Nam học"
+      },
+      "status_reason": "Lệch bản chất học thuật khi ánh xạ sang Hướng dẫn viên du lịch; cần xem xét lại định hướng văn hóa/giảng dạy."
+    },
+    {
+      "major_id": "quan_ly_du_lich_lu_hanh",
+      "major_name_vi": "Quản trị dịch vụ du lịch và lữ hành",
+      "moet_code": "7810103",
+      "status": "UNRESOLVED",
+      "soc_code": null,
+      "occupation_title_en": null,
+      "ih_code": null,
+      "oi_vector": null,
+      "curriculum_evidence": {
+        "institution": "Trường Đại học Kinh tế Quốc dân (NEU)",
+        "url": "https://neu.edu.vn",
+        "program_name": "Cử nhân Quản trị dịch vụ du lịch và lữ hành"
+      },
+      "status_reason": "Bằng chứng cấp C, chưa có mã SOC 1-1 đại diện phù hợp trong O*NET 30.2."
+    },
+    {
+      "major_id": "quan_ly_nha_nuoc",
+      "major_name_vi": "Quản lý nhà nước",
+      "moet_code": "7310205",
+      "status": "UNRESOLVED",
+      "soc_code": null,
+      "occupation_title_en": null,
+      "ih_code": null,
+      "oi_vector": null,
+      "curriculum_evidence": {
+        "institution": "Học viện Hành chính Quốc gia (NAPA)",
+        "url": "https://napa.vn",
+        "program_name": "Cử nhân Quản lý nhà nước"
+      },
+      "status_reason": "Bằng chứng cấp B nhưng phân mảnh giữa 4 SOC không đồng thuận (43-6014.00, 13-1111.00, 19-3094.00, 11-3012.00)."
+    }
+  ]
+}

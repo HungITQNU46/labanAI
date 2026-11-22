@@ -1,28 +1,48 @@
+/**
+ * evaluationController.js
+ *
+ * Controller for Career Evaluation page and ML inference endpoints.
+ * Direction B: RIASEC27 + 6 ML models + Top-3 majors.
+ */
+
+'use strict';
+
 const mongoose = require('mongoose');
-const hollandQuestionStore = require('../services/hollandQuestionService');
-const Admission = require('../models/admModel');
 const KetQuaDanhGia = require('../models/assessResultModel');
 const ChiTietDanhGia = require('../models/assessDetailModel');
+const mlModel = require('../models/mlModel');
+const riasec27Service = require('../services/riasec27Service');
+const { isPreviewEnabled, isLoopbackAddress, isValidLocalhostHost } = require('../middleware/riasec27PreviewGate');
 
-const getEvaluation = async (req, res) => {
-    const [hollandQuestions, admissions] = await Promise.all([
-        hollandQuestionStore.getQuestions(),
-        Admission.find().sort({ maTruong: 1, maNganh: 1 })
-    ]);
-    const serializeForInlineJson = (value) => JSON.stringify(value).replace(/[<>&]/g, (character) => ({
-        '<': '\\u003c',
-        '>': '\\u003e',
-        '&': '\\u0026'
-    })[character]);
+const jsonForHtml = (value) => JSON.stringify(value).replace(/[<>&]/g, (character) => ({
+    '<': '\\u003c', '>': '\\u003e', '&': '\\u0026'
+})[character]);
 
-    res.render('pages/evaluation', {
-        title: 'Đánh giá năng lực & Dự đoán trúng tuyển',
-        questionsData: serializeForInlineJson(hollandQuestions),
-        admissionsData: serializeForInlineJson(admissions.map((admission) => admission.toJSON()))
+const getEvaluation = (req, res) => {
+    res.set('Cache-Control', 'no-store');
+    const remoteIp = req.socket?.remoteAddress || req.connection?.remoteAddress;
+    const isLoopback = isLoopbackAddress(remoteIp);
+    const isValidHost = isValidLocalhostHost(req.headers.host);
+    const isAllowedPreview = isPreviewEnabled() && isLoopback && isValidHost;
+
+    if (isAllowedPreview) {
+        const questionnaire = riasec27Service.getQuestionnaire();
+        return res.render('pages/evaluation', {
+            title: 'Định hướng nghề nghiệp bằng AI',
+            questionnaireData: jsonForHtml(questionnaire),
+            researchStatus: 'RESEARCH_ONLY — TOP3_NOT_VALIDATED',
+            isAllowedPreview: true
+        });
+    }
+
+    return res.render('pages/evaluation', {
+        title: 'Định hướng nghề nghiệp bằng AI',
+        questionnaireData: 'null',
+        researchStatus: 'RESEARCH_ONLY — TOP3_NOT_VALIDATED',
+        isAllowedPreview: false
     });
 };
 
-// Lưu kết quả đánh giá hướng nghiệp và chi tiết 54 câu hỏi vào MongoDB
 const submitEvaluation = async (req, res) => {
     try {
         const userId = req.session?.user?.id;
@@ -31,29 +51,19 @@ const submitEvaluation = async (req, res) => {
         }
 
         const { nganhHoc, tiLe, chiTietDiem } = req.body;
-
         if (!Array.isArray(nganhHoc) || !Array.isArray(tiLe) || nganhHoc.length === 0) {
             return res.status(400).json({ success: false, message: 'Dữ liệu kết quả ngành học và tỷ lệ không hợp lệ.' });
         }
 
-        // Tạo mã ID chuỗi cho KetQuaDanhGia
-        const idKetQua = 'KQ_' + new mongoose.Types.ObjectId().toString();
-        const idChiTiet = 'CT_' + new mongoose.Types.ObjectId().toString();
+        const idKetQua = `KQ_${new mongoose.Types.ObjectId().toString()}`;
+        const idChiTiet = `CT_${new mongoose.Types.ObjectId().toString()}`;
 
-        // 1. Lưu kết quả đề xuất AI vào KetQuaDanhGia
-        const ketQua = await KetQuaDanhGia.create({
+        await KetQuaDanhGia.create({
             _id: idKetQua,
             id_nguoiDung: String(userId),
-            nganhHoc: nganhHoc.map(n => String(n).trim()),
+            nganhHoc: nganhHoc.map((nganh) => String(nganh).trim()),
             tiLe: tiLe.map(Number)
         });
-
-        // 2. Chuẩn bị 54 câu trả lời cho ChiTietDanhGia (mặc định điểm 1 nếu không truyền)
-        const detailData = {
-            _id: idChiTiet,
-            id_ketQua: idKetQua,
-            thoiGian: new Date()
-        };
 
         const fieldKeys = [
             '1tuLap', '2suyNghiThucTe', '3thichNghiMoiTruong', '4vanHanhMayMoc', '5congViecThuCong',
@@ -68,10 +78,15 @@ const submitEvaluation = async (req, res) => {
             '46sapXepToChuc', '47tinhCanTrong', '48chuDaoChinhXac', '49tinhToanSoSach', '50luuTruThongTin',
             '51lapKeHoachCuocSong', '52duKienThuChi', '53lapThoiKhoaBieu', '54lamViecTheoQuyTrinh'
         ];
+        const detailData = {
+            _id: idChiTiet,
+            id_ketQua: idKetQua,
+            thoiGian: new Date()
+        };
 
-        fieldKeys.forEach(key => {
-            detailData[key] = (chiTietDiem && typeof chiTietDiem[key] !== 'undefined') 
-                ? parseInt(chiTietDiem[key], 10) 
+        fieldKeys.forEach((key) => {
+            detailData[key] = chiTietDiem && typeof chiTietDiem[key] !== 'undefined'
+                ? parseInt(chiTietDiem[key], 10)
                 : 3;
         });
 
@@ -88,4 +103,26 @@ const submitEvaluation = async (req, res) => {
     }
 };
 
-module.exports = { getEvaluation, submitEvaluation };
+const getMlStatus = (req, res) => {
+    res.set('Cache-Control', 'no-store');
+    try {
+        res.json(mlModel.getStatus());
+    } catch (error) {
+        res.status(503).json({ available: false, error: 'ML_ARTIFACT_UNAVAILABLE', message: 'Model F54 đã xác minh hiện không khả dụng.' });
+    }
+};
+
+const recommendMajors = (req, res) => {
+    res.set('Cache-Control', 'no-store');
+    try {
+        res.json(mlModel.recommend(req.body));
+    } catch (error) {
+        const invalidInput = error instanceof mlModel.MlInputError;
+        res.status(invalidInput ? 400 : 503).json({
+            error: invalidInput ? 'INVALID_F54_INPUT' : 'ML_ARTIFACT_UNAVAILABLE',
+            message: invalidInput ? error.message : 'Model F54 đã xác minh hiện không khả dụng.'
+        });
+    }
+};
+
+module.exports = { getEvaluation, submitEvaluation, getMlStatus, recommendMajors };

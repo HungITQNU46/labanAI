@@ -1,0 +1,493 @@
+{
+  "descriptions_version": "1.0.0",
+  "phase": "B-09",
+  "created_at_utc": "2026-11-21T07:45:00Z",
+  "status": "DRAFT_READY_FOR_EXPERT_REVIEW",
+  "total_majors": 21,
+  "description": "Bộ mô tả trung lập cho 21 ngành READY_FOR_PROTOTYPE của LabanAI, biên soạn dựa trên bằng chứng chương trình đào tạo đại học chính thức.",
+  "majors": [
+    {
+      "major_id": "giao_duc_tieu_hoc",
+      "major_name_vi": "Giáo dục Tiểu học",
+      "moet_code": "7140202",
+      "hoc_nhung_gi": "Ngành Giáo dục Tiểu học trang bị kiến thức nền tảng về tâm lý học và giáo dục học lứa tuổi học sinh tiểu học (6–11 tuổi). Sinh viên nghiên cứu phương pháp dạy học các môn học cơ bản như Tiếng Việt, Toán, Tự nhiên và Xã hội, cùng kỹ năng tổ chức hoạt động giáo dục toàn diện.",
+      "hoat_dong_hoc_tap": [
+        "Soạn giáo án và thực hành giảng dạy các bài học môn Tiếng Việt và Toán cấp tiểu học.",
+        "Rèn luyện nghiệp vụ viết bảng chữ đẹp và thuyết trình sư phạm trước tập thể.",
+        "Kiến tập và thực tập sư phạm tại các trường tiểu học công lập hoặc tư thục."
+      ],
+      "huong_tim_hieu_tiep": [
+        "Tra cứu khung chương trình giáo dục phổ thông 2018 cấp tiểu học trên cổng Bộ Giáo dục và Đào tạo.",
+        "Xem đề cương chi tiết học phần Phương pháp dạy học Tiểu học trên website khoa Sư phạm."
+      ],
+      "nguon_va_gioi_han": {
+        "co_so_dao_tao": "Trường Đại học Sư phạm Hà Nội (HNUE)",
+        "nam_ctdt": "2019-2023 (K69)",
+        "url_tham_chieu": "https://tuyensinh.hnue.edu.vn/khungchuongtrinh/354",
+        "muc_do_xac_minh": "VERIFIED_OFFICIAL_DIRECT",
+        "gioi_han_ap_dung": "Chương trình phản ánh cấu trúc đào tạo cử nhân sư phạm tiểu học tại HNUE; các trường sư phạm khác có thể có phân bổ số tín chỉ tự chọn khác nhau."
+      },
+      "draft_status": "DRAFT_EVIDENCE_BACKED"
+    },
+    {
+      "major_id": "giao_duc_mam_non",
+      "major_name_vi": "Giáo dục Mầm non",
+      "moet_code": "7140201",
+      "hoc_nhung_gi": "Ngành Giáo dục Mầm non đào tạo kiến thức về sự phát triển thể chất, ngôn ngữ, nhận thức và cảm xúc của trẻ em từ 0 đến 6 tuổi. Chương trình tập trung vào phương pháp chăm sóc dinh dưỡng, bảo vệ sức khỏe và tổ chức các hoạt động giáo dục vui chơi phù hợp lứa tuổi.",
+      "hoat_dong_hoc_tap": [
+        "Thiết kế và tổ chức các hoạt động vui chơi, kể chuyện và làm quen biểu tượng toán cho trẻ.",
+        "Luyện tập kỹ năng đàn, hát nhạc thiếu nhi và sáng tạo đồ dùng dạy học mầm non.",
+        "Thực tập chăm sóc và điều phối lớp học tại các cơ sở giáo dục mầm non."
+      ],
+      "huong_tim_hieu_tiep": [
+        "Tham khảo chương trình chăm sóc giáo dục mầm non trên cổng thông tin Bộ Giáo dục và Đào tạo.",
+        "Tìm hiểu đề cương các môn dinh dưỡng trẻ em và âm nhạc mầm non của trường sư phạm."
+      ],
+      "nguon_va_gioi_han": {
+        "co_so_dao_tao": "Trường Đại học Sư phạm Hà Nội (HNUE)",
+        "nam_ctdt": "2019-2023 (K69)",
+        "url_tham_chieu": "https://tuyensinh.hnue.edu.vn/khungchuongtrinh/352",
+        "muc_do_xac_minh": "VERIFIED_OFFICIAL_DIRECT",
+        "gioi_han_ap_dung": "Khung chương trình thuộc HNUE tập trung vào trẻ 0-6 tuổi; tỷ trọng học phần nghệ thuật mầm non có thể thay đổi tùy điều kiện từng trường đào tạo."
+      },
+      "draft_status": "DRAFT_EVIDENCE_BACKED"
+    },
+    {
+      "major_id": "quan_ly_giao_duc",
+      "major_name_vi": "Quản lý giáo dục",
+      "moet_code": "7140114",
+      "hoc_nhung_gi": "Ngành Quản lý giáo dục cung cấp hệ thống tri thức về tổ chức, điều hành và giám sát hoạt động của các cơ sở giáo dục từ mầm non đến đại học. Sinh viên học về hoạch định chính sách giáo dục, quản lý nhân sự, kiểm định chất lượng và phân bổ nguồn lực tài chính nhà trường.",
+      "hoat_dong_hoc_tap": [
+        "Phân tích các văn bản quy phạm pháp luật và chính sách phát triển giáo dục.",
+        "Thực hành xây dựng kế hoạch năm học và đề án kiểm định chất lượng trường học.",
+        "Kiến tập công tác tổ chức và quản lý hành chính tại cơ sở giáo dục hoặc phòng Giáo dục và Đào tạo."
+      ],
+      "huong_tim_hieu_tiep": [
+        "Đọc Luật Giáo dục hiện hành để hiểu cấu trúc hệ thống giáo dục quốc dân.",
+        "Xem danh mục môn học về quản trị trường học và kiểm định chất lượng trên website trường."
+      ],
+      "nguon_va_gioi_han": {
+        "co_so_dao_tao": "Trường Đại học Sư phạm Hà Nội (HNUE)",
+        "nam_ctdt": "2021-2025 (K71)",
+        "url_tham_chieu": "https://tuyensinh.hnue.edu.vn/khungchuongtrinh/357",
+        "muc_do_xac_minh": "VERIFIED_OFFICIAL_DIRECT",
+        "gioi_han_ap_dung": "Chương trình HNUE tập trung vào quản lý hệ thống và hành chính giáo dục, không đào tạo kỹ năng giảng dạy môn học văn hóa cụ thể."
+      },
+      "draft_status": "DRAFT_EVIDENCE_BACKED"
+    },
+    {
+      "major_id": "tam_ly_hoc_giao_duc",
+      "major_name_vi": "Tâm lý học giáo dục",
+      "moet_code": "7310403",
+      "hoc_nhung_gi": "Ngành Tâm lý học giáo dục trang bị hiểu biết sâu về quy luật tâm lý học đường, sự hình thành nhân cách và các vấn đề phát triển tâm lý trẻ em. Người học được trang bị kỹ năng đánh giá trắc nghiệm tâm lý, tham vấn học đường và xây dựng biện pháp can thiệp khó khăn tâm lý trong trường học.",
+      "hoat_dong_hoc_tap": [
+        "Sử dụng các công cụ đo lường và thang đo đánh giá tâm lý lứa tuổi học sinh.",
+        "Thực hành đóng vai tình huống tham vấn tâm lý học đường và kỹ năng lắng nghe tích cực.",
+        "Kiến tập hoạt động tại phòng tư vấn tâm lý trường học hoặc trung tâm hỗ trợ phát triển."
+      ],
+      "huong_tim_hieu_tiep": [
+        "Tìm hiểu các bài viết học thuật về sức khỏe tâm thần học đường và tham vấn tâm lý.",
+        "Tra cứu khung chương trình đào tạo của khoa Tâm lý giáo dục tại các trường đại học sư phạm."
+      ],
+      "nguon_va_gioi_han": {
+        "co_so_dao_tao": "Trường Đại học Sư phạm Hà Nội (HNUE)",
+        "nam_ctdt": "2019-2023 (K69)",
+        "url_tham_chieu": "https://tuyensinh.hnue.edu.vn/khungchuongtrinh/339",
+        "muc_do_xac_minh": "VERIFIED_OFFICIAL_DIRECT",
+        "gioi_han_ap_dung": "Đào tạo chuyên biệt về tâm lý học trong môi trường giáo dục; không thay thế chương trình bác sĩ y khoa chuyên khoa tâm thần."
+      },
+      "draft_status": "DRAFT_EVIDENCE_BACKED"
+    },
+    {
+      "major_id": "ky_thuat_phan_mem",
+      "major_name_vi": "Kỹ thuật phần mềm",
+      "moet_code": "7480103",
+      "hoc_nhung_gi": "Ngành Kỹ thuật phần mềm tập trung vào quy trình khoa học để phân tích, thiết kế, xây dựng và kiểm thử các hệ thống phần mềm. Sinh viên được trang bị kiến thức về thuật toán, cơ sở dữ liệu, kiến trúc phần mềm, bảo mật và các mô hình quản lý dự án phần mềm theo tiêu chuẩn công nghiệp.",
+      "hoat_dong_hoc_tap": [
+        "Lập trình ứng dụng web, phần mềm di động hoặc hệ thống phân tán bằng ngôn ngữ hiện đại.",
+        "Thiết kế sơ đồ kiến trúc hệ thống, cơ sở dữ liệu và đặc tả yêu cầu phần mềm.",
+        "Thực hiện viết kiểm thử tự động, đánh giá chất lượng mã nguồn và quản lý phiên bản với Git."
+      ],
+      "huong_tim_hieu_tiep": [
+        "Học các khái niệm cơ bản về lập trình và giải thuật qua các khóa học mở trực tuyến.",
+        "Đọc đề cương các môn Kiến trúc phần mềm và Kiểm thử trên website các trường đại học công nghệ."
+      ],
+      "nguon_va_gioi_han": {
+        "co_so_dao_tao": "Trường Đại học Công nghệ Thông tin - ĐHQG-HCM (UIT)",
+        "nam_ctdt": "2024",
+        "url_tham_chieu": "https://tuyensinh.uit.edu.vn/ky-thuat-phan-mem",
+        "muc_do_xac_minh": "VERIFIED_OFFICIAL_SUMMARY",
+        "gioi_han_ap_dung": "Chương trình UIT nhấn mạnh kỹ nghệ phần mềm và vòng đời dự án; công nghệ và ngôn ngữ cụ thể có thể điều chỉnh theo từng năm học."
+      },
+      "draft_status": "DRAFT_EVIDENCE_BACKED"
+    },
+    {
+      "major_id": "kinh_te",
+      "major_name_vi": "Kinh tế",
+      "moet_code": "7310101",
+      "hoc_nhung_gi": "Ngành Kinh tế nghiên cứu cách thức các cá nhân, doanh nghiệp và chính phủ đưa ra quyết định phân bổ các nguồn lực khan hiếm. Chương trình cung cấp lý thuyết kinh tế vi mô, kinh tế vĩ mô, phương pháp kinh tế lượng và kỹ năng xử lý dữ liệu thống kê để phân tích các hiện tượng kinh tế - xã hội.",
+      "hoat_dong_hoc_tap": [
+        "Xây dựng mô hình hồi quy kinh tế lượng và phân tích dữ liệu chuỗi thời gian bằng phần mềm thống kê.",
+        "Đọc hiểu và đánh giá tác động của các chính sách tiền tệ, tài khóa và thương mại quốc tế.",
+        "Viết báo cáo nghiên cứu thực nghiệm về thị trường lao động hoặc tiêu dùng hộ gia đình."
+      ],
+      "huong_tim_hieu_tiep": [
+        "Đọc các báo cáo kinh tế vĩ mô định kỳ của Tổng cục Thống kê hoặc Ngân hàng Thế giới.",
+        "Tra cứu danh mục môn học Kinh tế lượng và Kinh tế học phát triển trên cổng đào tạo đại học."
+      ],
+      "nguon_va_gioi_han": {
+        "co_so_dao_tao": "Đại học Kinh tế Quốc dân (NEU)",
+        "nam_ctdt": "2018-2022 (K60)",
+        "url_tham_chieu": "https://courses.neu.edu.vn/curriculum/kinh-te-k60-K60.7310101",
+        "muc_do_xac_minh": "VERIFIED_OFFICIAL_DIRECT",
+        "gioi_han_ap_dung": "Khung CTĐT NEU tập trung vào tư duy phân tích chính sách và nghiên cứu kinh tế tổng thể, phân biệt với chuyên ngành quản trị tác nghiệp."
+      },
+      "draft_status": "DRAFT_EVIDENCE_BACKED"
+    },
+    {
+      "major_id": "quan_tri_kinh_doanh",
+      "major_name_vi": "Quản trị kinh doanh",
+      "moet_code": "7340101",
+      "hoc_nhung_gi": "Ngành Quản trị kinh doanh trang bị kiến thức tổng hợp về việc thiết lập, vận hành và phát triển các hoạt động của một tổ chức kinh tế. Sinh viên được học về quản trị chiến lược, quản trị tài chính, nhân sự, chuỗi cung ứng, tiếp thị và kỹ năng ra quyết định trong môi trường cạnh tranh.",
+      "hoat_dong_hoc_tap": [
+        "Phân tích tình huống kinh doanh thực tế (case study) của các doanh nghiệp trong nước và quốc tế.",
+        "Lập kế hoạch kinh doanh, nghiên cứu hành vi khách hàng và xây dựng chiến lược tiếp thị.",
+        "Thực hành mô phỏng điều hành doanh nghiệp và thuyết trình dự án khởi sự kinh doanh."
+      ],
+      "huong_tim_hieu_tiep": [
+        "Tham khảo sách nhập môn Quản trị học để nắm các chức năng hoạch định, tổ chức, lãnh đạo và kiểm tra.",
+        "Xem khung chương trình đào tạo của khoa Quản trị kinh doanh tại các trường đại học kinh tế."
+      ],
+      "nguon_va_gioi_han": {
+        "co_so_dao_tao": "Đại học Kinh tế Quốc dân (NEU)",
+        "nam_ctdt": "2018-2022 (K60)",
+        "url_tham_chieu": "https://courses.neu.edu.vn/curriculum/quan-tri-kinh-doanh-k60-K60.7340101",
+        "muc_do_xac_minh": "VERIFIED_OFFICIAL_DIRECT",
+        "gioi_han_ap_dung": "Chương trình cung cấp kiến thức diện rộng về các mảng kinh doanh; sinh viên thường lựa chọn định hướng chuyên môn sâu ở các năm cuối."
+      },
+      "draft_status": "DRAFT_EVIDENCE_BACKED"
+    },
+    {
+      "major_id": "ke_toan",
+      "major_name_vi": "Kế toán",
+      "moet_code": "7340301",
+      "hoc_nhung_gi": "Ngành Kế toán đào tạo chuyên môn về thu thập, xử lý, kiểm tra và cung cấp thông tin tài chính - kinh tế cho các tổ chức. Người học nắm vững nguyên tắc kế toán tài chính, kế toán quản trị, chuẩn mực kế toán Việt Nam (VAS) và quốc tế (IFRS), cùng quy định pháp luật về thuế.",
+      "hoat_dong_hoc_tap": [
+        "Định khoản kế toán, lập chứng từ và hạch toán các nghiệp vụ kinh tế phát sinh.",
+        "Lập bảng cân đối kế toán, báo cáo kết quả hoạt động kinh doanh và báo cáo lưu chuyển tiền tệ.",
+        "Sử dụng phần mềm kế toán chuyên dụng để tính toán giá thành sản phẩm và lập tờ khai thuế."
+      ],
+      "huong_tim_hieu_tiep": [
+        "Tìm hiểu các chuẩn mực kế toán cơ bản và vai trò của thông tin kế toán đối với doanh nghiệp.",
+        "Xem mô tả học phần Nguyên lý kế toán và Kế toán tài chính trên cổng trường đại học."
+      ],
+      "nguon_va_gioi_han": {
+        "co_so_dao_tao": "Đại học Kinh tế Quốc dân (NEU)",
+        "nam_ctdt": "2018-2022 (K60)",
+        "url_tham_chieu": "https://courses.neu.edu.vn/curriculum/ke-toan-k60-K60.7340301",
+        "muc_do_xac_minh": "VERIFIED_OFFICIAL_DIRECT",
+        "gioi_han_ap_dung": "Khung CTĐT NEU chuẩn hóa theo hệ thống kế toán và thuế Việt Nam; sinh viên cần bổ sung chứng chỉ nghề nghiệp chuyên môn khi hành nghề chuyên biệt."
+      },
+      "draft_status": "DRAFT_EVIDENCE_BACKED"
+    },
+    {
+      "major_id": "tai_chinh_ngan_hang",
+      "major_name_vi": "Tài chính - Ngân hàng",
+      "moet_code": "7340201",
+      "hoc_nhung_gi": "Ngành Tài chính - Ngân hàng cung cấp kiến thức về quản lý dòng tiền, định giá tài sản, hoạt động thị trường vốn và các tổ chức tín dụng. Sinh viên học về tài chính doanh nghiệp, thị trường chứng khoán, nghiệp vụ ngân hàng thương mại và các kỹ thuật quản trị rủi ro tài chính.",
+      "hoat_dong_hoc_tap": [
+        "Thực hành lập mô hình tài chính để định giá cổ phiếu, trái phiếu và thẩm định dự án đầu tư.",
+        "Mô phỏng quy trình thẩm định hồ sơ vay vốn và giải ngân tín dụng tại ngân hàng thương mại.",
+        "Phân tích báo cáo tài chính doanh nghiệp nhằm đánh giá khả năng thanh toán và hiệu quả sinh lời."
+      ],
+      "huong_tim_hieu_tiep": [
+        "Theo dõi các chỉ số tài chính vĩ mô như lãi suất điều hành, tỷ giá và chỉ số thị trường chứng khoán.",
+        "Xem cấu trúc học phần Tài chính tiền tệ và Nghiệp vụ ngân hàng trên website viện đào tạo tài chính."
+      ],
+      "nguon_va_gioi_han": {
+        "co_so_dao_tao": "Đại học Kinh tế Quốc dân (NEU)",
+        "nam_ctdt": "2018-2022 (K60)",
+        "url_tham_chieu": "https://courses.neu.edu.vn/curriculum/tai-chinh-ngan-hang-k60-K60.7340201",
+        "muc_do_xac_minh": "VERIFIED_OFFICIAL_DIRECT",
+        "gioi_han_ap_dung": "Chương trình bao quát cả mảng tài chính doanh nghiệp và ngân hàng; nghiệp vụ thực tế có thể thay đổi theo quy chế nội bộ của từng tổ chức tín dụng."
+      },
+      "draft_status": "DRAFT_EVIDENCE_BACKED"
+    },
+    {
+      "major_id": "quan_tri_khach_san",
+      "major_name_vi": "Quản trị khách sạn",
+      "moet_code": "7810201",
+      "hoc_nhung_gi": "Ngành Quản trị khách sạn trang bị kiến thức và kỹ năng điều hành các hoạt động kinh doanh lưu trú, ẩm thực và dịch vụ giải trí. Sinh viên học về tiêu chuẩn phục vụ quốc tế, quản lý tiền sảnh, quản trị buồng phòng, quản trị ẩm thực (F&B) và tiếp thị dịch vụ khách sạn.",
+      "hoat_dong_hoc_tap": [
+        "Thực hành quy trình đón tiếp khách, làm thủ tục nhận phòng và trả phòng tại phòng mô phỏng tiền sảnh.",
+        "Lập kế hoạch tổ chức sự kiện, tiệc hội nghị (MICE) và tính toán chi phí dịch vụ ẩm thực.",
+        "Kiến tập và thực tập nghề nghiệp trực tiếp tại các cơ sở khách sạn hoặc khu nghỉ dưỡng."
+      ],
+      "huong_tim_hieu_tiep": [
+        "Tìm hiểu tiêu chuẩn xếp hạng sao khách sạn của Cục Du lịch Quốc gia Việt Nam.",
+        "Tra cứu đề cương môn Quản trị tiền sảnh và Quản trị F&B trên trang khoa Du lịch - Khách sạn."
+      ],
+      "nguon_va_gioi_han": {
+        "co_so_dao_tao": "Đại học Kinh tế Quốc dân (NEU)",
+        "nam_ctdt": "2018-2022 (K60)",
+        "url_tham_chieu": "https://courses.neu.edu.vn/curriculum/quan-tri-khach-san-k60-K60.7810201",
+        "muc_do_xac_minh": "VERIFIED_OFFICIAL_DIRECT",
+        "gioi_han_ap_dung": "Khung CTĐT NEU đào tạo quản trị kết hợp nghiệp vụ; đặc thù ngành có thời lượng thực hành hiện trường cao và gắn với tính mùa vụ du lịch."
+      },
+      "draft_status": "DRAFT_EVIDENCE_BACKED"
+    },
+    {
+      "major_id": "ngon_ngu_anh",
+      "major_name_vi": "Ngôn ngữ Anh",
+      "moet_code": "7220201",
+      "hoc_nhung_gi": "Ngành Ngôn ngữ Anh cung cấp tri thức chuyên sâu về ngôn ngữ học tiếng Anh bao gồm ngữ âm, ngữ pháp, ngữ nghĩa và phong cách văn bản. Đồng thời, chương trình đào tạo kỹ năng biên - phiên dịch chuyên nghiệp cùng hiểu biết về văn hóa, lịch sử và xã hội của các quốc gia nói tiếng Anh.",
+      "hoat_dong_hoc_tap": [
+        "Thực hành dịch thuật văn bản học thuật, kinh tế, pháp lý từ tiếng Anh sang tiếng Việt và ngược lại.",
+        "Luyện tập kỹ năng dịch đuổi (consecutive interpreting) và dịch song song trong phòng lab phiên dịch.",
+        "Phân tích tác phẩm văn học và hiện tượng giao tiếp liên văn hóa qua các chuyên đề thảo luận nhóm."
+      ],
+      "huong_tim_hieu_tiep": [
+        "Tìm hiểu sự khác biệt giữa ngành Ngôn ngữ Anh (biên-phiên dịch) và Sư phạm Tiếng Anh.",
+        "Tra cứu danh mục môn Ngữ âm học, Cú pháp học và Lý thuyết dịch trên website trường đại học ngoại ngữ."
+      ],
+      "nguon_va_gioi_han": {
+        "co_so_dao_tao": "Trường Đại học Sư phạm Hà Nội (HNUE)",
+        "nam_ctdt": "2019-2023 (K69)",
+        "url_tham_chieu": "https://tuyensinh.hnue.edu.vn/khungchuongtrinh/347",
+        "muc_do_xac_minh": "VERIFIED_OFFICIAL_DIRECT",
+        "gioi_han_ap_dung": "Chương trình cử nhân Ngôn ngữ Anh (chuyên ngành biên - phiên dịch); không bao gồm khối kiến thức sư phạm và phương pháp giảng dạy tiếng Anh."
+      },
+      "draft_status": "DRAFT_EVIDENCE_BACKED"
+    },
+    {
+      "major_id": "van_hoc",
+      "major_name_vi": "Văn học",
+      "moet_code": "7229030",
+      "hoc_nhung_gi": "Ngành Văn học nghiên cứu lịch sử phát triển, lý luận và các trào lưu tư tưởng văn học dân tộc cũng như văn học thế giới. Sinh viên được rèn luyện phương pháp tiếp cận tác phẩm, phân tích văn bản, lý luận phê bình văn học và kỹ năng sáng tạo văn bản báo chí - xuất bản.",
+      "hoat_dong_hoc_tap": [
+        "Đọc hiểu sâu sắc, giải mã văn bản và phân tích nghệ thuật thi pháp tác phẩm văn chương.",
+        "Viết bài nghiên cứu chuyên đề, tiểu luận phê bình văn học và bài viết truyền thông văn hóa.",
+        "Thực hành biên tập bản thảo, soát lỗi chính tả và tổ chức nội dung tác phẩm xuất bản."
+      ],
+      "huong_tim_hieu_tiep": [
+        "Đọc các công trình lý luận văn học và phê bình văn học cơ bản của các nhà nghiên cứu uy tín.",
+        "Xem chương trình môn Lịch sử văn học Việt Nam và Thi pháp học trên website các khoa Ngữ văn."
+      ],
+      "nguon_va_gioi_han": {
+        "co_so_dao_tao": "Trường Đại học Sư phạm Hà Nội (HNUE)",
+        "nam_ctdt": "2019-2023 (K69)",
+        "url_tham_chieu": "https://tuyensinh.hnue.edu.vn/khungchuongtrinh/334",
+        "muc_do_xac_minh": "VERIFIED_OFFICIAL_DIRECT",
+        "gioi_han_ap_dung": "Chương trình cử nhân nghiên cứu khoa học ngành Văn học; phân biệt với ngành Sư phạm Ngữ văn (mã 7140217) về mục tiêu chuẩn đầu ra."
+      },
+      "draft_status": "DRAFT_EVIDENCE_BACKED"
+    },
+    {
+      "major_id": "luat",
+      "major_name_vi": "Luật",
+      "moet_code": "7380101",
+      "hoc_nhung_gi": "Ngành Luật trang bị kiến thức toàn diện về hệ thống pháp luật quốc gia và các nguyên tắc pháp lý quốc tế. Chương trình đào tạo bao gồm lý luận nhà nước và pháp luật, luật hiến pháp, hành chính, dân sự, hình sự, tố tụng tư pháp cùng phương pháp phân tích quy phạm pháp luật.",
+      "hoat_dong_hoc_tap": [
+        "Tra cứu văn bản pháp luật, nghiên cứu án lệ và phân tích tình huống pháp lý tranh chấp.",
+        "Tham gia diễn án tại phiên tòa giả định với các vai trò kiểm sát viên, luật sư hoặc thẩm phán.",
+        "Soạn thảo văn bản pháp lý, hợp đồng dân sự - thương mại và biên bản làm việc tư pháp."
+      ],
+      "huong_tim_hieu_tiep": [
+        "Tìm hiểu cấu trúc hệ thống văn bản quy phạm pháp luật trên Cổng thông tin điện tử Chính phủ.",
+        "Tra cứu khung chương trình cử nhân luật của các trường đại học luật thành viên Đại học Quốc gia."
+      ],
+      "nguon_va_gioi_han": {
+        "co_so_dao_tao": "Trường Đại học Luật - Đại học Quốc gia Hà Nội (VNU-UL)",
+        "nam_ctdt": "2024",
+        "url_tham_chieu": "https://law.vnu.edu.vn/academics/nganh-luat/",
+        "muc_do_xac_minh": "VERIFIED_OFFICIAL_SUMMARY",
+        "gioi_han_ap_dung": "Chương trình cung cấp bằng Cử nhân Luật nền tảng; người học cần hoàn thành khóa đào tạo nghề tư pháp sau đại học để đủ điều kiện cấp chứng chỉ hành nghề luật sư."
+      },
+      "draft_status": "DRAFT_EVIDENCE_BACKED"
+    },
+    {
+      "major_id": "cong_nghe_ky_thuat_xay_dung",
+      "major_name_vi": "Công nghệ kỹ thuật xây dựng",
+      "moet_code": "7510103",
+      "hoc_nhung_gi": "Ngành Công nghệ kỹ thuật xây dựng đào tạo kiến thức về vật liệu, kết cấu và quy trình thi công các công trình dân dụng, công nghiệp và hạ tầng. Người học nghiên cứu sức bền vật liệu, cơ học kết cấu bê tông cốt thép, kỹ thuật thi công, an toàn lao động và quản lý tiến độ xây dựng.",
+      "hoat_dong_hoc_tap": [
+        "Thực hiện tính toán tải trọng, nội lực và mô hình hóa kết cấu công trình bằng phần mềm kỹ thuật.",
+        "Đọc hiểu bản vẽ thiết kế kiến trúc, lập dự toán kinh phí và kế hoạch thi công xây lắp.",
+        "Thí nghiệm kiểm định cường độ mẫu bê tông cốt thép và khảo sát trắc địa địa hình công trường."
+      ],
+      "huong_tim_hieu_tiep": [
+        "Tìm hiểu các tiêu chuẩn xây dựng quốc gia (TCVN) và quy chuẩn kỹ thuật an toàn công trình.",
+        "Xem đề cương các môn Kết cấu thép, Thi công xây dựng trên trang tuyển sinh trường xây dựng."
+      ],
+      "nguon_va_gioi_han": {
+        "co_so_dao_tao": "Trường Đại học Xây dựng Hà Nội (HUCE)",
+        "nam_ctdt": "2024",
+        "url_tham_chieu": "https://tuyensinh.huce.edu.vn/nganh-cong-nghe-ky-thuat-xay-dung",
+        "muc_do_xac_minh": "VERIFIED_OFFICIAL_SUMMARY",
+        "gioi_han_ap_dung": "Chương trình HUCE nhấn mạnh ứng dụng công nghệ thi công và tổ chức xây lắp thực tế, yêu cầu thực hành ngoài hiện trường công trình."
+      },
+      "draft_status": "DRAFT_EVIDENCE_BACKED"
+    },
+    {
+      "major_id": "ky_thuat_dien_tu_vien_thong",
+      "major_name_vi": "Kỹ thuật điện tử - viễn thông",
+      "moet_code": "7520207",
+      "hoc_nhung_gi": "Ngành Kỹ thuật điện tử - viễn thông trang bị kiến thức về thiết kế mạch điện tử, xử lý tín hiệu thông tin và hệ thống truyền dẫn mạng viễn thông. Chương trình bao gồm lý thuyết vi mạch bán dẫn, lập trình hệ thống nhúng, kỹ thuật truyền thông vô tuyến, mạng dữ liệu và cảm biến thông minh.",
+      "hoat_dong_hoc_tap": [
+        "Thiết kế sơ đồ nguyên lý mạch điện tử và gia công mạch in PCB bằng phần mềm chuyên dụng.",
+        "Lập trình điều khiển vi điều khiển và hệ thống vi xử lý nhúng trong phòng thí nghiệm.",
+        "Đo đạc tham số tần số, dạng sóng tín hiệu và băng thông truyền dẫn bằng máy hiện sóng oscilloscope."
+      ],
+      "huong_tim_hieu_tiep": [
+        "Tìm hiểu các kiến thức nền tảng về linh kiện bán dẫn và nguyên lý sóng điện từ.",
+        "Tra cứu danh mục môn học chương trình ET1 trên cổng trường Điện - Điện tử Đại học Bách khoa Hà Nội."
+      ],
+      "nguon_va_gioi_han": {
+        "co_so_dao_tao": "Trường Điện - Điện tử, Đại học Bách khoa Hà Nội (HUST)",
+        "nam_ctdt": "2024",
+        "url_tham_chieu": "https://seee.hust.edu.vn/vi/dao-tao/et1/",
+        "muc_do_xac_minh": "VERIFIED_OFFICIAL_SUMMARY",
+        "gioi_han_ap_dung": "Chương trình HUST theo chuẩn kiểm định quốc tế AUN-QA, phân chia chuyên sâu vi mạch hoặc viễn thông từ năm thứ ba."
+      },
+      "draft_status": "DRAFT_EVIDENCE_BACKED"
+    },
+    {
+      "major_id": "ky_thuat_dien",
+      "major_name_vi": "Kỹ thuật điện",
+      "moet_code": "7520201",
+      "hoc_nhung_gi": "Ngành Kỹ thuật điện tập trung vào việc nghiên cứu, sản xuất, truyền tải, phân phối và sử dụng an toàn điện năng. Sinh viên học về nguyên lý máy điện, khí cụ điện, mạng lưới điện cao áp, hệ thống bảo vệ rơ-le, điều khiển tự động truyền động điện và tích hợp nguồn năng lượng tái tạo.",
+      "hoat_dong_hoc_tap": [
+        "Vận hành và đo kiểm đặc tính máy biến áp, động cơ điện và máy phát điện trong phòng thí nghiệm.",
+        "Thiết kế mạng điện cung cấp cho nhà máy công nghiệp hoặc khu dân cư bằng phần mềm CAD điện.",
+        "Lập trình điều khiển hệ thống truyền động điện tự động sử dụng thiết bị biến tần và PLC."
+      ],
+      "huong_tim_hieu_tiep": [
+        "Tìm hiểu nguyên lý vận hành của lưới điện quốc gia và các nguồn năng lượng gió, năng lượng mặt trời.",
+        "Xem mô tả học phần Máy điện và Nhà máy điện trên website khoa đào tạo kỹ thuật điện."
+      ],
+      "nguon_va_gioi_han": {
+        "co_so_dao_tao": "Trường Điện - Điện tử, Đại học Bách khoa Hà Nội (HUST)",
+        "nam_ctdt": "2024",
+        "url_tham_chieu": "https://seee.hust.edu.vn/vi/dao-tao/ee1/",
+        "muc_do_xac_minh": "VERIFIED_OFFICIAL_SUMMARY",
+        "gioi_han_ap_dung": "Chương trình EE1 tập trung vào hệ thống điện công suất lớn và thiết bị điện; phân biệt với kỹ thuật điện tử vi mạch hạ áp."
+      },
+      "draft_status": "DRAFT_EVIDENCE_BACKED"
+    },
+    {
+      "major_id": "cong_nghe_ky_thuat_hoa_hoc",
+      "major_name_vi": "Công nghệ kỹ thuật hóa học",
+      "moet_code": "7510401",
+      "hoc_nhung_gi": "Ngành Công nghệ kỹ thuật hóa học nghiên cứu các quá trình chuyển đổi hóa học và sinh học từ nguyên liệu thô thành các sản phẩm công nghiệp hữu ích. Người học tiếp cận kiến thức về động học phản ứng, truyền nhiệt, truyền khối, thiết kế thiết bị công nghệ hóa học và kiểm soát an toàn hóa chất.",
+      "hoat_dong_hoc_tap": [
+        "Thực hiện thí nghiệm tổng hợp hợp chất hữu cơ, vô cơ và phân tích định tính, định lượng chất.",
+        "Tính toán kích thước tháp chưng cất, thiết bị phản ứng và hệ thống trao đổi nhiệt công nghiệp.",
+        "Kiểm tra chất lượng mẫu hóa chất, phân tích sắc ký và kiểm soát chỉ tiêu môi trường chất thải."
+      ],
+      "huong_tim_hieu_tiep": [
+        "Tìm hiểu các quy trình sản xuất hóa chất công nghiệp cơ bản như phân bón, dược phẩm, mỹ phẩm.",
+        "Tra cứu khung chương trình ngành Công nghệ kỹ thuật hóa học trên cổng trường Đại học Khoa học Tự nhiên."
+      ],
+      "nguon_va_gioi_han": {
+        "co_so_dao_tao": "Trường Đại học Khoa học Tự nhiên - ĐHQGHN (VNU-HUS)",
+        "nam_ctdt": "2024",
+        "url_tham_chieu": "https://tuyensinh.hus.vnu.edu.vn/dai-hoc/nganh-hoc/hoa-hoc-va-cong-nghe/cong-nghe-ky-thuat-hoa-hoc",
+        "muc_do_xac_minh": "VERIFIED_OFFICIAL_SUMMARY",
+        "gioi_han_ap_dung": "Chương trình HUS chú trọng quy trình công nghệ và thiết bị sản xuất quy mô công nghiệp; khác biệt với nghiên cứu hóa học lý thuyết thuần túy."
+      },
+      "draft_status": "DRAFT_EVIDENCE_BACKED"
+    },
+    {
+      "major_id": "toan_hoc",
+      "major_name_vi": "Toán học",
+      "moet_code": "7460101",
+      "hoc_nhung_gi": "Ngành Toán học cung cấp hệ thống tri thức toán học nền tảng và phương pháp tư duy suy luận logic chặt chẽ. Nội dung học tập đi sâu vào các cấu trúc giải tích hiện đại, đại số tuyến tính và trừu tượng, hình học, tô-pô, lý thuyết xác suất - thống kê và các phương pháp giải tích số.",
+      "hoat_dong_hoc_tap": [
+        "Nghiên cứu và chứng minh các định lý, mệnh đề toán học thuần túy bằng tư duy suy diễn logic.",
+        "Mô hình hóa các bài toán khoa học thực tế thành hệ phương trình vi phân và giải tích số.",
+        "Sử dụng các phần mềm tính toán toán học như MATLAB, Python hoặc R để mô phỏng thuật toán số."
+      ],
+      "huong_tim_hieu_tiep": [
+        "Đọc các tài liệu toán đại cương bậc đại học như Giải tích cổ điển và Đại số tuyến tính.",
+        "Xem khung chương trình đào tạo của Khoa Toán - Cơ - Tin học tại các trường đại học khoa học tự nhiên."
+      ],
+      "nguon_va_gioi_han": {
+        "co_so_dao_tao": "Trường Đại học Khoa học Tự nhiên - ĐHQGHN (VNU-HUS)",
+        "nam_ctdt": "2024",
+        "url_tham_chieu": "https://tuyensinh.hus.vnu.edu.vn/dai-hoc/nganh-hoc/toan-toan-ung-dung-va-tin-hoc/toan-hoc",
+        "muc_do_xac_minh": "VERIFIED_OFFICIAL_SUMMARY",
+        "gioi_han_ap_dung": "Chương trình đào tạo cử nhân khoa học cơ bản về toán lý thuyết và ứng dụng phương pháp toán; không đào tạo nghiệp vụ sư phạm giảng dạy phổ thông."
+      },
+      "draft_status": "DRAFT_EVIDENCE_BACKED"
+    },
+    {
+      "major_id": "nong_hoc",
+      "major_name_vi": "Nông học",
+      "moet_code": "7620109",
+      "hoc_nhung_gi": "Ngành Nông học nghiên cứu các nguyên lý khoa học về sinh lý cây trồng, đất đai, khí hậu và kỹ thuật sản xuất nông nghiệp bền vững. Chương trình trang bị kiến thức về chọn tạo giống cây trồng, dinh dưỡng khoáng, bảo vệ thực vật, quản lý sâu bệnh hại và ứng dụng công nghệ cao trong nông nghiệp.",
+      "hoat_dong_hoc_tap": [
+        "Tiến hành bố trí thí nghiệm đồng ruộng để theo dõi sinh trưởng và năng suất cây trồng qua các vụ.",
+        "Phân tích độ phì nhiêu của mẫu đất và đánh giá tình trạng thiếu hụt dinh dưỡng của lá cây.",
+        "Nhận diện triệu chứng bệnh hại, sâu hại cây trồng và thực hành biện pháp phòng trừ dịch hại tổng hợp (IPM)."
+      ],
+      "huong_tim_hieu_tiep": [
+        "Tìm hiểu các kỹ thuật nông nghiệp hiện đại như tưới tiết kiệm, nhà màng và canh tác hữu cơ.",
+        "Tra cứu khung chương trình K68 ngành Nông học trên cổng thông tin Học viện Nông nghiệp Việt Nam."
+      ],
+      "nguon_va_gioi_han": {
+        "co_so_dao_tao": "Học viện Nông nghiệp Việt Nam (VNUA)",
+        "nam_ctdt": "2023-2027 (K68)",
+        "url_tham_chieu": "https://file.vnua.edu.vn/data/26/documents/2024/01/26/btvnonghoc/danh-muc-nong-hoc-k68-final.pdf",
+        "muc_do_xac_minh": "VERIFIED_OFFICIAL_DIRECT",
+        "gioi_han_ap_dung": "Khung CTĐT K68 VNUA quy định đào tạo kỹ sư nông học với thời lượng thực nghiệm ngoài đồng ruộng cao và phụ thuộc lịch thời vụ gieo trồng."
+      },
+      "draft_status": "DRAFT_EVIDENCE_BACKED"
+    },
+    {
+      "major_id": "quan_ly_dat_dai",
+      "major_name_vi": "Quản lý đất đai",
+      "moet_code": "7850103",
+      "hoc_nhung_gi": "Ngành Quản lý đất đai trang bị kiến thức tổng hợp về đo đạc địa chính, cơ sở dữ liệu địa lý và quản lý nhà nước về tài nguyên đất đai. Sinh viên học về pháp luật đất đai, trắc địa bản đồ, hệ thống thông tin đất đai (LIS/GIS), quy hoạch sử dụng đất và phương pháp định giá bất động sản.",
+      "hoat_dong_hoc_tap": [
+        "Thực hành sử dụng máy toàn đạc điện tử và thiết bị định vị GNSS để đo đạc ranh giới thửa đất.",
+        "Xây dựng bản đồ địa chính và phân tích dữ liệu không gian bằng phần mềm GIS chuyên dụng.",
+        "Lập hồ sơ cấp giấy chứng nhận quyền sử dụng đất, thẩm định quy hoạch và định giá thửa đất."
+      ],
+      "huong_tim_hieu_tiep": [
+        "Đọc các điểm mới trong Luật Đất đai hiện hành về quyền lợi và nghĩa vụ của người sử dụng đất.",
+        "Xem khung chương trình ngành Quản lý đất đai trên website các trường đại học đào tạo tài nguyên."
+      ],
+      "nguon_va_gioi_han": {
+        "co_so_dao_tao": "Đại học Kinh tế Quốc dân (NEU)",
+        "nam_ctdt": "2018-2022 (K60)",
+        "url_tham_chieu": "https://courses.neu.edu.vn/curriculum/quan-ly-dat-dai-k60-K60.7850103",
+        "muc_do_xac_minh": "VERIFIED_OFFICIAL_DIRECT",
+        "gioi_han_ap_dung": "Chương trình NEU kết hợp quản lý kinh tế - chính sách đất đai với kỹ thuật đo đạc địa chính; tuân thủ khuôn khổ pháp lý đất đai Việt Nam."
+      },
+      "draft_status": "DRAFT_EVIDENCE_BACKED"
+    },
+    {
+      "major_id": "cong_tac_xa_hoi",
+      "major_name_vi": "Công tác xã hội",
+      "moet_code": "7760101",
+      "hoc_nhung_gi": "Ngành Công tác xã hội đào tạo kiến thức và phương pháp chuyên nghiệp nhằm hỗ trợ các cá nhân, nhóm và cộng đồng vượt qua hoàn cảnh khó khăn. Chương trình bao gồm lý thuyết công tác xã hội cá nhân, nhóm, phát triển cộng đồng, chính sách an sinh xã hội, pháp luật bảo vệ quyền con người và tham vấn tâm lý xã hội.",
+      "hoat_dong_hoc_tap": [
+        "Thực hiện thu thập thông tin, đánh giá nhu cầu trợ giúp và lập kế hoạch hỗ trợ thân chủ yếu thế.",
+        "Tổ chức các buổi sinh hoạt nhóm hỗ trợ, kỹ năng sống và hoạt động nâng cao nhận thức cộng đồng.",
+        "Thực tập nghiệp vụ trợ giúp xã hội tại các trung tâm bảo trợ, trường học, bệnh viện hoặc tổ chức xã hội."
+      ],
+      "huong_tim_hieu_tiep": [
+        "Tìm hiểu các chính sách trợ giúp xã hội và mô hình nhân viên công tác xã hội tại bệnh viện, trường học.",
+        "Xem mô tả học phần Công tác xã hội cá nhân và Phát triển cộng đồng trên trang khoa đào tạo."
+      ],
+      "nguon_va_gioi_han": {
+        "co_so_dao_tao": "Trường Đại học Sư phạm Hà Nội (HNUE)",
+        "nam_ctdt": "2019-2023 (K69)",
+        "url_tham_chieu": "https://tuyensinh.hnue.edu.vn/khungchuongtrinh/358",
+        "muc_do_xac_minh": "VERIFIED_OFFICIAL_DIRECT",
+        "gioi_han_ap_dung": "Khung CTĐT HNUE định hướng trợ giúp xã hội học đường và cộng đồng; yêu cầu thời lượng thực tập thực địa tại các cơ sở bảo trợ xã hội."
+      },
+      "draft_status": "DRAFT_EVIDENCE_BACKED"
+    }
+  ]
+}
