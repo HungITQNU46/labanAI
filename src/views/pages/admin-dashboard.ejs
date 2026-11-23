@@ -20,12 +20,12 @@
     const totalAdminsCount = safeUsers.filter(u => u.role === 'admin').length;
 %>
 
-<button id="admin-brand-toggle" type="button" onclick="toggleAdminSidebar()" class="fixed left-4 top-3.5 z-[70] flex items-center gap-3 bg-transparent p-0 text-left sm:left-8" title="Nhấn vào logo để ẩn thanh điều hướng" aria-expanded="true">
-    <span class="flex h-11 w-11 shrink-0 items-center justify-center rounded-[14px] bg-gradient-to-b from-[#00B4D8] to-[#7B2CBF] text-white shadow-md shadow-cyan/20 transition-transform duration-300 ease-out hover:rotate-45">
+<button id="admin-brand-toggle" type="button" onclick="toggleAdminSidebar()" class="group fixed left-4 top-3.5 z-[70] flex items-center gap-3 bg-transparent p-0 text-left sm:left-8 cursor-pointer" title="Nhấn vào logo để ẩn thanh điều hướng" aria-expanded="true">
+    <span class="flex h-11 w-11 shrink-0 items-center justify-center rounded-[14px] bg-gradient-to-b from-[#00B4D8] to-[#7B2CBF] text-white shadow-md shadow-cyan/20 transition-transform duration-300 ease-out group-hover:rotate-45">
         <i data-lucide="compass" class="h-6 w-6 stroke-[2.2]"></i>
     </span>
     <span id="admin-brand-copy" class="text-left">
-        <span class="block text-xl font-extrabold leading-none tracking-tight text-navy">la bàn<span class="text-cyan">.ai</span></span>
+        <span class="brand-text block text-xl font-extrabold leading-none tracking-tight text-navy transition-colors duration-200">la bàn<span class="text-cyan">.ai</span></span>
         <span class="mt-1 block text-[8.5px] font-bold uppercase tracking-widest text-slate-400">CHỌN NGÀNH, CHỌN TƯƠNG LAI</span>
     </span>
 </button>
@@ -78,80 +78,100 @@
                     </div>
                 </div>
 
-            <!-- 3 Thẻ chỉ số tổng quan (Chuẩn thiết kế Hình 2) -->
-<div class="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
-    <!-- Thẻ 1: Người dùng -->
-    <div data-export-summary onclick="activateAdminPanel('accounts')" class="glass-card kpi-card-users rounded-3xl p-5 cursor-pointer transition-all group relative overflow-hidden" title="Bấm để sang Quản lý tài khoản">
-        <div class="flex items-center justify-between">
-            <div class="flex items-center gap-2">
-                <p class="text-xs font-extrabold uppercase tracking-[0.15em] text-navy group-hover:text-cyan transition-colors">Người dùng</p>
-                <span id="badge-new-users" class="hidden items-center text-[10px] font-black px-2 py-0.5 rounded-full bg-cyan/15 text-cyan border border-cyan/30 animate-pulse"></span>
-            </div>
-            <span class="rounded-full bg-cyan/15 border border-cyan/40 p-2 text-cyan group-hover:scale-110 transition-transform"><i data-lucide="users" class="w-4 h-4"></i></span>
-        </div>
-        <div class="mt-3 flex items-end justify-between gap-3">
-            <p id="metric-total-users" class="text-4xl font-black text-navy leading-none"><%= Number(safeStats.totalUsers || 0).toLocaleString('vi-VN') %></p>
-            <svg class="w-40 h-12 shrink-0 overflow-visible" viewBox="0 0 160 48" fill="none">
-                <defs>
-                    <linearGradient id="spark-cyan-fill" x1="0" y1="0" x2="0" y2="1">
-                        <stop offset="0%" stop-color="#00E5FF" stop-opacity="0.45"/>
-                        <stop offset="100%" stop-color="#00E5FF" stop-opacity="0.0"/>
-                    </linearGradient>
-                </defs>
-                <path d="M4 40 C22 36, 30 22, 46 30 C62 38, 74 22, 92 28 C110 34, 122 8, 138 18 C146 24, 152 16, 156 18 L156 46 L4 46 Z" fill="url(#spark-cyan-fill)"/>
-                <path d="M4 40 C22 36, 30 22, 46 30 C62 38, 74 22, 92 28 C110 34, 122 8, 138 18 C146 24, 152 16, 156 18" stroke="#38BDF8" stroke-width="2.4" stroke-linecap="round"/>
-            </svg>
-        </div>
-    </div>
+         <div class="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
+                <!-- Thẻ 1: Người dùng -->
+                <div data-export-summary onclick="activateAdminPanel('accounts')" class="glass-card kpi-card-users rounded-3xl p-5 cursor-pointer transition-all group relative overflow-hidden" title="Bấm để sang Quản lý tài khoản">
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center gap-2">
+                            <p class="text-xs font-extrabold uppercase tracking-[0.15em] text-navy group-hover:text-cyan transition-colors">Người dùng</p>
+                            <span id="badge-new-users" class="hidden items-center text-[10px] font-black px-2 py-0.5 rounded-full bg-cyan/15 text-cyan border border-cyan/30 animate-pulse"></span>
+                        </div>
+                        <span class="rounded-full bg-cyan/15 border border-cyan/40 p-2 text-cyan group-hover:scale-110 transition-transform"><i data-lucide="users" class="w-4 h-4"></i></span>
+                    </div>
+                    <div class="mt-3 flex items-end justify-between gap-3">
+                        <p id="metric-total-users" class="text-4xl font-black text-navy leading-none"><%= Number(safeStats.totalUsers || 0).toLocaleString('vi-VN') %></p>
+                        <div class="flex flex-col items-end shrink-0">
+                            <svg id="spark-users-svg" class="w-40 h-12 overflow-visible" viewBox="0 0 160 48" fill="none">
+                                <title id="spark-users-title">Tốc độ tuần (T2 - CN)</title>
+                                <defs>
+                                    <linearGradient id="spark-cyan-fill" x1="0" y1="0" x2="0" y2="1">
+                                        <stop offset="0%" stop-color="#00E5FF" stop-opacity="0.45"/>
+                                        <stop offset="100%" stop-color="#00E5FF" stop-opacity="0.0"/>
+                                    </linearGradient>
+                                </defs>
+                                <path id="spark-users-area" d="M4 40 L156 40 L156 46 L4 46 Z" fill="url(#spark-cyan-fill)"/>
+                                <path id="spark-users-line" d="M4 40 L156 40" stroke="#38BDF8" stroke-width="2.4" stroke-linecap="round"/>
+                                <g id="spark-users-dots"></g>
+                            </svg>
+                            <div class="w-40 flex justify-between px-0.5 text-[9px] font-semibold text-muted/75 select-none">
+                                <span>T2</span><span>T3</span><span>T4</span><span>T5</span><span>T6</span><span>T7</span><span>CN</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
 
-    <!-- Thẻ 2: Số lượng tin tức -->
-    <div data-export-summary onclick="activateAdminPanel('news')" class="glass-card kpi-card-news rounded-3xl p-5 cursor-pointer transition-all group relative overflow-hidden" title="Bấm để sang Quản lý tin tức">
-        <div class="flex items-center justify-between">
-            <div class="flex items-center gap-2">
-                <p class="text-xs font-extrabold uppercase tracking-[0.15em] text-navy group-hover:text-amber-400 transition-colors">Số lượng tin tức</p>
-                <span id="badge-new-news" class="hidden items-center text-[10px] font-black px-2 py-0.5 rounded-full bg-amber-500/15 text-amber-500 border border-amber-500/30 animate-pulse"></span>
-            </div>
-            <span class="rounded-full bg-amber-500/15 border border-amber-400/40 p-2 text-amber-400 group-hover:scale-110 transition-transform"><i data-lucide="newspaper" class="w-4 h-4"></i></span>
-        </div>
-        <div class="mt-3 flex items-end justify-between gap-3">
-            <p id="metric-total-news" class="text-4xl font-black text-navy leading-none"><%= Number(safeStats.totalNews || 0).toLocaleString('vi-VN') %></p>
-            <svg class="w-40 h-12 shrink-0 overflow-visible" viewBox="0 0 160 48" fill="none">
-                <defs>
-                    <linearGradient id="spark-amber-fill" x1="0" y1="0" x2="0" y2="1">
-                        <stop offset="0%" stop-color="#F59E0B" stop-opacity="0.42"/>
-                        <stop offset="100%" stop-color="#F59E0B" stop-opacity="0.0"/>
-                    </linearGradient>
-                </defs>
-                <path d="M4 38 C24 36, 36 30, 54 36 C72 42, 84 16, 102 30 C118 42, 128 8, 142 24 C148 30, 152 24, 156 26 L156 46 L4 46 Z" fill="url(#spark-amber-fill)"/>
-                <path d="M4 38 C24 36, 36 30, 54 36 C72 42, 84 16, 102 30 C118 42, 128 8, 142 24 C148 30, 152 24, 156 26" stroke="#F59E0B" stroke-width="2.4" stroke-linecap="round"/>
-            </svg>
-        </div>
-    </div>
+                <!-- Thẻ 2: Số lượng tin tức -->
+                <div data-export-summary onclick="activateAdminPanel('news')" class="glass-card kpi-card-news rounded-3xl p-5 cursor-pointer transition-all group relative overflow-hidden" title="Bấm để sang Quản lý tin tức">
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center gap-2">
+                            <p class="text-xs font-extrabold uppercase tracking-[0.15em] text-navy group-hover:text-amber-400 transition-colors">Số lượng tin tức</p>
+                            <span id="badge-new-news" class="hidden items-center text-[10px] font-black px-2 py-0.5 rounded-full bg-amber-500/15 text-amber-500 border border-amber-500/30 animate-pulse"></span>
+                        </div>
+                        <span class="rounded-full bg-amber-500/15 border border-amber-400/40 p-2 text-amber-400 group-hover:scale-110 transition-transform"><i data-lucide="newspaper" class="w-4 h-4"></i></span>
+                    </div>
+                    <div class="mt-3 flex items-end justify-between gap-3">
+                        <p id="metric-total-news" class="text-4xl font-black text-navy leading-none"><%= Number(safeStats.totalNews || 0).toLocaleString('vi-VN') %></p>
+                        <div class="flex flex-col items-end shrink-0">
+                            <svg id="spark-news-svg" class="w-40 h-12 overflow-visible" viewBox="0 0 160 48" fill="none">
+                                <title id="spark-news-title">Tốc độ tuần (T2 - CN)</title>
+                                <defs>
+                                    <linearGradient id="spark-amber-fill" x1="0" y1="0" x2="0" y2="1">
+                                        <stop offset="0%" stop-color="#F59E0B" stop-opacity="0.42"/>
+                                        <stop offset="100%" stop-color="#F59E0B" stop-opacity="0.0"/>
+                                    </linearGradient>
+                                </defs>
+                                <path id="spark-news-area" d="M4 40 L156 40 L156 46 L4 46 Z" fill="url(#spark-amber-fill)"/>
+                                <path id="spark-news-line" d="M4 40 L156 40" stroke="#F59E0B" stroke-width="2.4" stroke-linecap="round"/>
+                                <g id="spark-news-dots"></g>
+                            </svg>
+                            <div class="w-40 flex justify-between px-0.5 text-[9px] font-semibold text-muted/75 select-none">
+                                <span>T2</span><span>T3</span><span>T4</span><span>T5</span><span>T6</span><span>T7</span><span>CN</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
 
-    <!-- Thẻ 3: Số lượt đánh giá hướng nghiệp -->
-    <div data-export-summary class="glass-card kpi-card-evals rounded-3xl p-5 relative overflow-hidden">
-        <div class="flex items-center justify-between">
-            <div class="flex items-center gap-2">
-                <p class="text-xs font-extrabold uppercase tracking-[0.15em] text-navy">Số lượt đánh giá hướng nghiệp</p>
-                <span id="badge-new-evaluations" class="hidden items-center text-[10px] font-black px-2 py-0.5 rounded-full bg-emerald-500/15 text-emerald-400 border border-emerald-500/30 animate-pulse"></span>
-            </div>
-            <span class="rounded-full bg-emerald/15 border border-emerald/40 p-2 text-emerald"><i data-lucide="file-check" class="w-4 h-4"></i></span>
-        </div>
-        <div class="mt-3 flex items-end justify-between gap-3">
-            <p id="metric-total-evaluations" class="text-4xl font-black text-navy leading-none"><%= Number(safeStats.totalEvaluations || 0).toLocaleString('vi-VN') %></p>
-            <svg class="w-40 h-12 shrink-0 overflow-visible" viewBox="0 0 160 48" fill="none">
-                <defs>
-                    <linearGradient id="spark-emerald-fill" x1="0" y1="0" x2="0" y2="1">
-                        <stop offset="0%" stop-color="#10B981" stop-opacity="0.45"/>
-                        <stop offset="100%" stop-color="#10B981" stop-opacity="0.0"/>
-                    </linearGradient>
-                </defs>
-                <path d="M4 38 C26 38, 44 26, 66 32 C88 38, 104 18, 130 16 C142 15, 148 28, 156 20 L156 46 L4 46 Z" fill="url(#spark-emerald-fill)"/>
-                <path d="M4 38 C26 38, 44 26, 66 32 C88 38, 104 18, 130 16 C142 15, 148 28, 156 20" stroke="#10B981" stroke-width="2.4" stroke-linecap="round"/>
-            </svg>
-        </div>
-    </div>
-</div>
+                <!-- Thẻ 3: Số lượt đánh giá hướng nghiệp -->
+                <div data-export-summary class="glass-card kpi-card-evals rounded-3xl p-5 relative overflow-hidden">
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center gap-2">
+                            <p class="text-xs font-extrabold uppercase tracking-[0.15em] text-navy">Số lượt đánh giá hướng nghiệp</p>
+                            <span id="badge-new-evaluations" class="hidden items-center text-[10px] font-black px-2 py-0.5 rounded-full bg-emerald-500/15 text-emerald-400 border border-emerald-500/30 animate-pulse"></span>
+                        </div>
+                        <span class="rounded-full bg-emerald/15 border border-emerald/40 p-2 text-emerald"><i data-lucide="file-check" class="w-4 h-4"></i></span>
+                    </div>
+                    <div class="mt-3 flex items-end justify-between gap-3">
+                        <p id="metric-total-evaluations" class="text-4xl font-black text-navy leading-none"><%= Number(safeStats.totalEvaluations || 0).toLocaleString('vi-VN') %></p>
+                        <div class="flex flex-col items-end shrink-0">
+                            <svg id="spark-evals-svg" class="w-40 h-12 overflow-visible" viewBox="0 0 160 48" fill="none">
+                                <title id="spark-evals-title">Tốc độ tuần (T2 - CN)</title>
+                                <defs>
+                                    <linearGradient id="spark-emerald-fill" x1="0" y1="0" x2="0" y2="1">
+                                        <stop offset="0%" stop-color="#10B981" stop-opacity="0.45"/>
+                                        <stop offset="100%" stop-color="#10B981" stop-opacity="0.0"/>
+                                    </linearGradient>
+                                </defs>
+                                <path id="spark-evals-area" d="M4 40 L156 40 L156 46 L4 46 Z" fill="url(#spark-emerald-fill)"/>
+                                <path id="spark-evals-line" d="M4 40 L156 40" stroke="#10B981" stroke-width="2.4" stroke-linecap="round"/>
+                                <g id="spark-evals-dots"></g>
+                            </svg>
+                            <div class="w-40 flex justify-between px-0.5 text-[9px] font-semibold text-muted/75 select-none">
+                                <span>T2</span><span>T3</span><span>T4</span><span>T5</span><span>T6</span><span>T7</span><span>CN</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>  
 
                 <div class="grid gap-6 xl:grid-cols-[1.4fr_1fr]">
                     <!-- Biểu đồ Hoạt động tư vấn -->
@@ -527,13 +547,13 @@
     </main>
 </div>
 
-<!-- Thư viện Flatpickr CDN hỗ trợ chọn ngày tiếng Việt DD/MM/YYYY -->
-<!-- Thư viện Flatpickr CDN hỗ trợ chọn ngày tiếng Việt DD/MM/YYYY -->
+<script>
+    window.ADMIN_SERVER_NOW = <%- JSON.stringify(typeof serverNow !== 'undefined' ? serverNow : new Date().toISOString()) %>;
+    window.ADMIN_LOGIN_AT = <%- JSON.stringify(typeof sessionLoginAt !== 'undefined' ? sessionLoginAt : '') %>;
+    window.INITIAL_WEEKLY_SPARKLINES = <%- JSON.stringify(typeof weeklySparklines !== 'undefined' ? weeklySparklines : null) %>;
+</script>
 <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
 <script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/vn.js"></script>
 <%- include('../partials/footer', { 
-    extraScripts: `
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-        <script src="/js/admin.js"></script>
-    ` 
+    extraScripts: `<script src="/js/admin.js"></script>` 
 }) %>

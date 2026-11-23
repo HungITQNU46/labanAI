@@ -2,7 +2,7 @@ renderLayout('nav-home');
 
 const container = document.getElementById('canvas-container');
 const scene = new THREE.Scene();
-const camera = new THREE.PerspectiveCamera(45, container.clientWidth / container.clientHeight, 0.1, 1000);
+const camera = new THREE.PerspectiveCamera(45, 1, 0.1, 1000);
 camera.position.z = 10;
 
 const renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });

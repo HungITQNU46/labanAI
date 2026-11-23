@@ -17,6 +17,9 @@ async function logoutUser() {
         const result = await response.json();
         if (!response.ok) throw new Error(result.message || 'Không thể đăng xuất.');
         localStorage.removeItem('sidebarCollapsed');
+        localStorage.removeItem('adminSessionStartTime');
+        sessionStorage.removeItem('adminSessionStartTime');
+        sessionStorage.removeItem('adminSessionLoginAt');
         window.location.href = '/';
     } catch (error) {
         window.alert(error.message || 'Không thể đăng xuất. Vui lòng thử lại.');

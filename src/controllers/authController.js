@@ -175,7 +175,8 @@ const setAuthenticatedSession = (req, user) => new Promise((resolve, reject) => 
             name: user.hoTen,
             role: user.role,
             email: user.email || null,
-            phone: user.phone || null
+            phone: user.phone || null,
+            loginAt: new Date().toISOString()
         };
         req.session.save((saveError) => {
             if (saveError) return reject(saveError);

@@ -9,51 +9,193 @@ let currentSessionId = chatSessions[0] ? chatSessions[0].id : null;
 let currentConsultantMode = 'general';
 
 let compassScene, compassCamera, compassRenderer, compassGroup;
+let compassAnimId = null;
 
 function initWelcomeCompass() {
     const container = document.getElementById('compass-canvas-container');
     if (!container) return;
 
+    // Tự động nạp Three.js nếu trình duyệt chưa kịp tải xong từ header
+    if (typeof THREE === 'undefined') {
+        if (!document.getElementById('threejs-chatbot-fallback')) {
+            const script = document.createElement('script');
+            script.id = 'threejs-chatbot-fallback';
+            script.src = 'https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js';
+            script.onload = () => initWelcomeCompass();
+            document.head.appendChild(script);
+        }
+        return;
+    }
+
+    if (compassAnimId) {
+        cancelAnimationFrame(compassAnimId);
+        compassAnimId = null;
+    }
+
     container.innerHTML = '';
+    const width = container.clientWidth > 40 ? container.clientWidth : 176;
+    const height = container.clientHeight > 40 ? container.clientHeight : 176;
+
     compassScene = new THREE.Scene();
-    compassCamera = new THREE.PerspectiveCamera(45, container.clientWidth / container.clientHeight, 0.1, 1000);
-    compassCamera.position.z = 8;
+    compassCamera = new THREE.PerspectiveCamera(45, width / height, 0.1, 1000);
+    compassCamera.position.z = 10.5;
 
     compassRenderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
-    compassRenderer.setSize(container.clientWidth, container.clientHeight);
+    compassRenderer.setSize(width, height);
+    compassRenderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+    compassRenderer.domElement.style.display = 'block';
+    compassRenderer.domElement.style.margin = '0 auto';
     container.appendChild(compassRenderer.domElement);
 
     compassGroup = new THREE.Group();
-    
-    const ring1 = new THREE.Mesh(new THREE.TorusGeometry(2.3, 0.04, 16, 100), new THREE.MeshPhysicalMaterial({ color: 0x00B4D8, metalness: 0.5, roughness: 0.1, transparent: true, opacity: 0.85 }));
-    ring1.rotation.x = Math.PI / 2; compassGroup.add(ring1);
 
-    const ring2 = new THREE.Mesh(new THREE.TorusGeometry(1.7, 0.02, 16, 100), new THREE.MeshBasicMaterial({ color: 0x7B2CBF, side: THREE.DoubleSide }));
-    ring2.rotation.x = Math.PI / 3; compassGroup.add(ring2);
+    // 1. Vòng ngoài: Xanh Cyan Pha Lê
+    const ring1 = new THREE.Mesh(
+        new THREE.TorusGeometry(3, 0.055, 24, 120),
+        new THREE.MeshPhysicalMaterial({
+            color: 0x00D2FF,
+            emissive: 0x0077B6,
+            emissiveIntensity: 0.35,
+            metalness: 0.4,
+            roughness: 0.15,
+            clearcoat: 1.0,
+            transparent: true,
+            opacity: 0.92
+        })
+    );
+    ring1.rotation.x = Math.PI / 2;
+    compassGroup.add(ring1);
 
-    const needle = new THREE.Mesh(new THREE.OctahedronGeometry(1.0, 0), new THREE.MeshPhysicalMaterial({ color: 0x10B981, metalness: 0.8, roughness: 0.2, clearcoat: 1.0 }));
-    needle.scale.set(0.35, 1.8, 0.35); compassGroup.add(needle);
+    // 2. Vòng trong: Tím Lavender 3D
+    const ring2 = new THREE.Mesh(
+        new THREE.TorusGeometry(2.2, 0.04, 20, 100),
+        new THREE.MeshPhysicalMaterial({
+            color: 0xC084FC,
+            emissive: 0x7B2CBF,
+            emissiveIntensity: 0.4,
+            metalness: 0.35,
+            roughness: 0.2,
+            clearcoat: 1.0
+        })
+    );
+    ring2.rotation.x = Math.PI / 3;
+    compassGroup.add(ring2);
 
+    // 3. Kim la bàn chuyển sắc 3D (Ngọc Bích -> Cyan -> Tím Lavender)
+    const needleGeo = new THREE.OctahedronGeometry(1.2, 0);
+    const posAttr = needleGeo.attributes.position;
+    const colors = [];
+    const colorTop = new THREE.Color(0x00F5A0);
+    const colorMid = new THREE.Color(0x00D2FF);
+    const colorBottom = new THREE.Color(0xA855F7);
+
+    for (let i = 0; i < posAttr.count; i++) {
+        const y = posAttr.getY(i);
+        const c = y > 0.1 ? colorTop : (y < -0.1 ? colorBottom : colorMid);
+        colors.push(c.r, c.g, c.b);
+    }
+    needleGeo.setAttribute('color', new THREE.Float32BufferAttribute(colors, 3));
+
+    const needle = new THREE.Mesh(
+        needleGeo,
+        new THREE.MeshPhysicalMaterial({
+            vertexColors: true,
+            emissive: 0x0A192F,
+            emissiveIntensity: 0.2,
+            metalness: 0.25,
+            roughness: 0.18,
+            clearcoat: 1.0,
+            clearcoatRoughness: 0.08,
+            flatShading: true
+        })
+    );
+    needle.scale.set(0.4, 2, 0.4);
+    compassGroup.add(needle);
+
+    // 4. Các hạt sáng 3D (Stardust Orbs) bay lơ lửng xung quanh
+    const particlesGroup = new THREE.Group();
+    const particleColors = [0x00F5D4, 0x38BDF8, 0xC084FC, 0x34D399, 0xFFFFFF];
+    const particlesData = [];
+
+    for (let i = 0; i < 36; i++) {
+        const radius = 0.03 + Math.random() * 0.05;
+        const color = particleColors[i % particleColors.length];
+        const dot = new THREE.Mesh(
+            new THREE.SphereGeometry(radius, 12, 12),
+            new THREE.MeshPhysicalMaterial({
+                color,
+                emissive: color,
+                emissiveIntensity: 0.65,
+                roughness: 0.1,
+                clearcoat: 1.0
+            })
+        );
+
+        const dist = 2.0 + Math.random() * 2.1;
+        const theta = Math.random() * Math.PI * 2;
+        const phi = Math.acos(2 * Math.random() - 1);
+        const x = dist * Math.sin(phi) * Math.cos(theta);
+        const y = dist * Math.sin(phi) * Math.sin(theta);
+        const z = dist * Math.cos(phi);
+
+        dot.position.set(x, y, z);
+        particlesGroup.add(dot);
+        particlesData.push({
+            mesh: dot,
+            baseY: y,
+            speed: 0.8 + Math.random() * 1.5,
+            phase: Math.random() * Math.PI * 2,
+            amp: 0.08 + Math.random() * 0.14
+        });
+    }
+    compassGroup.add(particlesGroup);
     compassScene.add(compassGroup);
-    compassScene.add(new THREE.AmbientLight(0xffffff, 0.9));
-    
-    const dirLight = new THREE.DirectionalLight(0xffffff, 1.6);
-    dirLight.position.set(5, 10, 7);
+
+    // 5. Ánh sáng tạo khối 3D
+    compassScene.add(new THREE.AmbientLight(0xffffff, 0.65));
+
+    const dirLight = new THREE.DirectionalLight(0xffffff, 1.35);
+    dirLight.position.set(6, 10, 8);
     compassScene.add(dirLight);
+
+    const cyanLight = new THREE.PointLight(0x00E5FF, 1.5, 40);
+    cyanLight.position.set(-6, 3, 5);
+    compassScene.add(cyanLight);
+
+    const violetLight = new THREE.PointLight(0xA855F7, 1.5, 40);
+    violetLight.position.set(6, -4, 5);
+    compassScene.add(violetLight);
 
     let mouseX = 0, mouseY = 0;
     container.addEventListener('mousemove', (e) => {
         const rect = container.getBoundingClientRect();
-        mouseX = ((e.clientX - rect.left) - rect.width / 2) * 0.002;
-        mouseY = ((e.clientY - rect.top) - rect.height / 2) * 0.002;
+        mouseX = ((e.clientX - rect.left) - rect.width / 2) * 0.003;
+        mouseY = ((e.clientY - rect.top) - rect.height / 2) * 0.003;
+    });
+    container.addEventListener('mouseleave', () => {
+        mouseX = 0;
+        mouseY = 0;
     });
 
     function animateCompass() {
-        requestAnimationFrame(animateCompass);
-        ring1.rotation.z -= 0.003; ring2.rotation.y += 0.005; needle.rotation.y -= 0.008;
-        compassGroup.rotation.y += 0.05 * (mouseX * 2 - compassGroup.rotation.y);
-        compassGroup.rotation.x += 0.05 * (mouseY * 2 - compassGroup.rotation.x);
-        compassGroup.position.y = Math.sin(Date.now() * 0.0015) * 0.15;
+        compassAnimId = requestAnimationFrame(animateCompass);
+        const time = Date.now() * 0.001;
+
+        ring1.rotation.z -= 0.002;
+        ring2.rotation.y += 0.004;
+        needle.rotation.y -= 0.01;
+
+        particlesGroup.rotation.y += 0.0025;
+        particlesGroup.rotation.x -= 0.001;
+        for (let i = 0; i < particlesData.length; i++) {
+            const p = particlesData[i];
+            p.mesh.position.y = p.baseY + Math.sin(time * p.speed + p.phase) * p.amp;
+        }
+
+        compassGroup.rotation.y += 0.05 * (mouseX * 1.5 - compassGroup.rotation.y);
+        compassGroup.rotation.x += 0.05 * (mouseY * 1.5 - compassGroup.rotation.x);
+        compassGroup.position.y = Math.sin(time) * 0.25;
+
         compassRenderer.render(compassScene, compassCamera);
     }
     animateCompass();
@@ -128,7 +270,7 @@ function saveSessions() { localStorage.setItem('laban_chat_sessions', JSON.strin
 function toggleModeMenu(event) {
     if (event) event.stopPropagation();
     const menu = document.getElementById('mode-popup-menu'), chevron = document.getElementById('mode-chevron');
-    if (menu.classList.contains('hidden')) { menu.classList.remove('hidden'); menu.classList.add('flex'); chevron?.classList.add('rotate-180'); } 
+    if (menu.classList.contains('hidden')) { menu.classList.remove('hidden'); menu.classList.add('flex'); chevron?.classList.add('rotate-180'); }
     else { menu.classList.add('hidden'); menu.classList.remove('flex'); chevron?.classList.remove('rotate-180'); }
 }
 
@@ -207,7 +349,7 @@ function handleSendMessage() {
     const input = document.getElementById('chat-input'), text = input.value.trim();
     if (!text) return;
     if (!currentSessionId) startNewChatSession();
-    
+
     const session = chatSessions.find(s => s.id === currentSessionId);
     session.messages.push({ role: 'user', content: text });
     if (session.messages.length === 1) {
@@ -227,7 +369,7 @@ function handleSendMessage() {
 
 function generateSimulatedAIResponse(query) {
     const lower = query.toLowerCase();
-    if (lower.includes('toán') || lower.includes('lý') || lower.includes('khối a')) return `Dựa trên thế mạnh vượt trội về **Toán học và Vật lý** của bạn, hệ thống AI đề xuất các hướng đi nghề nghiệp tối ưu sau:\n- **Công nghệ thông tin & Trí tuệ nhân tạo (AI):** Cần tư duy thuật toán chặt chẽ và logic logic cao.\n- **Kỹ thuật Điện tử - Viễn thông / Tự động hóa:** Ứng dụng sâu kiến thức vật lý đại cương và mạch điện.\n- **Khoa học Dữ liệu (Data Science):** Giao thoa giữa toán xác suất thống kê và công nghệ phần mềm.\nDưới đây là bảng so sánh nhanh các ngành theo khối xét tuyển:\n\n| Ngành Học | Khối Xét | Điểm Chuẩn Tham Khảo | Cơ Hội Nghề Nghiệp |\n| Công nghệ thông tin | A00, A01 | 23.5 - 27.5 | Kỹ sư phần mềm, AI Engineer |\n| Tự động hóa | A00, A01 | 22.0 - 26.0 | Kỹ sư robot, vận hành hệ thống |\n| Khoa học Dữ liệu | A01, D01 | 24.0 - 26.5 | Chuyên viên phân tích dữ liệu |\n\nBạn có muốn mình so sánh chi tiết điểm chuẩn các trường tại khu vực bạn đang quan tâm không?`;
+    if (lower.includes('toán') || lower.includes('lý') || lower.includes('khối a')) return `Dựa trên thế mạnh vượt trội về **Toán học và Vật lý** của bạn, hệ thống AI đề xuất các hướng đi nghề nghiệp tối ưu sau:\n- **Công nghệ thông tin & Trí tuệ nhân tạo (AI):** Cần tư duy thuật toán chặt chẽ và logic cao.\n- **Kỹ thuật Điện tử - Viễn thông / Tự động hóa:** Ứng dụng sâu kiến thức vật lý đại cương và mạch điện.\n- **Khoa học Dữ liệu (Data Science):** Giao thoa giữa toán xác suất thống kê và công nghệ phần mềm.\nDưới đây là bảng so sánh nhanh các ngành theo khối xét tuyển:\n\n| Ngành Học | Khối Xét | Điểm Chuẩn Tham Khảo | Cơ Hội Nghề Nghiệp |\n| Công nghệ thông tin | A00, A01 | 23.5 - 27.5 | Kỹ sư phần mềm, AI Engineer |\n| Tự động hóa | A00, A01 | 22.0 - 26.0 | Kỹ sư robot, vận hành hệ thống |\n| Khoa học Dữ liệu | A01, D01 | 24.0 - 26.5 | Chuyên viên phân tích dữ liệu |\n\nBạn có muốn mình so sánh chi tiết điểm chuẩn các trường tại khu vực bạn đang quan tâm không?`;
     if (lower.includes('so sánh') && (lower.includes('cntt') || lower.includes('khoa học dữ liệu') || lower.includes('it'))) return `Dưới đây là phân tích đối chiếu chuyên sâu giữa **Công nghệ thông tin (CNTT)** và **Khoa học dữ liệu (Data Science)**:\n\n1. **Bản chất ngành:**\n- **CNTT:** Tập trung vào kỹ thuật lập trình, xây dựng ứng dụng web/app, hệ thống mạng và kiến trúc phần mềm.\n- **Khoa học Dữ liệu:** Tập trung vào phân tích, khai phá quy luật từ dữ liệu lớn để hỗ trợ ra quyết định kinh doanh hoặc huấn luyện mô hình AI.\n\n2. **Yêu cầu năng lực:**\n- CNTT đòi hỏi tư duy lập trình và giải quyết bài toán hệ thống tốt.\n- Khoa học Dữ liệu đòi hỏi nền tảng Toán xác suất, thống kê và tư duy phân tích sâu.\n\nBạn thiên về thích tạo ra sản phẩm hoàn chỉnh (App/Web) hay thích nghiên cứu tìm quy luật từ các con số hơn?`;
     if (lower.includes('marketing')) return `Ngành **Marketing** hiện nay đã phát triển mạnh mẽ theo hướng công nghệ và dữ liệu (Digital & Data-driven Marketing). Ra trường bạn có thể đảm nhận các vị trí:\n\n- **Digital Marketing Specialist:** Lên chiến dịch quảng cáo, tối ưu chuyển đổi số trên Facebook, Google, TikTok.\n- **Content Creator / Copywriter:** Sáng tạo câu chuyện thương hiệu và kịch bản truyền thông.\n- **Brand Manager:** Quản trị và định vị hình ảnh thương hiệu dài hạn cho doanh nghiệp.\n- **Market Research Analyst:** Phân tích nhu cầu khách hàng và xu hướng thị trường.\n\nNgành này đặc biệt phù hợp với các bạn có nhóm tính cách **Artistic (Sáng tạo)** và **Enterprising (Kinh doanh / Thuyết phục)** theo mã Holland.`;
     return `Cảm ơn câu hỏi của bạn! Với câu hỏi này, **Laban.ai** nhận thấy bạn đang tìm hiểu theo hướng phù hợp với xu thế phát triển hiện nay.\n\nĐể có thể đưa ra phân tích chính xác nhất, bạn có thể chia sẻ thêm:\n- Bạn dự kiến thi các môn thi nào (hoặc điểm số học tập hiện tại)?\n- Bạn đã làm bài đánh giá tính cách Holland RIASEC trên hệ thống chưa?\n\nMình sẽ dựa vào đó để tính toán xác suất trúng tuyển và gợi ý lộ trình đại học tốt nhất cho bạn!`;
@@ -255,4 +397,7 @@ function toggleVoiceInput() {
     document.getElementById('chat-input').placeholder = btn.classList.contains('text-red-500') ? "Đang lắng nghe giọng nói của bạn..." : "Nhập câu hỏi hoặc băn khoăn về ngành học của bạn...";
 }
 
-window.addEventListener('DOMContentLoaded', () => { initWelcomeCompass(); renderCurrentMessages(); });
+window.addEventListener('DOMContentLoaded', () => {
+    renderCurrentMessages();
+    initWelcomeCompass();
+});
