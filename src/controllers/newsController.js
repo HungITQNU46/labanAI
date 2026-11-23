@@ -5,8 +5,7 @@ const { syncTuoiTreNews } = require('../services/newsRssService');
 exports.getAllNews = async (req, res) => {
     try {
         const newsList = await TinTuc.find({ trangThai: true })
-            .sort({ pubDate: -1 })
-            .limit(50);
+            .sort({ pubDate: -1 });
         res.json({ success: true, data: newsList });
     } catch (error) {
         res.status(500).json({ success: false, message: 'Lỗi lấy danh sách tin tức' });
