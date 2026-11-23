@@ -45,7 +45,8 @@ module.exports = router;
 
 
 
-router.get('/api/news', newsController.getAllNews);//tintuc
-router.post('/api/news/sync', newsController.syncNews);//tintuc
+router.get('/api/news', newsController.getAllNews);
+router.get('/api/news/:id', newsController.getNewsDetail);
+router.post('/api/news/sync', newsController.syncNews);
 
 module.exports = router;
