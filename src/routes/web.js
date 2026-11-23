@@ -58,6 +58,6 @@ router.patch('/api/admin/users/batch-status', requireAdmin, adminController.batc
 module.exports = router;
 router.get('/api/news', newsController.getAllNews);//tintuc
 router.post('/api/news/sync', newsController.syncNews);//tintuc
-
+router.get('/api/news/:id', newsController.getNewsDetail); //tintuc
 module.exports = router;
 
