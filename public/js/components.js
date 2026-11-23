@@ -92,7 +92,7 @@ function renderLayout(activeMenuId) {
                     <div class="flex items-center gap-6 sm:gap-8">
                         <nav aria-label="Điều hướng chính" class="hidden lg:flex items-center gap-6 text-sm font-semibold text-slate-600">
                             <a href="/" class="${activeMenuId === 'nav-home' ? 'text-cyan font-bold' : 'hover:text-cyan transition-colors'}">Trang chủ</a>
-                            <a href="/evaluation" class="${activeMenuId === 'nav-eval' || activeMenuId === 'nav-riasec27' ? 'text-cyan font-bold' : 'text-ocean font-bold hover:text-cyan transition-colors flex items-center gap-1'}"><i data-lucide="target" class="w-3.5 h-3.5 ${activeMenuId === 'nav-eval' || activeMenuId === 'nav-riasec27' ? 'text-cyan' : 'text-slate-400'}"></i>Đánh giá hướng nghiệp</a>
+                            <a href="/evaluation" class="${activeMenuId === 'nav-eval' || activeMenuId === 'nav-riasec27' ? 'text-cyan font-bold' : 'hover:text-cyan transition-colors'}">Đánh giá hướng nghiệp</a>
                             <a href="/evaluation/history" class="${activeMenuId === 'nav-evaluation-history' ? 'text-cyan font-bold' : 'hover:text-cyan transition-colors'}">Lịch sử hướng nghiệp</a>
                             <a href="/news" class="${activeMenuId === 'nav-news' ? 'text-cyan font-bold' : 'hover:text-cyan transition-colors'}">Tin tức</a>
                             <a href="/guide" class="${activeMenuId === 'nav-guide' ? 'text-cyan font-bold' : 'hover:text-cyan transition-colors'}">Hướng dẫn</a>
