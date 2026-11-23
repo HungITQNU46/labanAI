@@ -607,3 +607,22 @@ html.dark .theme-switch-thumb {
 
 html.dark .theme-switch-icon.sun-icon { color: #94A3B8; }
 html.dark .theme-switch-icon.moon-icon { color: #FFFFFF; }
+
+/* Đồng bộ hiệu ứng rê chuột chuyển xanh dương cho chữ "la bàn" ở cả Light & Dark (User + Admin) */
+#admin-brand-copy > span:first-child,
+.brand-text {
+    transition: color 0.2s ease;
+}
+
+.brand-text:hover,
+html.dark .brand-text:hover,
+.group:hover .brand-text,
+html.dark .group:hover .brand-text,
+.group:hover .group-hover\:text-cyan,
+html.dark .group:hover .group-hover\:text-cyan,
+.hover\:text-cyan:hover,
+html.dark .hover\:text-cyan:hover,
+#admin-brand-toggle:hover #admin-brand-copy > span:first-child,
+html.dark #admin-brand-toggle:hover #admin-brand-copy > span:first-child {
+    color: rgb(var(--accent-cyan, 0 180 216)) !important;
+}

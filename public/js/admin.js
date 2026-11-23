@@ -1,10 +1,28 @@
-// ==========================================
-// 1. BIẾN TOÀN CỤC & TRẠNG THÁI HỆ THỐNG
-// ==========================================
-let adminSessionStartTime = localStorage.getItem('adminSessionStartTime') || new Date().toISOString();
-if (!localStorage.getItem('adminSessionStartTime')) {
-    localStorage.setItem('adminSessionStartTime', adminSessionStartTime);
+const ADMIN_SESSION_KEY = 'adminSessionStartTime';
+const ADMIN_LOGIN_KEY = 'adminSessionLoginAt';
+
+// Xóa sạch dấu vết cũ từng lưu trong localStorage
+localStorage.removeItem(ADMIN_SESSION_KEY);
+
+function resolveAdminSessionStartTime() {
+    const serverNow = window.ADMIN_SERVER_NOW || new Date().toISOString();
+    const serverLoginAt = window.ADMIN_LOGIN_AT || '';
+    const savedStart = sessionStorage.getItem(ADMIN_SESSION_KEY);
+    const savedLoginAt = sessionStorage.getItem(ADMIN_LOGIN_KEY);
+
+    // Giữ nguyên mốc khi F5; tự reset khi đóng tab/trình duyệt hoặc vừa đăng nhập phiên mới
+    if (savedStart && (!serverLoginAt || savedLoginAt === serverLoginAt)) {
+        return savedStart;
+    }
+
+    sessionStorage.setItem(ADMIN_SESSION_KEY, serverNow);
+    if (serverLoginAt) {
+        sessionStorage.setItem(ADMIN_LOGIN_KEY, serverLoginAt);
+    }
+    return serverNow;
 }
+
+let adminSessionStartTime = resolveAdminSessionStartTime();
 
 let userRoleFilter = 'all';
 let userStatusFilter = 'all';
@@ -55,13 +73,81 @@ function formatClockTime(isoStr) {
     return `${h}:${m} (${day}/${month})`;
 }
 
+function buildSmoothSparklinePaths(values) {
+    const safeValues = Array.isArray(values) && values.length === 7 ? values : [0, 0, 0, 0, 0, 0, 0];
+    const maxVal = Math.max(...safeValues, 1);
+    const minX = 4;
+    const maxX = 156;
+    const topY = 8;
+    const bottomY = 40;
+    const stepX = (maxX - minX) / (safeValues.length - 1);
+
+    const points = safeValues.map((val, idx) => {
+        const x = +(minX + idx * stepX).toFixed(1);
+        const y = val === 0
+            ? bottomY
+            : +(bottomY - (val / maxVal) * (bottomY - topY)).toFixed(1);
+        return { x, y, val };
+    });
+
+    // Đường cong mượt Cubic Bezier đi qua đúng 7 mốc Thứ 2 -> Chủ nhật
+    let lineD = `M${points[0].x} ${points[0].y}`;
+    for (let i = 0; i < points.length - 1; i++) {
+        const p0 = points[i];
+        const p1 = points[i + 1];
+        const cx = +((p0.x + p1.x) / 2).toFixed(1);
+        lineD += ` C${cx} ${p0.y}, ${cx} ${p1.y}, ${p1.x} ${p1.y}`;
+    }
+
+    const areaD = `${lineD} L${maxX} 46 L${minX} 46 Z`;
+    return { lineD, areaD, points };
+}
+
+function renderWeeklySparklines(sparklines) {
+    if (!sparklines) return;
+    const labels = sparklines.labels || ['T2', 'T3', 'T4', 'T5', 'T6', 'T7', 'CN'];
+    const rangeSuffix = sparklines.rangeLabel ? ` (${sparklines.rangeLabel})` : '';
+
+    const configs = [
+        { key: 'users',       areaId: 'spark-users-area', lineId: 'spark-users-line', dotsId: 'spark-users-dots', titleId: 'spark-users-title', stroke: '#38BDF8', unit: 'người dùng' },
+        { key: 'news',        areaId: 'spark-news-area',  lineId: 'spark-news-line',  dotsId: 'spark-news-dots',  titleId: 'spark-news-title',  stroke: '#F59E0B', unit: 'tin tức' },
+        { key: 'evaluations', areaId: 'spark-evals-area', lineId: 'spark-evals-line', dotsId: 'spark-evals-dots', titleId: 'spark-evals-title', stroke: '#10B981', unit: 'lượt đánh giá' }
+    ];
+
+    configs.forEach(({ key, areaId, lineId, dotsId, titleId, stroke, unit }) => {
+        const values = sparklines[key];
+        if (!Array.isArray(values)) return;
+
+        const { lineD, areaD, points } = buildSmoothSparklinePaths(values);
+        const areaEl = document.getElementById(areaId);
+        const lineEl = document.getElementById(lineId);
+        const dotsEl = document.getElementById(dotsId);
+        const titleEl = document.getElementById(titleId);
+
+        if (areaEl) areaEl.setAttribute('d', areaD);
+        if (lineEl) lineEl.setAttribute('d', lineD);
+        if (dotsEl) {
+            dotsEl.innerHTML = points
+                .map((p, idx) => p.val > 0
+                    ? `<circle cx="${p.x}" cy="${p.y}" r="2.6" fill="${stroke}" stroke="#ffffff" stroke-width="1"><title>${labels[idx]}: ${p.val} ${unit}</title></circle>`
+                    : '')
+                .join('');
+        }
+        if (titleEl) {
+            const summary = labels.map((lb, idx) => `${lb}: ${values[idx]}`).join(' | ');
+            titleEl.textContent = `Tốc độ tuần${rangeSuffix} (${unit}): ${summary}`;
+        }
+    });
+}
+
 async function fetchRealtimeMetrics() {
+    if (document.hidden) return; // Tạm ngưng polling khi đang chuyển sang tab khác
+
     try {
         const res = await fetch(`/api/admin/realtime-metrics?since=${encodeURIComponent(adminSessionStartTime)}`);
         const data = await res.json();
         if (!data.success) return;
 
-        // Cập nhật con số tổng lũy kế
         const elUsers = document.getElementById('metric-total-users');
         const elNews = document.getElementById('metric-total-news');
         const elEvals = document.getElementById('metric-total-evaluations');
@@ -76,24 +162,17 @@ async function fetchRealtimeMetrics() {
             elEvals.innerText = Number(data.totals.totalEvaluations).toLocaleString('vi-VN');
         }
 
-        // Cập nhật các Badge "+X mới từ lúc đăng nhập"
+        // Cập nhật badge "+X mới" kể từ thời điểm phiên hiện tại
         updateNewBadge('badge-new-users', data.newCounts?.newUsers);
+        updateNewBadge('badge-new-news', data.newCounts?.newNews);
         updateNewBadge('badge-new-evaluations', data.newCounts?.newEvaluations);
 
-        // Cập nhật thanh Live Bar
-        const timeDisplay = document.getElementById('admin-access-time-display');
-        if (timeDisplay) {
-            timeDisplay.innerText = `Theo dõi từ: ${formatClockTime(adminSessionStartTime)}`;
+        // Cập nhật 3 sóng tốc độ tuần Thứ 2 -> Chủ nhật
+        if (data.weeklySparklines) {
+            renderWeeklySparklines(data.weeklySparklines);
         }
-        const liveText = document.getElementById('admin-live-text');
-        if (liveText) {
-            const sumNew = (data.newCounts?.newUsers || 0) + (data.newCounts?.newEvaluations || 0);
-            if (sumNew > 0) {
-                liveText.innerHTML = `<span class="font-bold text-cyan">+${sumNew} bản ghi mới</span> từ lúc bạn mở phiên làm việc!`;
-            } else {
-                liveText.innerText = 'Chế độ giám sát Realtime đang kích hoạt.';
-            }
-        }
+
+        updateAdminTimeDisplay();
     } catch (err) {
         console.warn('Lỗi kết nối Realtime metrics:', err);
     }
@@ -111,7 +190,6 @@ function updateNewBadge(badgeId, count) {
         el.classList.remove('inline-flex');
     }
 }
-
 // ==========================================
 // 4. BỘ LỌC TÌM KIẾM, TABS VAI TRÒ & TRẠNG THÁI
 // ==========================================
@@ -1083,14 +1161,18 @@ document.addEventListener('DOMContentLoaded', () => {
         window.location.href = '/';
         return;
     }
+    updateAdminTimeDisplay();
+    if (window.INITIAL_WEEKLY_SPARKLINES) {
+        renderWeeklySparklines(window.INITIAL_WEEKLY_SPARKLINES);
+    }
 
     initVietnameseDatePickers();
     fetchConsultationStats({ timeframe: '7days' });
     initAdmin3DCompass();
 
-    // Kích hoạt Realtime Polling định kỳ mỗi 6 giây
+    // Kích hoạt Realtime Polling định kỳ mỗi 5 giây
     fetchRealtimeMetrics();
-    setInterval(fetchRealtimeMetrics, 6000);
+    setInterval(fetchRealtimeMetrics, 5000);
 
     // Khởi tạo icons Lucide
     if (typeof lucide !== 'undefined') {
