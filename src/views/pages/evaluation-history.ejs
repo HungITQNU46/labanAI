@@ -1,0 +1,54 @@
+<%- include('../partials/header', { extraHead: '<link rel="stylesheet" href="/css/evaluation.css">' }) %>
+<div id="main-wrapper" class="ui-page">
+    <main>
+        <header class="ui-page-header">
+            <span class="ui-kicker"><i data-lucide="history" aria-hidden="true"></i> Hướng nghiệp</span>
+            <h1>Lịch sử hướng nghiệp</h1>
+            <p>Xem lại các kết quả hướng nghiệp đã được lưu cho tài khoản của bạn.</p>
+        </header>
+
+        <% if (history.length === 0) { %>
+            <section class="ui-card ui-empty" role="status">
+                <div class="ui-icon"><i data-lucide="clock-3" aria-hidden="true"></i></div>
+                <h2>Chưa có lịch sử hướng nghiệp</h2>
+                <p>Các kết quả khảo sát RIASEC hiện tại chỉ dùng trong phiên và không được lưu. Khi có kết quả đánh giá đã lưu, chúng sẽ xuất hiện tại đây.</p>
+                <a href="/evaluation" class="ui-button btn-gradient">Bắt đầu đánh giá <i data-lucide="arrow-right" aria-hidden="true"></i></a>
+            </section>
+        <% } else { %>
+            <div class="ui-history-list">
+                <% history.forEach((item) => { %>
+                    <article class="ui-card ui-history-card">
+                        <div class="ui-history-heading">
+                            <div>
+                                <span class="ui-kicker">Kết quả đã lưu</span>
+                                <h2>Lượt đánh giá hướng nghiệp</h2>
+                            </div>
+                            <time class="ui-history-date">
+                                <%= item.detail?.thoiGian
+                                    ? new Date(item.detail.thoiGian).toLocaleString('vi-VN', { timeZone: 'Asia/Ho_Chi_Minh' })
+                                    : 'Chưa có thời gian ghi nhận' %>
+                            </time>
+                        </div>
+                        <% if (Array.isArray(item.nganhHoc) && item.nganhHoc.length > 0) { %>
+                            <h3>Ngành học được gợi ý</h3>
+                            <ol class="ui-history-majors">
+                                <% item.nganhHoc.forEach((major, index) => { %>
+                                    <li>
+                                        <span><%= major %></span>
+                                        <% if (Array.isArray(item.tiLe) && Number.isFinite(Number(item.tiLe[index]))) { %>
+                                            <strong><%= Number(item.tiLe[index]).toLocaleString('vi-VN') %>%</strong>
+                                        <% } %>
+                                    </li>
+                                <% }) %>
+                            </ol>
+                        <% } else { %>
+                            <p>Không có thông tin ngành học trong lượt đánh giá này.</p>
+                        <% } %>
+                    </article>
+                <% }) %>
+            </div>
+            <a href="/evaluation" class="ui-button btn-gradient">Làm bài đánh giá mới <i data-lucide="arrow-right" aria-hidden="true"></i></a>
+        <% } %>
+    </main>
+</div>
+<%- include('../partials/footer', { extraScripts: '<script>renderLayout("nav-evaluation-history");</script>' }) %>

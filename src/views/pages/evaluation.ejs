@@ -1,76 +1,79 @@
 <%- include('../partials/header', { 
     extraHead: `<style>
-        .option-label:hover { border-color: #00B4D8; background-color: rgba(0, 180, 216, 0.04); }
-        .option-radio:checked + span { color: #0077B6; font-weight: 700; }
         .status-badge-ready { background-color: #ECFDF5; color: #065F46; border: 1px solid #A7F3D0; }
         .status-badge-conditional { background-color: #FFFBEB; color: #92400E; border: 1px solid #FDE68A; }
         .status-badge-unresolved { background-color: #FEF2F2; color: #991B1B; border: 1px solid #FECACA; }
-    </style>`
+    </style><link rel="stylesheet" href="/css/evaluation.css">`
 }) %>
 
 <% if (typeof isAllowedPreview !== 'undefined' && isAllowedPreview) { %>
-<div id="main-wrapper" class="ui-page w-full min-h-screen flex flex-col items-center relative pb-24 px-4 sm:px-8">
+<div id="main-wrapper" class="ui-page evaluation-page w-full min-h-screen flex flex-col items-center relative pb-24 px-4 sm:px-8">
     <div class="fixed top-[-10%] right-[-5%] w-[400px] h-[400px] bg-cyan/10 rounded-full blur-[100px] -z-10"></div>
     <div class="fixed bottom-[-10%] left-[20%] w-[500px] h-[500px] bg-violet/10 rounded-full blur-[120px] -z-10"></div>
 
-    <main class="w-full max-w-5xl relative flex flex-col">
+    <main id="evaluation-app" class="w-full max-w-5xl relative flex flex-col">
 
-        <!-- ĐIỀU HƯỚNG QUAY LẠI TRANG CHỦ -->
-        <div class="mb-4 flex flex-wrap items-center justify-between gap-3 text-xs">
-            <a href="/" class="text-muted hover:text-navy font-semibold flex items-center gap-1">
-                <i data-lucide="home" class="w-3.5 h-3.5"></i> Trang chủ
-            </a>
-        </div>
-        <header class="ui-page-header">
-            <span class="ui-kicker"><i data-lucide="sparkles" aria-hidden="true"></i> Khám phá sở thích</span>
-            <h1>Định hướng nghề nghiệp bằng AI</h1>
-            <p>Trả lời 27 câu hỏi RIASEC để khám phá những ngành đại học bạn có thể tìm hiểu thêm.</p>
+        <header class="ui-page-header evaluation-page-header">
+            <h1>Đánh giá năng lực &amp; định hướng</h1>
+            <p>Khám phá sở thích nghề nghiệp qua bài trắc nghiệm Holland gồm 27 câu RIASEC.</p>
         </header>
 
-        <!-- PHẦN 1: BÀI KHẢO SÁT 27 CÂU RIASEC -->
-        <section id="riasec27-survey-panel" class="glass-card rounded-3xl p-6 sm:p-8 mb-10 shadow-sm border border-slate-200">
-            <div class="flex flex-wrap items-center justify-between gap-4 border-b border-slate-100 pb-4 mb-6">
+        <ol class="evaluation-stepper" aria-label="Các bước đánh giá">
+            <li class="evaluation-step is-current" data-eval-step="1" aria-current="step">
+                <span class="evaluation-step-number">1</span>
+                <span class="evaluation-step-label">Trắc nghiệm Holland</span>
+            </li>
+            <li class="evaluation-step" data-eval-step="2">
+                <span class="evaluation-step-number">2</span>
+                <span class="evaluation-step-label">Kết quả AI</span>
+            </li>
+            <li class="evaluation-step" data-eval-step="3">
+                <span class="evaluation-step-number">3</span>
+                <span class="evaluation-step-label">Giải thích</span>
+            </li>
+        </ol>
+
+        <section id="riasec27-survey-panel" class="evaluation-panel">
+            <div class="evaluation-panel-heading">
                 <div>
-                    <h3 class="text-lg font-bold text-navy flex items-center gap-2">
-                        <span>1. Khảo sát 27 câu RIASEC</span>
-                    </h3>
-                    <p class="text-xs text-muted mt-1">Đánh giá mức độ đồng ý từ 1 (Hoàn toàn không đồng ý) đến 5 (Hoàn toàn đồng ý).</p>
+                    <span class="evaluation-eyebrow">BÀI TRẮC NGHIỆM</span>
+                    <h2>Khảo sát Holland RIASEC</h2>
+                    <p>Chọn mức độ đồng ý phù hợp nhất với bạn cho từng nhận định. Thang điểm: 1 = Hoàn toàn không đồng ý · 3 = Trung lập · 5 = Hoàn toàn đồng ý.</p>
                 </div>
-                <div class="bg-cyan/10 text-ocean px-4 py-2 rounded-2xl text-xs font-bold" id="riasec27-counter">
-                    Đã hoàn thành: <span id="answered-count">0</span> / 27 câu
+                <div class="evaluation-counter" id="riasec27-counter" role="status" aria-live="polite">
+                    <span id="answered-count">0</span><span> / 27 câu</span>
                 </div>
             </div>
+            <div class="evaluation-progress" role="progressbar" aria-label="Tiến độ trả lời" aria-valuemin="0" aria-valuemax="27" aria-valuenow="0">
+                <span id="riasec27-progress-bar"></span>
+            </div>
 
-            <!-- FORM 27 CÂU HỎI -->
             <form id="riasec27-form" novalidate>
-                <div id="questions-list" class="space-y-6">
+                <div id="questions-list" class="evaluation-questions">
                     <!-- Danh sách 27 câu sẽ được render động từ JSON codebook -->
                 </div>
 
-                <div class="mt-8 pt-6 border-t border-slate-100 flex flex-wrap items-center justify-between gap-4">
-                    <button type="button" id="btn-reset-answers" class="px-5 py-2.5 rounded-xl border border-slate-200 text-xs font-bold text-navy hover:bg-slate-50 transition">
+                <div class="evaluation-form-actions">
+                    <button type="button" id="btn-reset-answers" class="evaluation-button evaluation-button-secondary">
                         Làm lại từ đầu
                     </button>
-                    <button type="submit" id="btn-submit-riasec" disabled class="btn-gradient px-7 py-3 rounded-xl text-white font-bold text-sm shadow-md disabled:opacity-40 disabled:cursor-not-allowed transition">
+                    <button type="submit" id="btn-submit-riasec" disabled class="evaluation-button evaluation-button-primary">
                         Xem kết quả
                     </button>
                 </div>
             </form>
         </section>
 
-        <!-- PHẦN 2: KẾT QUẢ XẾP HẠNG ML TOP-3 (CHỈ 21 NGÀNH READY) -->
-        <section id="riasec27-results-panel" class="hidden scroll-mt-24 glass-card rounded-3xl p-6 sm:p-8 mb-10 shadow-sm border border-slate-200">
-            <div class="flex flex-wrap items-center justify-between gap-4 border-b border-slate-100 pb-4 mb-6">
+        <section id="riasec27-results-panel" class="hidden evaluation-panel evaluation-results scroll-mt-24">
+            <div class="evaluation-panel-heading">
                 <div>
-                    <h3 class="text-lg font-bold text-navy flex items-center gap-2">
-                        <span>2. Kết quả Top-3 ngành đại học</span>
-                    </h3>
-                    <p id="result-reference-note" class="text-xs text-muted mt-1" role="note">Kết quả mang tính tham khảo, không thay thế tư vấn hướng nghiệp.</p>
+                    <span class="evaluation-eyebrow">KẾT QUẢ</span>
+                    <h2>Gợi ý ngành học từ RIASEC</h2>
+                    <p id="result-reference-note" role="note">Kết quả nghiên cứu mang tính tham khảo, không thay thế tư vấn hướng nghiệp.</p>
                 </div>
             </div>
 
-            <!-- NỘI DUNG KẾT QUẢ DYNAMIC -->
-            <div id="results-content" class="space-y-6">
+            <div id="results-content" class="evaluation-results-content">
                 <!-- SUCCESS, ABSTAIN_FLAT_PROFILE, TIED_BOUNDARY render tại đây -->
             </div>
 
