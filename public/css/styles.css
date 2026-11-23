@@ -616,7 +616,6 @@ html.dark .theme-switch-thumb {
 html.dark .theme-switch-icon.sun-icon { color: #94A3B8; }
 html.dark .theme-switch-icon.moon-icon { color: #FFFFFF; }
 
-<<<<<<< HEAD
 /* Shared presentation for the existing information and evaluation pages. */
 .ui-page { width: 100%; min-height: 100vh; padding: 6.5rem 1.5rem 3rem; }
 .ui-page > main { width: 100%; max-width: 1100px; margin: 0 auto; min-width: 0; }
@@ -665,7 +664,6 @@ html.dark .ui-footer { border-color: rgba(148, 163, 184, .24); }
 @media (min-width: 1024px) { #site-menu-toggle, #site-mobile-menu { display: none !important; } }
 @media (max-width: 767px) { .ui-card-grid { grid-template-columns: 1fr; } .ui-page { padding: 6rem 1rem 2rem; } .ui-card { padding: 1.25rem; } .ui-step, .ui-about-intro { gap: .85rem; } }
 @media (prefers-reduced-motion: reduce) { .animate-float, .animate-float-slow, .sweeping-light, .btn-gradient { animation: none; } }
-=======
 /* Đồng bộ hiệu ứng rê chuột chuyển xanh dương cho chữ "la bàn" ở cả Light & Dark (User + Admin) */
 #admin-brand-copy > span:first-child,
 .brand-text {
@@ -684,4 +682,3 @@ html.dark .hover\:text-cyan:hover,
 html.dark #admin-brand-toggle:hover #admin-brand-copy > span:first-child {
     color: rgb(var(--accent-cyan, 0 180 216)) !important;
 }
->>>>>>> origin/Ngan
