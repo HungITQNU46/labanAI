@@ -4,8 +4,8 @@
  * End-to-end browser test for LabanAI single RIASEC27 survey architecture on /evaluation.
  * Verifies prompt requirements 1-9:
  * 1. Clean '/' home page with no F54/Holland references, CTA pointing to /evaluation.
- * 2. Direct 27 RIASEC questions on /evaluation without tabs/mode selection.
- * 3. Complete absence of F54, Holland 60, THPT scores, Wishlist drag.
+ * 2. Academic profile on /evaluation advances to the 27 RIASEC questions.
+ * 3. No F54, Holland 60, or wishlist; profile scores stay client-side.
  * 4. 27 differentiated answers -> Top-3 READY majors + decimal Pearson + B-11 explanation.
  * 5. 27 flat answers -> ABSTAIN_FLAT_PROFILE.
  * 6. Responsive layout at 1440px, 375px, 320px.
@@ -179,6 +179,10 @@ async function runEvaluationTests() {
             }
             throw new Error(`Timeout waiting for: ${description}`);
         };
+        const advanceToSurvey = async () => {
+            await evaluate("document.querySelectorAll('.academic-score-input').forEach(input=>{input.value='8.0'});document.getElementById('btn-next-to-survey').click()");
+            await waitFor("!document.getElementById('riasec27-survey-panel').classList.contains('hidden')", 'Holland survey step visible');
+        };
 
         // =========================================================================
         // STEP 1: The original home remains separate from the gated RIASEC27 feature.
@@ -224,7 +228,7 @@ async function runEvaluationTests() {
         console.log('PASS: / renders original home without survey or redirect; home/evaluation links, existing menus and desktop/mobile layouts are intact.');
 
         // =========================================================================
-        // STEP 2: Verify /evaluation Opens Directly to RIASEC27 Survey
+        // STEP 2: Verify /evaluation Opens at Academic Profile, then RIASEC27 Survey
         // =========================================================================
         console.log('\n--- STEP 2: Checking /evaluation Direct RIASEC27 Survey ---');
         await evaluate("Array.from(document.querySelectorAll('#layout-container a[href=\"/evaluation\"]')).find(a=>a.textContent.includes('Định hướng AI')).click()");
@@ -235,10 +239,13 @@ async function runEvaluationTests() {
         await evaluate("document.getElementById('btn-hero-riasec27').click()");
         await waitFor("document.getElementById('questions-list')?.children?.length === 27", 'Home CTA opens the same 27-question survey');
         assert.equal(await evaluate('location.pathname'), '/evaluation');
+        assert.equal(await evaluate("!document.getElementById('academic-profile-panel').classList.contains('hidden')"), true);
+        assert.equal(await evaluate("document.getElementById('riasec27-survey-panel').classList.contains('hidden')"), true);
+        await advanceToSurvey();
 
         // Check required elements
         const titleText = await evaluate("document.querySelector('h1')?.innerText");
-        assert.ok(titleText.includes('Định hướng nghề nghiệp bằng AI'));
+        assert.ok(titleText.includes('Đánh giá năng lực'));
 
         assert.ok(await evaluate("document.getElementById('result-reference-note').textContent.includes('Kết quả mang tính tham khảo, không thay thế tư vấn hướng nghiệp.')"));
         assert.equal(await evaluate("/RESEARCH_ONLY|TOP3_NOT_VALIDATED|research_status|BẢN THỬ NGHIỆM NỘI BỘ/.test(document.querySelector('main').innerText)"),false);
@@ -255,6 +262,7 @@ async function runEvaluationTests() {
         const hasHollandPanel = await evaluate("Boolean(document.getElementById('holland-survey-panel'))");
         const hasHollandTab = await evaluate("Boolean(document.getElementById('tab-btn-holland'))");
         const hasThptInput = await evaluate("Boolean(document.getElementById('input-toan'))");
+        const hasAcademicScore = await evaluate("Boolean(document.getElementById('academic-score-toan'))");
         const hasWishlist = await evaluate("Boolean(document.getElementById('wishlist-drag-container'))");
         const hasBottomBar = await evaluate("Boolean(document.getElementById('bottom-nav-bar'))");
 
@@ -263,9 +271,10 @@ async function runEvaluationTests() {
         assert.equal(hasHollandPanel, false, 'No Holland panel');
         assert.equal(hasHollandTab, false, 'No Holland tab');
         assert.equal(hasThptInput, false, 'No THPT input');
+        assert.equal(hasAcademicScore, true, 'Academic profile step is available');
         assert.equal(hasWishlist, false, 'No Wishlist container');
-        assert.equal(hasBottomBar, false, 'No legacy bottom bar');
-        console.log('PASS: /evaluation directly opens 27 questions with zero legacy elements.');
+        assert.equal(hasBottomBar, true, 'Evaluation action bar is present');
+        console.log('PASS: /evaluation opens the academic profile and advances to the 27-question survey.');
 
         // =========================================================================
         // STEP 3: Fill 27 Differentiated Answers -> Top-3 SUCCESS + B-11
@@ -308,7 +317,7 @@ async function runEvaluationTests() {
         assert.ok(resultsText.includes('TOP #3'), 'Must contain TOP #3');
         assert.ok(resultsText.includes('O*NET:'), 'Must contain O*NET');
         assert.ok(!resultsText.includes('%') && !resultsText.includes('Pearson'), 'Main cards contain no score or long explanation');
-        assert.equal(await evaluate("document.querySelectorAll('main > section').length"), 2);
+        assert.equal(await evaluate("document.querySelectorAll('main > section').length"), 3);
         assert.equal(await evaluate("Boolean(document.getElementById('top3-process-explanation') || document.getElementById('riasec27-catalog-panel') || document.getElementById('riasec27-tier2-panel'))"), false);
         assert.deepEqual(await evaluate("Array.from(document.querySelectorAll('.top3-card')).map(c=>c.querySelectorAll('[data-result-field]').length)"), [5,5,5]);
         const rankingBefore = await evaluate("Array.from(document.querySelectorAll('.top3-card')).map(c=>c.dataset.majorId)");
@@ -351,7 +360,8 @@ async function runEvaluationTests() {
         assert.equal(providerCalls, 3); assert.equal(mlCalls, countBefore);
         assert.equal(await evaluate("document.getElementById('ai-explanation-content').children.length"), 0);
         assert.deepEqual(await evaluate("Array.from(document.querySelectorAll('.top3-card')).map(c=>c.dataset.majorId)"), rankingBefore);
-        console.log('PASS: Two sections; consent -> real ML/P2 -> mocked Groq Chat Completions, no raw answers or extra ML; ranking mismatch and 429 preserve Top-3.');
+        console.log('PASS: Three-step survey; consent -> real ML/P2 -> mocked Groq Chat Completions, no raw answers or extra ML; ranking mismatch and 429 preserve Top-3.');
+        await evaluate("document.getElementById('btn-back-step').click()");
         await evaluate("window.beforeTiedFetch=window.fetch;window.fetch=async(url,options)=>url==='/api/riasec27/evaluate'?new Response(JSON.stringify({ml_ranking:{status:'TIED_BOUNDARY',top3:[]}}),{headers:{'Content-Type':'application/json'}}):window.beforeTiedFetch(url,options);document.getElementById('btn-submit-riasec').click()");
         await waitFor("Boolean(document.querySelector('[data-result-status=\"TIED_BOUNDARY\"]'))", 'Tied boundary rendering');
         assert.equal(await evaluate("document.querySelectorAll('.top3-card').length"), 0);
@@ -366,6 +376,7 @@ async function runEvaluationTests() {
         console.log('\n--- STEP 4: Reset & Flat Profile All 3s ---');
         await evaluate("document.getElementById('btn-reset-answers').click()");
         await waitFor("document.getElementById('answered-count')?.innerText === '0'", 'Reset counter to 0');
+        await advanceToSurvey();
 
         const resultsHiddenAfterReset = await evaluate("document.getElementById('riasec27-results-panel')?.classList.contains('hidden')");
         assert.ok(resultsHiddenAfterReset, 'Results hidden after reset');

@@ -140,6 +140,10 @@ async function runBrowserTests() {
         }
         throw new Error(`Timeout waiting for: ${desc}`);
     };
+    const advanceToSurvey = async () => {
+        await evaluate(`document.querySelectorAll('.academic-score-input').forEach((input) => { input.value = '8.0'; }); document.getElementById('btn-next-to-survey').click()`);
+        await waitFor(`!document.getElementById('riasec27-survey-panel').classList.contains('hidden')`, 'Holland survey step visible');
+    };
 
     try {
         console.log('\n--- SCENARIO M: Security Enforcement & Host Spoofing Check ---');
@@ -172,6 +176,9 @@ async function runBrowserTests() {
 
         // Verify 27 questions rendered
         await waitFor(`document.querySelectorAll('#questions-list > div').length === 27`, '27 question cards rendered');
+        assert.equal(await evaluate(`!document.getElementById('academic-profile-panel').classList.contains('hidden')`), true);
+        assert.equal(await evaluate(`document.getElementById('riasec27-survey-panel').classList.contains('hidden')`), true);
+        await advanceToSurvey();
         assert.equal(await evaluate(`document.getElementById('btn-submit-riasec').disabled`), true);
         console.log('PASS: 27 question cards rendered and submit initially disabled.');
 
@@ -201,7 +208,8 @@ async function runBrowserTests() {
         assert.ok(resultsText.includes('TOP #3'));
         assert.ok(resultsText.includes('O*NET:'));
         assert.ok(!resultsText.includes('Pearson') && !resultsText.includes('%'));
-        assert.equal(await evaluate("document.querySelectorAll('main > section').length"), 2);
+        assert.equal(await evaluate("document.querySelectorAll('main > section').length"), 3);
+        assert.equal(await evaluate("document.getElementById('score-block-a01').textContent"), '24.0');
         console.log('PASS: Realistic profile generated SUCCESS Top-3 with five short fields and no score on the main cards.');
 
         console.log('\n--- SCENARIO L: Reset / Làm lại khảo sát ---');
@@ -210,6 +218,7 @@ async function runBrowserTests() {
         assert.equal(await evaluate(`document.getElementById('answered-count').textContent`), '0');
         assert.equal(await evaluate(`document.getElementById('btn-submit-riasec').disabled`), true);
         assert.equal(await evaluate(`document.getElementById('riasec27-results-panel').classList.contains('hidden')`), true);
+        await advanceToSurvey();
         console.log('PASS: Reset clears all 27 inputs, disables submit, and hides results panel.');
 
         console.log('\n--- SCENARIO B: Flat Profile All 1s -> ABSTAIN_FLAT_PROFILE ---');
@@ -237,6 +246,7 @@ async function runBrowserTests() {
         console.log('\n--- SCENARIO C: Flat Profile All 5s -> ABSTAIN_FLAT_PROFILE ---');
         await evaluate(`document.getElementById('btn-reset-answers').click()`);
         await pause(100);
+        await advanceToSurvey();
         await evaluate(`(() => {
             const cards = document.querySelectorAll('#questions-list > div');
             cards.forEach((card) => {
@@ -257,6 +267,7 @@ async function runBrowserTests() {
         console.log('PASS: Flat profile all 5s produces ABSTAIN_FLAT_PROFILE and zero Top-3 cards.');
 
         console.log('\n--- SCENARIO D: Real TIED renderer, no fabricated cards or AI ---');
+        await evaluate(`document.getElementById('btn-back-step').click()`);
         await evaluate(`window.beforeTiedFetch=window.fetch;window.fetch=async(url,options)=>url==='/api/riasec27/evaluate'?new Response(JSON.stringify({ml_ranking:{status:'TIED_BOUNDARY',top3:[]}}),{headers:{'Content-Type':'application/json'}}):window.beforeTiedFetch(url,options);document.getElementById('btn-submit-riasec').click()`);
         await waitFor(`Boolean(document.querySelector('[data-result-status="TIED_BOUNDARY"]'))`, 'Actual tied renderer');
         assert.equal(await evaluate(`document.querySelectorAll('.top3-card').length`), 0);

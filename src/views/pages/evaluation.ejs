@@ -7,33 +7,80 @@
 }) %>
 
 <% if (typeof isAllowedPreview !== 'undefined' && isAllowedPreview) { %>
-<div id="main-wrapper" class="ui-page evaluation-page w-full min-h-screen flex flex-col items-center relative pb-24 px-4 sm:px-8">
+<div id="main-wrapper" class="ui-page evaluation-page w-full min-h-screen flex flex-col items-center relative pb-32 px-4 sm:px-8">
     <div class="fixed top-[-10%] right-[-5%] w-[400px] h-[400px] bg-cyan/10 rounded-full blur-[100px] -z-10"></div>
     <div class="fixed bottom-[-10%] left-[20%] w-[500px] h-[500px] bg-violet/10 rounded-full blur-[120px] -z-10"></div>
 
     <main id="evaluation-app" class="w-full max-w-5xl relative flex flex-col">
 
         <header class="ui-page-header evaluation-page-header">
-            <h1>Đánh giá năng lực &amp; định hướng</h1>
-            <p>Khám phá sở thích nghề nghiệp qua bài trắc nghiệm Holland gồm 27 câu RIASEC.</p>
+            <h1 id="evaluation-page-title">Đánh giá năng lực &amp; định hướng</h1>
+            <p id="evaluation-page-subtitle">Khảo sát sở thích nghề nghiệp và khám phá các hướng học tập theo chuẩn Holland RIASEC.</p>
         </header>
 
-        <ol class="evaluation-stepper" aria-label="Các bước đánh giá">
+        <ol id="evaluation-stepper" class="evaluation-stepper" aria-label="Các bước đánh giá">
             <li class="evaluation-step is-current" data-eval-step="1" aria-current="step">
                 <span class="evaluation-step-number">1</span>
-                <span class="evaluation-step-label">Trắc nghiệm Holland</span>
+                <span class="evaluation-step-label">Hồ sơ học tập</span>
             </li>
             <li class="evaluation-step" data-eval-step="2">
                 <span class="evaluation-step-number">2</span>
-                <span class="evaluation-step-label">Kết quả AI</span>
+                <span class="evaluation-step-label">Trắc nghiệm Holland</span>
             </li>
             <li class="evaluation-step" data-eval-step="3">
                 <span class="evaluation-step-number">3</span>
-                <span class="evaluation-step-label">Giải thích</span>
+                <span class="evaluation-step-label">Kết quả AI</span>
             </li>
         </ol>
 
-        <section id="riasec27-survey-panel" class="evaluation-panel">
+        <section id="academic-profile-panel" class="evaluation-panel academic-profile-panel">
+            <div class="evaluation-panel-heading">
+                <div>
+                    <h2><i data-lucide="graduation-cap" aria-hidden="true"></i> Điểm số học tập dự kiến</h2>
+                    <p>Nhập điểm trung bình từng môn để tính tổng các tổ hợp xét tuyển tham khảo.</p>
+                </div>
+            </div>
+            <form id="academic-profile-form" class="academic-score-grid">
+                <label class="academic-score-field" for="academic-score-toan">
+                    <span>Toán</span>
+                    <input class="academic-score-input" id="academic-score-toan" name="toan" type="number" min="0" max="10" step="0.1" inputmode="decimal" placeholder="Ví dụ: 8.5" required>
+                </label>
+                <label class="academic-score-field" for="academic-score-van">
+                    <span>Ngữ Văn</span>
+                    <input class="academic-score-input" id="academic-score-van" name="van" type="number" min="0" max="10" step="0.1" inputmode="decimal" placeholder="Ví dụ: 7.0" required>
+                </label>
+                <label class="academic-score-field" for="academic-score-anh">
+                    <span>Tiếng Anh</span>
+                    <input class="academic-score-input" id="academic-score-anh" name="anh" type="number" min="0" max="10" step="0.1" inputmode="decimal" placeholder="Ví dụ: 9.0" required>
+                </label>
+                <label class="academic-score-field" for="academic-score-ly">
+                    <span>Vật Lý</span>
+                    <input class="academic-score-input" id="academic-score-ly" name="ly" type="number" min="0" max="10" step="0.1" inputmode="decimal" placeholder="Ví dụ: 8.0" required>
+                </label>
+                <label class="academic-score-field" for="academic-score-hoa">
+                    <span>Hóa Học</span>
+                    <input class="academic-score-input" id="academic-score-hoa" name="hoa" type="number" min="0" max="10" step="0.1" inputmode="decimal" placeholder="Ví dụ: 7.5" required>
+                </label>
+                <label class="academic-score-field" for="academic-score-sinh">
+                    <span>Sinh Học</span>
+                    <input class="academic-score-input" id="academic-score-sinh" name="sinh" type="number" min="0" max="10" step="0.1" inputmode="decimal" placeholder="Ví dụ: 6.5" required>
+                </label>
+                <label class="academic-score-field" for="academic-score-su">
+                    <span>Lịch Sử</span>
+                    <input class="academic-score-input" id="academic-score-su" name="su" type="number" min="0" max="10" step="0.1" inputmode="decimal" placeholder="Ví dụ: 7.0" required>
+                </label>
+                <label class="academic-score-field" for="academic-score-dia">
+                    <span>Địa Lý</span>
+                    <input class="academic-score-input" id="academic-score-dia" name="dia" type="number" min="0" max="10" step="0.1" inputmode="decimal" placeholder="Ví dụ: 7.5" required>
+                </label>
+                <label class="academic-score-field" for="academic-score-tin">
+                    <span>Tin Học / GDCD</span>
+                    <input class="academic-score-input" id="academic-score-tin" name="tin" type="number" min="0" max="10" step="0.1" inputmode="decimal" placeholder="Ví dụ: 9.0" required>
+                </label>
+            </form>
+        </section>
+
+        <section id="riasec27-survey-panel" class="hidden evaluation-panel">
             <div class="evaluation-panel-heading">
                 <div>
                     <span class="evaluation-eyebrow">BÀI TRẮC NGHIỆM</span>
@@ -52,15 +99,6 @@
                 <div id="questions-list" class="evaluation-questions">
                     <!-- Danh sách 27 câu sẽ được render động từ JSON codebook -->
                 </div>
-
-                <div class="evaluation-form-actions">
-                    <button type="button" id="btn-reset-answers" class="evaluation-button evaluation-button-secondary">
-                        Làm lại từ đầu
-                    </button>
-                    <button type="submit" id="btn-submit-riasec" disabled class="evaluation-button evaluation-button-primary">
-                        Xem kết quả
-                    </button>
-                </div>
             </form>
         </section>
 
@@ -71,6 +109,18 @@
                     <h2>Gợi ý ngành học từ RIASEC</h2>
                     <p id="result-reference-note" role="note">Kết quả nghiên cứu mang tính tham khảo, không thay thế tư vấn hướng nghiệp.</p>
                 </div>
+            </div>
+
+            <div id="academic-summary" class="academic-summary hidden" aria-label="Tổng điểm tổ hợp tham khảo">
+                <h3>Tổng điểm tổ hợp tham khảo</h3>
+                <div class="academic-summary-grid">
+                    <div><span>A01 · Toán, Lý, Anh</span><strong id="score-block-a01"></strong></div>
+                    <div><span>D01 · Toán, Văn, Anh</span><strong id="score-block-d01"></strong></div>
+                    <div><span>A00 · Toán, Lý, Hóa</span><strong id="score-block-a00"></strong></div>
+                    <div><span>D07 · Toán, Hóa, Anh</span><strong id="score-block-d07"></strong></div>
+                    <div><span>C00 · Văn, Sử, Địa</span><strong id="score-block-c00"></strong></div>
+                </div>
+                <p>Đây là tổng điểm môn bạn đã nhập, không phải điểm chuẩn hay xác suất trúng tuyển. Kết quả RIASEC chỉ dựa trên câu trả lời khảo sát.</p>
             </div>
 
             <div id="results-content" class="evaluation-results-content">
@@ -96,6 +146,122 @@
                 </div>
             </div>
         </section>
+
+        <section id="admission-prediction-panel" class="hidden admission-prediction-panel">
+            <div class="admission-warning" role="note">
+                <i data-lucide="info" aria-hidden="true"></i>
+                <span>Giao diện mẫu: trường, ngành và mốc điểm bên dưới là dữ liệu minh họa, không phải dự báo tuyển sinh chính thức.</span>
+            </div>
+
+            <section class="admission-profile-card" aria-labelledby="admission-profile-title">
+                <div class="admission-profile-content">
+                    <div class="admission-profile-heading">
+                        <div>
+                            <h2 id="admission-profile-title">Hồ sơ điểm của bạn</h2>
+                            <div class="admission-profile-tags">
+                                <span>Điểm học tập</span>
+                                <span>Tổ hợp xét tuyển tham khảo</span>
+                            </div>
+                        </div>
+                        <button id="btn-edit-academic-scores" type="button" class="admission-edit-button">
+                            <i data-lucide="sliders-horizontal" aria-hidden="true"></i> Chỉnh sửa điểm
+                        </button>
+                    </div>
+                    <div class="admission-block-scores">
+                        <span>A01 <strong id="admission-score-a01"></strong></span>
+                        <span>D01 <strong id="admission-score-d01"></strong></span>
+                        <span>A00 <strong id="admission-score-a00"></strong></span>
+                        <span>D07 <strong id="admission-score-d07"></strong></span>
+                        <span>C00 <strong id="admission-score-c00"></strong></span>
+                    </div>
+                    <div id="admission-subject-scores" class="admission-subject-scores"></div>
+                </div>
+            </section>
+
+            <section class="admission-filter-panel" aria-label="Lọc ngành và trường">
+                <label class="admission-search">
+                    <i data-lucide="search" aria-hidden="true"></i>
+                    <span class="sr-only">Tìm trường, ngành hoặc mã ngành</span>
+                    <input id="admission-search-input" type="search" placeholder="Tìm tên trường, tên ngành hoặc mã..." autocomplete="off">
+                </label>
+                <label class="admission-filter">
+                    <span class="sr-only">Khu vực</span>
+                    <select id="admission-filter-region">
+                        <option value="all">Khu vực: Tất cả</option>
+                        <option value="north">Miền Bắc</option>
+                        <option value="central">Miền Trung</option>
+                        <option value="south">Miền Nam</option>
+                    </select>
+                </label>
+                <label class="admission-filter">
+                    <span class="sr-only">Phương thức</span>
+                    <select id="admission-filter-method">
+                        <option value="all">Phương thức: Tất cả</option>
+                        <option value="thpt">Điểm thi THPT</option>
+                    </select>
+                </label>
+                <label class="admission-filter">
+                    <span class="sr-only">Khối ngành</span>
+                    <select id="admission-filter-category">
+                        <option value="all">Khối ngành: Tất cả</option>
+                        <option value="technology">Công nghệ</option>
+                        <option value="engineering">Kỹ thuật</option>
+                        <option value="business">Kinh tế</option>
+                    </select>
+                </label>
+                <label class="admission-filter admission-filter-risk">
+                    <span class="sr-only">Mức so sánh điểm tham khảo</span>
+                    <select id="admission-filter-risk">
+                        <option value="all">So sánh: Tất cả</option>
+                        <option value="advantage">Cao hơn mốc minh họa</option>
+                        <option value="near">Gần mốc minh họa</option>
+                        <option value="below">Thấp hơn mốc minh họa</option>
+                    </select>
+                </label>
+                <div class="admission-filter-footer">
+                    <p id="admission-result-count" role="status" aria-live="polite"></p>
+                    <div class="admission-legend" aria-label="Chú giải so sánh điểm">
+                        <span><i class="legend-dot legend-advantage"></i>Cao hơn mốc minh họa</span>
+                        <span><i class="legend-dot legend-near"></i>Gần mốc minh họa</span>
+                        <span><i class="legend-dot legend-below"></i>Thấp hơn mốc minh họa</span>
+                    </div>
+                </div>
+            </section>
+
+            <div id="admission-cards" class="admission-cards"></div>
+            <p id="admission-empty-state" class="admission-empty-state hidden" role="status">Không tìm thấy ngành phù hợp với bộ lọc.</p>
+        </section>
+
+        <div id="bottom-nav-bar" class="evaluation-action-bar" role="region" aria-label="Tác vụ đánh giá">
+            <div class="evaluation-action-links">
+                <a id="btn-open-admission" href="#admission-prediction-panel" class="evaluation-shortcut evaluation-shortcut-prediction">
+                    <i data-lucide="school" aria-hidden="true"></i><span>Dự đoán trúng tuyển ĐH</span>
+                </a>
+                <a href="/chatbot" class="evaluation-shortcut evaluation-shortcut-chat">
+                    <i data-lucide="message-square" aria-hidden="true"></i><span>Hỏi ChatBot AI</span>
+                </a>
+                <a href="/evaluation/history" class="evaluation-shortcut">
+                    <i data-lucide="history" aria-hidden="true"></i><span>Lịch sử</span>
+                </a>
+            </div>
+            <div class="evaluation-action-buttons">
+                <button type="button" id="btn-reset-answers" class="evaluation-button evaluation-button-reset">
+                    <i data-lucide="rotate-ccw" aria-hidden="true"></i><span>Làm lại từ đầu</span>
+                </button>
+                <button type="button" id="btn-back-step" class="evaluation-button evaluation-button-secondary hidden">
+                    <i data-lucide="arrow-left" aria-hidden="true"></i><span>Quay lại</span>
+                </button>
+                <button type="button" id="btn-next-to-survey" class="evaluation-button evaluation-button-primary">
+                    Tiếp theo <i data-lucide="arrow-right" aria-hidden="true"></i>
+                </button>
+                <button type="submit" id="btn-submit-riasec" form="riasec27-form" disabled class="evaluation-button evaluation-button-primary hidden">
+                    Xem kết quả <i data-lucide="arrow-right" aria-hidden="true"></i>
+                </button>
+                <button type="button" id="btn-return-from-admission" class="evaluation-button evaluation-button-return hidden">
+                    <i data-lucide="arrow-left" aria-hidden="true"></i><span>Quay lại bài làm</span>
+                </button>
+            </div>
+        </div>
 
     </main>
 </div>
