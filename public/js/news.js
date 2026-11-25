@@ -8,6 +8,16 @@ let currentSort = 'newest';
 let displayedCount = 6;
 let currentViewingArticle = null;
 
+function escapeNewsHtml(value) {
+    return String(value ?? '').replace(/[&<>"']/g, (character) => ({
+        '&': '&amp;',
+        '<': '&lt;',
+        '>': '&gt;',
+        '"': '&quot;',
+        "'": '&#39;'
+    })[character]);
+}
+
 // Tính thời gian đọc ước lượng từ độ dài nội dung HTML
 function estimateReadTime(html) {
     const text = (html || '').replace(/<[^>]*>?/gm, '');
@@ -75,22 +85,23 @@ function renderArticlesFeed(items) {
         const card = document.createElement('div');
         card.className = 'glass-card bg-white/95 rounded-3xl overflow-hidden border border-navy/5 hover:border-cyan/40 hover:shadow-xl transition-all duration-300 flex flex-col justify-between group cursor-pointer';
         card.onclick = () => openArticleModal(item.id);
+        const safeArticleId = escapeNewsHtml(JSON.stringify(item.id));
         card.innerHTML = `
             <div>
                 <div class="relative h-44 w-full overflow-hidden">
-                    <img src="${item.image}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
-                    <span class="absolute top-3 left-3 bg-white/90 text-navy text-[10px] font-black uppercase px-2.5 py-1 rounded-lg">${item.categoryName}</span>
+                    <img src="${escapeNewsHtml(item.image)}" alt="" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+                    <span class="absolute top-3 left-3 bg-white/90 text-navy text-[10px] font-black uppercase px-2.5 py-1 rounded-lg">${escapeNewsHtml(item.categoryName)}</span>
                 </div>
                 <div class="p-5">
-                    <h3 class="font-black text-sm text-navy group-hover:text-cyan line-clamp-2">${item.title}</h3>
-                    <p class="text-xs text-muted line-clamp-2 mt-2">${item.snippet}</p>
+                    <h3 class="font-black text-sm text-navy group-hover:text-cyan line-clamp-2">${escapeNewsHtml(item.title)}</h3>
+                    <p class="text-xs text-muted line-clamp-2 mt-2">${escapeNewsHtml(item.snippet)}</p>
                 </div>
             </div>
             <div class="px-5 pb-5 pt-3 border-t border-gray-100 flex items-center justify-between text-[11px] text-muted">
                 <div class="flex items-center gap-3">
-                    <span class="flex items-center gap-1"><i data-lucide="eye" class="w-3.5 h-3.5"></i> ${item.views}</span>
-                    <button onclick="toggleArticleLike('${item.id}', event)" class="flex items-center gap-1 px-1.5 py-0.5 rounded-md hover:bg-red-50 ${item.isLiked ? 'text-red-500 font-bold' : 'hover:text-red-500'}">
-                        <i data-lucide="heart" class="w-3.5 h-3.5 ${item.isLiked ? 'fill-red-500 text-red-500' : 'text-red-400'}"></i> <span>${item.likes}</span>
+                    <span class="flex items-center gap-1"><i data-lucide="eye" class="w-3.5 h-3.5"></i> ${Number(item.views) || 0}</span>
+                    <button onclick="toggleArticleLike(${safeArticleId}, event)" class="flex items-center gap-1 px-1.5 py-0.5 rounded-md hover:bg-red-50 ${item.isLiked ? 'text-red-500 font-bold' : 'hover:text-red-500'}">
+                        <i data-lucide="heart" class="w-3.5 h-3.5 ${item.isLiked ? 'fill-red-500 text-red-500' : 'text-red-400'}"></i> <span>${Number(item.likes) || 0}</span>
                     </button>
                 </div>
                 <span class="text-cyan font-bold flex items-center gap-0.5 group-hover:translate-x-1 transition-transform">Đọc tiếp <i data-lucide="arrow-right" class="w-3 h-3"></i></span>
@@ -202,13 +213,13 @@ async function openArticleModal(id) {
         const json = await res.json();
 
         if (json.success && json.data) {
-            const detailHtml = json.data.html_str || `<p>${article.snippet}</p>`;
+            const detailHtml = json.data.html_str || `<p>${escapeNewsHtml(article.snippet)}</p>`;
             article.content = `
                 ${detailHtml}
                 <div class="pt-4">
-                    <a href="${article.link}" target="_blank" rel="noopener noreferrer" 
+                    <a href="${escapeNewsHtml(article.link)}" target="_blank" rel="noopener noreferrer" 
                        class="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-cyan/10 text-cyan hover:bg-cyan hover:text-white font-bold text-xs transition-all">
-                        Đọc toàn bộ bài viết gốc trên Báo Tuổi Trẻ ↗
+                        Đọc bài viết gốc ↗
                     </a>
                 </div>
             `;

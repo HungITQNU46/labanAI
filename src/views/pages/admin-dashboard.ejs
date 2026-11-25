@@ -434,43 +434,93 @@
             <!-- PANEL 3: QUẢN LÝ TIN TỨC -->
             <section id="news" class="admin-panel hidden">
                 <div class="glass-card rounded-3xl border border-navy/5 p-5 shadow-lg">
-                    <div class="mb-4 flex items-center justify-between">
-                        <h3 class="text-3xl font-black text-navy">Quản lý tin tức</h3>
-                        
-                        <button id="export-accounts" type="button" class="inline-flex items-center gap-2 rounded-2xl border border-cyan/20 bg-cyan/10 px-4 py-2.5 text-sm font-bold text-cyan transition hover:bg-cyan/15">
-                            </i>
-                            + Tạo bài viết
-                        </button>
+                    <div class="mb-5 flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
+                        <div>
+                            <h3 class="text-3xl font-black text-navy">Quản lý tin tức</h3>
+                            <p class="mt-1 text-sm text-muted">Danh sách đồng bộ với các bài viết đang hiển thị trên trang Tin tức.</p>
+                        </div>
+                        <div class="flex flex-wrap gap-2">
+                            <button id="sync-news" type="button" class="inline-flex items-center gap-2 rounded-2xl border border-amber-300/50 bg-amber-50 px-4 py-2.5 text-sm font-bold text-amber-700 transition hover:bg-amber-100">
+                                <i data-lucide="refresh-cw" class="h-4 w-4"></i> Đồng bộ tin tức
+                            </button>
+                            <button id="create-news" type="button" class="inline-flex items-center gap-2 rounded-2xl border border-cyan/20 bg-cyan/10 px-4 py-2.5 text-sm font-bold text-cyan transition hover:bg-cyan/15">
+                                <i data-lucide="plus" class="h-4 w-4"></i> Tạo bài viết
+                            </button>
+                        </div>
                     </div>
 
-                    <% const managedNews = [
-                        { title: 'Thế Hệ Gen Z & Nguy Cơ Lỗi Thời: Top 5 Kỹ Năng Số Cần Chuẩn Bị Cho Kỷ Nguyên AI 2027', category: 'Xu hướng nghề & AI · Bài nổi bật', date: '01/10/2026' },
-                        { title: 'Phương Pháp 3 Chiều Chọn Ngành: Sở Thích, Điểm Thi & Mức Thu Nhập Thực Tế', category: 'Cẩm nang chọn ngành · Bài nổi bật', date: 'Bài nổi bật' },
-                        { title: 'Sinh Viên IT Năm 3 Review Thẳng Thắn: Học Công Nghệ Thông Tin Có Màu Hồng Như Lời Đồn?', category: 'Góc sinh viên · Bài nổi bật', date: 'Bài nổi bật' },
-                        { title: 'Học Kỹ Thuật Phần Mềm Năm 2026: Cần Trình Độ Tiếng Anh & Thuật Toán Như Thế Nào?', category: 'Xu hướng nghề & AI', date: '30/09/2026' },
-                        { title: 'Bí Quyết Phân Bổ Nguyện Vọng Đại Học 2026: Tránh Rủi Ro Bằng Chiến Lược Bậc Thang', category: 'Thông tin tuyển sinh', date: '27/09/2026' }
-                    ]; %>
-                    <div class="space-y-4">
-                        <% managedNews.forEach(function(article) { %>
-                            <article class="rounded-2xl border border-navy/10 bg-slate-50 p-4">
-                                <div class="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
-                                    <div class="min-w-0">
-                                        <div class="mb-2 flex flex-wrap items-center gap-2">
-                                            <span class="rounded-full bg-cyan/10 px-2.5 py-1 text-[11px] font-bold text-cyan"><%= article.category %></span>
-                                            <span class="text-xs text-muted"><%= article.date %></span>
-                                        </div>
-                                        <p class="text-base font-bold leading-relaxed text-navy"><%= article.title %></p>
-                                    </div>
-                                    <span class="w-fit shrink-0 rounded-full bg-emerald-100 px-2.5 py-1 text-[11px] font-bold text-emerald-700">Hiện</span>
-                                </div>
-                                <div class="mt-4 flex flex-wrap items-center justify-end gap-2">
-                                    <button type="button" class="rounded-xl border border-cyan/30 bg-cyan/5 px-3 py-1.5 text-xs font-bold text-cyan">Chỉnh sửa</button>
-                                    <button type="button" class="rounded-xl border border-amber-200 bg-amber-50 px-3 py-1.5 text-xs font-bold text-amber-700">Ẩn bài viết</button>
-                                    <button type="button" class="rounded-xl border border-red-200 bg-red-50 px-3 py-1.5 text-xs font-bold text-red-600">Xóa</button>
-                                </div>
-                            </article>
-                        <% }); %>
+                    <div class="mb-4 flex flex-col gap-3 sm:flex-row">
+                        <input id="admin-news-search" type="search" placeholder="Tìm theo tiêu đề, mô tả hoặc tác giả..." class="min-w-0 flex-1 rounded-2xl border border-slate-200 bg-white px-4 py-2.5 text-sm text-navy outline-none focus:border-cyan">
+                        <select id="admin-news-status" class="rounded-2xl border border-slate-200 bg-white px-4 py-2.5 text-sm font-semibold text-navy outline-none focus:border-cyan">
+                            <option value="all">Tất cả trạng thái</option>
+                            <option value="published">Đang hiển thị</option>
+                            <option value="hidden">Đang ẩn</option>
+                        </select>
                     </div>
+                    <div id="admin-news-list" class="space-y-4" aria-live="polite"></div>
+                    <div class="mt-5 flex items-center justify-between gap-3">
+                        <p id="admin-news-pagination-label" class="text-xs text-muted"></p>
+                        <div class="flex gap-2">
+                            <button id="admin-news-prev" type="button" class="rounded-xl border border-slate-200 px-3 py-2 text-xs font-bold text-navy disabled:cursor-not-allowed disabled:opacity-40">Trước</button>
+                            <button id="admin-news-next" type="button" class="rounded-xl border border-slate-200 px-3 py-2 text-xs font-bold text-navy disabled:cursor-not-allowed disabled:opacity-40">Sau</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="news-editor-modal" class="fixed inset-0 z-[140] hidden items-center justify-center overflow-y-auto bg-navy/60 p-4 backdrop-blur-sm">
+                    <form id="news-editor-form" class="my-auto w-full max-w-2xl rounded-3xl bg-white p-6 shadow-2xl">
+                        <div class="mb-5 flex items-center justify-between">
+                            <h4 id="news-editor-title" class="text-2xl font-black text-navy">Tạo bài viết</h4>
+                            <button id="close-news-editor" type="button" class="rounded-xl p-2 text-muted hover:bg-slate-100" aria-label="Đóng">&times;</button>
+                        </div>
+                        <div class="grid gap-4 sm:grid-cols-2">
+                            <label class="text-xs font-bold text-navy sm:col-span-2">Tiêu đề
+                                <input name="title" required maxlength="200" class="mt-1 w-full rounded-xl border border-slate-200 px-3 py-2.5 text-sm font-normal outline-none focus:border-cyan">
+                            </label>
+                            <label class="text-xs font-bold text-navy sm:col-span-2">Liên kết nguồn (URL http/https)
+                                <input name="link" type="url" required class="mt-1 w-full rounded-xl border border-slate-200 px-3 py-2.5 text-sm font-normal outline-none focus:border-cyan">
+                            </label>
+                            <label class="text-xs font-bold text-navy">Danh mục
+                                <select name="category" class="mt-1 w-full rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-sm font-normal">
+                                    <option value="admission">Tuyển sinh</option>
+                                    <option value="school">Nhịp sống học đường</option>
+                                    <option value="study-abroad">Du học & Học bổng</option>
+                                    <option value="tech-ai">Công nghệ & AI</option>
+                                    <option value="teacher">Chân dung nhà giáo</option>
+                                </select>
+                            </label>
+                            <label class="text-xs font-bold text-navy">Nhóm ngành
+                                <select name="industry" class="mt-1 w-full rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-sm font-normal">
+                                    <option value="all">Tất cả</option>
+                                    <option value="tech">Công nghệ thông tin & AI</option>
+                                    <option value="business">Kinh tế & Marketing</option>
+                                    <option value="medical">Y - Dược & Sức khỏe</option>
+                                    <option value="design">Thiết kế & Mỹ thuật</option>
+                                    <option value="language">Ngôn ngữ & Truyền thông</option>
+                                </select>
+                            </label>
+                            <label class="text-xs font-bold text-navy">Tên danh mục hiển thị
+                                <input name="categoryName" maxlength="80" class="mt-1 w-full rounded-xl border border-slate-200 px-3 py-2.5 text-sm font-normal outline-none focus:border-cyan">
+                            </label>
+                            <label class="text-xs font-bold text-navy">Tác giả
+                                <input name="author" maxlength="120" class="mt-1 w-full rounded-xl border border-slate-200 px-3 py-2.5 text-sm font-normal outline-none focus:border-cyan">
+                            </label>
+                            <label class="text-xs font-bold text-navy sm:col-span-2">Ảnh đại diện (URL hoặc đường dẫn /...)
+                                <input name="image" type="text" class="mt-1 w-full rounded-xl border border-slate-200 px-3 py-2.5 text-sm font-normal outline-none focus:border-cyan">
+                            </label>
+                            <label class="text-xs font-bold text-navy sm:col-span-2">Mô tả ngắn
+                                <textarea name="snippet" rows="2" maxlength="1000" class="mt-1 w-full rounded-xl border border-slate-200 px-3 py-2.5 text-sm font-normal outline-none focus:border-cyan"></textarea>
+                            </label>
+                            <label class="text-xs font-bold text-navy sm:col-span-2">Nội dung văn bản
+                                <textarea name="content" rows="6" maxlength="8000" class="mt-1 w-full rounded-xl border border-slate-200 px-3 py-2.5 text-sm font-normal outline-none focus:border-cyan"></textarea>
+                                <span id="news-content-hint" class="mt-1 block font-normal text-muted">Khi chỉnh sửa bài viết hiện có, để trống nếu không muốn thay đổi nội dung.</span>
+                            </label>
+                        </div>
+                        <div class="mt-5 flex justify-end gap-2">
+                            <button id="cancel-news-editor" type="button" class="rounded-xl border border-slate-200 px-4 py-2.5 text-sm font-bold text-muted">Hủy</button>
+                            <button id="save-news-editor" type="submit" class="rounded-xl bg-cyan px-5 py-2.5 text-sm font-bold text-white disabled:opacity-50">Lưu bài viết</button>
+                        </div>
+                    </form>
                 </div>
             </section>
         </div>
