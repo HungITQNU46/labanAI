@@ -38,6 +38,11 @@ test('home integration: root renders the original home without redirect, evaluat
     }
     assert.deepEqual(chain, [['/evaluation', 200]]);
     assert.ok(html.includes('id="questions-list"') && html.includes('Giải thích kết quả bằng Groq AI'));
+    assert.ok(html.includes('data-eval-step="1"') && html.includes('data-eval-step="2"') && html.includes('data-eval-step="3"'));
+    assert.ok(html.includes('Khảo sát Holland RIASEC'));
+    const questionnaireMatch = html.match(/<script id="riasec27-data" type="application\/json">([\s\S]*?)<\/script>/);
+    assert.ok(questionnaireMatch, 'evaluation page should include the questionnaire data');
+    assert.equal(JSON.parse(questionnaireMatch[1]).questions.length, 27);
     assert.ok(!html.includes('id="btn-hero-riasec27"'));
     assert.equal(inference.mock.callCount(), 0);
 

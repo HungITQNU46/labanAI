@@ -30,6 +30,9 @@
     const submitBtn = document.getElementById('btn-submit-riasec');
     const resetBtn = document.getElementById('btn-reset-answers');
     const form = document.getElementById('riasec27-form');
+    const progressBar = document.getElementById('riasec27-progress-bar');
+    const progressTrack = document.querySelector('.evaluation-progress');
+    const evaluationSteps = Array.from(document.querySelectorAll('[data-eval-step]'));
 
     const resultsPanel = document.getElementById('riasec27-results-panel');
     const resultsContent = document.getElementById('results-content');
@@ -46,6 +49,16 @@
     let explanationRequest = null;
     let revision = 0;
     let evaluationPending = false;
+
+    function updateEvaluationStep(activeStep) {
+        evaluationSteps.forEach((step) => {
+            const stepNumber = Number(step.dataset.evalStep);
+            step.classList.toggle('is-current', stepNumber === activeStep);
+            step.classList.toggle('is-complete', stepNumber < activeStep);
+            if (stepNumber === activeStep) step.setAttribute('aria-current', 'step');
+            else step.removeAttribute('aria-current');
+        });
+    }
 
     function clearExplanation() {
         if (explanationRequest) explanationRequest.abort();
@@ -89,46 +102,52 @@
 
         questions.forEach((q, idx) => {
             const card = document.createElement('div');
-            card.className = 'p-4 sm:p-5 rounded-2xl bg-white border border-slate-200/80 shadow-sm';
+            card.className = 'eval-question-card';
 
             const header = document.createElement('div');
-            header.className = 'flex items-center gap-2 mb-2';
-            header.innerHTML = `
-                <span class="rounded-lg bg-slate-100 text-slate-700 font-mono text-xs font-bold px-2 py-0.5">${q.question_id}</span>
-                <span class="text-xs text-muted font-semibold">Nhóm ${q.domain}</span>
-            `;
+            header.className = 'eval-question-meta';
+            const number = document.createElement('span');
+            number.className = 'eval-question-number';
+            number.textContent = `Câu ${idx + 1}`;
+            const domain = document.createElement('span');
+            domain.className = 'eval-domain-tag';
+            domain.textContent = `${q.domain} · ${questionnaire.domain_names?.[q.domain]?.vi || q.domain}`;
+            header.append(number, domain);
 
-            const prompt = document.createElement('div');
-            prompt.className = 'text-sm font-semibold text-navy mb-4';
-            prompt.innerHTML = `
-                <span>${idx + 1}. ${escapeHtml(q.vietnamese_text)}</span>
-                <span class="block text-xs font-normal text-slate-500 mt-0.5 italic">[${escapeHtml(q.codebook_statement)}]</span>
-            `;
+            const prompt = document.createElement('h3');
+            prompt.className = 'eval-question-prompt';
+            prompt.id = `question-prompt-${q.question_id}`;
+            prompt.textContent = q.vietnamese_text;
 
             const optionsGroup = document.createElement('div');
-            optionsGroup.className = 'grid grid-cols-1 sm:grid-cols-5 gap-2';
+            optionsGroup.className = 'eval-options';
+            optionsGroup.setAttribute('role', 'radiogroup');
+            optionsGroup.setAttribute('aria-labelledby', prompt.id);
 
             scale.forEach((s) => {
                 const label = document.createElement('label');
-                label.className = 'option-label flex items-center sm:flex-col sm:justify-center p-2.5 rounded-xl border border-slate-200 cursor-pointer text-xs transition gap-2 text-slate-700 select-none';
+                label.className = 'eval-option';
 
                 const radio = document.createElement('input');
                 radio.type = 'radio';
                 radio.name = `question_${q.question_id}`;
                 radio.value = s.value;
                 radio.className = 'option-radio accent-cyan text-cyan';
+                radio.setAttribute('aria-label', `${s.value}: ${s.label_vi}`);
 
                 radio.addEventListener('change', () => {
                     revision++;
                     clearExplanation();
                     if (resultsPanel) resultsPanel.classList.add('hidden');
                     answers.set(q.question_id, s.value);
+                    optionsGroup.querySelectorAll('.eval-option').forEach((option) => option.classList.remove('is-selected'));
+                    label.classList.add('is-selected');
+                    updateEvaluationStep(1);
                     updateAnswerProgress();
                 });
 
                 const textSpan = document.createElement('span');
-                textSpan.className = 'text-center text-[11px]';
-                textSpan.innerHTML = `<strong>${s.value}.</strong> ${escapeHtml(s.label_vi)}`;
+                textSpan.textContent = String(s.value);
 
                 label.appendChild(radio);
                 label.appendChild(textSpan);
@@ -145,6 +164,8 @@
     function updateAnswerProgress() {
         const count = answers.size;
         if (answeredCountEl) answeredCountEl.textContent = count;
+        if (progressBar) progressBar.style.width = `${(count / TOTAL_QUESTIONS) * 100}%`;
+        if (progressTrack) progressTrack.setAttribute('aria-valuenow', String(count));
         if (submitBtn) {
             submitBtn.disabled = count !== TOTAL_QUESTIONS || evaluationPending;
         }
@@ -156,7 +177,9 @@
         answers.clear();
         const radios = questionsContainer.querySelectorAll('input[type="radio"]');
         radios.forEach((r) => { r.checked = false; });
+        questionsContainer.querySelectorAll('.eval-option').forEach((option) => option.classList.remove('is-selected'));
         updateAnswerProgress();
+        updateEvaluationStep(1);
         if (resultsPanel) resultsPanel.classList.add('hidden');
         if (resultsContent) resultsContent.innerHTML = '';
     }
@@ -206,6 +229,7 @@
         const status = ml.status || 'UNKNOWN';
 
         if (status === 'SUCCESS') {
+            updateEvaluationStep(2);
             const top3 = ml.top3 || [];
             let cardsHtml = '<div class="grid grid-cols-1 md:grid-cols-3 gap-5">';
 
@@ -236,6 +260,7 @@
             if (aiControls) aiControls.classList.remove('hidden');
             if (aiOpen) aiOpen.disabled = !contextToken;
         } else if (status === 'ABSTAIN_FLAT_PROFILE') {
+            updateEvaluationStep(2);
             resultsContent.innerHTML = `
                 <div data-result-status="ABSTAIN_FLAT_PROFILE" class="p-6 rounded-2xl bg-slate-50 border border-slate-200 text-navy" role="status">
                     <h4 class="font-bold text-base mb-2 flex items-center gap-2">
@@ -250,6 +275,7 @@
                 </div>
             `;
         } else if (status === 'TIED_BOUNDARY') {
+            updateEvaluationStep(2);
             resultsContent.innerHTML = `
                 <div data-result-status="TIED_BOUNDARY" class="p-6 rounded-2xl bg-slate-50 border border-slate-200 text-navy" role="status">
                     <h4 class="font-bold text-base mb-2 flex items-center gap-2">
@@ -595,8 +621,15 @@
     function init() {
         renderQuestions();
 
-        if (aiOpen) aiOpen.addEventListener('click', () => aiPanel.classList.remove('hidden'));
-        if (aiClose) aiClose.addEventListener('click', () => { if (explanationRequest) explanationRequest.abort(); aiPanel.classList.add('hidden'); });
+        if (aiOpen) aiOpen.addEventListener('click', () => {
+            aiPanel.classList.remove('hidden');
+            updateEvaluationStep(3);
+        });
+        if (aiClose) aiClose.addEventListener('click', () => {
+            if (explanationRequest) explanationRequest.abort();
+            aiPanel.classList.add('hidden');
+            updateEvaluationStep(2);
+        });
         if (aiConsent) aiConsent.addEventListener('change', () => { aiSend.disabled = !aiConsent.checked || !!explanationRequest; });
         if (aiSend) aiSend.addEventListener('click', requestAIExplanation);
 
@@ -628,6 +661,7 @@
 
         loadCatalog();
         loadThemes();
+        updateEvaluationStep(1);
     }
 
     init();

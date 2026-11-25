@@ -5,6 +5,7 @@ const authController = require('../controllers/authController');
 const homeController = require('../controllers/homeController');
 const chatbotController = require('../controllers/chatbotController');
 const evaluationController = require('../controllers/evaluationController');
+const evaluationHistoryController = require('../controllers/evaluationHistoryController');
 const adminController = require('../controllers/adminController');
 const riasec27Controller = require('../controllers/riasec27Controller');
 const { riasec27PreviewGate } = require('../middleware/riasec27PreviewGate');
@@ -32,7 +33,7 @@ router.get('/chatbot', requireAuth, chatbotController.getChatbot);
 
 // Phân hệ Đánh giá năng lực & Dự đoán
 router.get('/evaluation', requireAuth, evaluationController.getEvaluation);
-router.post('/api/evaluation/submit', requireAuth, evaluationController.submitEvaluation);
+router.get('/evaluation/history', requireAuth, evaluationHistoryController.getEvaluationHistory);
 router.get('/api/ml/status', evaluationController.getMlStatus);
 router.post('/api/ml/recommendations', evaluationController.recommendMajors);
 
