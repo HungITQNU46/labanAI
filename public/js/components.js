@@ -69,7 +69,6 @@ function renderLayout(activeMenuId) {
     const layoutContainer = document.getElementById('layout-container');
     if (!layoutContainer) return;
     const menuItems = [['/', 'Trang chủ', 'nav-home'], ['/evaluation', 'Đánh giá hướng nghiệp', 'nav-eval'],
-        ['/evaluation/history', 'Lịch sử hướng nghiệp', 'nav-evaluation-history'],
         ['/news', 'Tin tức', 'nav-news'], ['/guide', 'Hướng dẫn', 'nav-guide'],
         ['/about', 'Về chúng tôi', 'nav-about'], ['/chatbot', 'ChatBot AI', 'nav-chat']];
 
@@ -93,7 +92,6 @@ function renderLayout(activeMenuId) {
                         <nav aria-label="Điều hướng chính" class="hidden lg:flex items-center gap-6 text-sm font-semibold text-slate-600">
                             <a href="/" class="${activeMenuId === 'nav-home' ? 'text-cyan font-bold' : 'hover:text-cyan transition-colors'}">Trang chủ</a>
                             <a href="/evaluation" class="${activeMenuId === 'nav-eval' || activeMenuId === 'nav-riasec27' ? 'text-cyan font-bold' : 'hover:text-cyan transition-colors'}">Đánh giá hướng nghiệp</a>
-                            <a href="/evaluation/history" class="${activeMenuId === 'nav-evaluation-history' ? 'text-cyan font-bold' : 'hover:text-cyan transition-colors'}">Lịch sử hướng nghiệp</a>
                             <a href="/news" class="${activeMenuId === 'nav-news' ? 'text-cyan font-bold' : 'hover:text-cyan transition-colors'}">Tin tức</a>
                             <a href="/guide" class="${activeMenuId === 'nav-guide' ? 'text-cyan font-bold' : 'hover:text-cyan transition-colors'}">Hướng dẫn</a>
                             <a href="/about" class="${activeMenuId === 'nav-about' ? 'text-cyan font-bold' : 'hover:text-cyan transition-colors'}">Về chúng tôi</a>
@@ -142,7 +140,6 @@ function renderLayout(activeMenuId) {
                     <a href="/evaluation" class="flex items-center justify-between p-3 rounded-xl text-sm transition-colors ${activeMenuId === 'nav-eval' || activeMenuId === 'nav-riasec27' ? 'font-bold bg-cyan/10 text-cyan' : 'font-semibold text-muted hover:bg-navy/5'}">
                         <span class="flex items-center gap-3"><i data-lucide="target" class="w-5 h-5 ${activeMenuId === 'nav-eval' || activeMenuId === 'nav-riasec27' ? 'text-cyan' : 'text-muted'}"></i> Đánh giá hướng nghiệp</span>
                     </a>
-                    <a href="/evaluation/history" class="flex items-center gap-3 p-3 rounded-xl text-sm transition-colors ${activeMenuId === 'nav-evaluation-history' ? 'font-bold bg-cyan/10 text-cyan' : 'font-semibold text-muted hover:bg-navy/5'}"><i data-lucide="history" class="w-5 h-5 ${activeMenuId === 'nav-evaluation-history' ? 'text-cyan' : 'text-muted'}"></i> Lịch sử hướng nghiệp</a>
                     <a href="/chatbot" class="flex items-center gap-3 p-3 rounded-xl text-sm transition-colors ${activeMenuId === 'nav-chat' ? 'font-bold bg-cyan/10 text-cyan' : 'font-semibold text-muted hover:bg-navy/5'}"><i data-lucide="message-square" class="w-5 h-5"></i> ChatBot AI</a>
                     <div class="mt-6 pt-4 border-t border-navy/10">
                         <p class="text-xs text-muted mb-2 px-3 uppercase font-bold tracking-wider">Khám phá</p>

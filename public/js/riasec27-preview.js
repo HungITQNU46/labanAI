@@ -30,6 +30,32 @@
     const submitBtn = document.getElementById('btn-submit-riasec');
     const resetBtn = document.getElementById('btn-reset-answers');
     const form = document.getElementById('riasec27-form');
+    const academicProfilePanel = document.getElementById('academic-profile-panel');
+    const academicProfileForm = document.getElementById('academic-profile-form');
+    const academicScoreInputs = Array.from(document.querySelectorAll('.academic-score-input'));
+    const academicSummary = document.getElementById('academic-summary');
+    const nextToSurveyBtn = document.getElementById('btn-next-to-survey');
+    const backStepBtn = document.getElementById('btn-back-step');
+    const surveyPanel = document.getElementById('riasec27-survey-panel');
+    const admissionPanel = document.getElementById('admission-prediction-panel');
+    const admissionLink = document.getElementById('btn-open-admission');
+    const admissionReturnBtn = document.getElementById('btn-return-from-admission');
+    const editScoresBtn = document.getElementById('btn-edit-academic-scores');
+    const stepper = document.getElementById('evaluation-stepper');
+    const pageTitle = document.getElementById('evaluation-page-title');
+    const pageSubtitle = document.getElementById('evaluation-page-subtitle');
+    const originalPageTitle = pageTitle?.textContent || '';
+    const originalPageSubtitle = pageSubtitle?.textContent || '';
+    const admissionCards = document.getElementById('admission-cards');
+    const admissionResultCount = document.getElementById('admission-result-count');
+    const admissionEmptyState = document.getElementById('admission-empty-state');
+    const admissionFilters = {
+        search: document.getElementById('admission-search-input'),
+        region: document.getElementById('admission-filter-region'),
+        method: document.getElementById('admission-filter-method'),
+        category: document.getElementById('admission-filter-category'),
+        risk: document.getElementById('admission-filter-risk')
+    };
     const progressBar = document.getElementById('riasec27-progress-bar');
     const progressTrack = document.querySelector('.evaluation-progress');
     const evaluationSteps = Array.from(document.querySelectorAll('[data-eval-step]'));
@@ -49,8 +75,36 @@
     let explanationRequest = null;
     let revision = 0;
     let evaluationPending = false;
+    let currentStep = 1;
+    let admissionViewOpen = false;
+    const savedAdmissionChoices = new Set();
+    const admissionExamples = [
+        { id: 'qnu-it', schoolCode: 'DQN', schoolName: 'Đại học Quy Nhơn (QNU)', region: 'central', majorName: 'Công nghệ thông tin', majorCode: '7480201', category: 'technology', group: 'A01', referenceCutoff: 23, previousCutoffs: '21,5 · 22,0 · 22,5' },
+        { id: 'ddk-software', schoolCode: 'DDK', schoolName: 'ĐH Bách Khoa - ĐH Đà Nẵng', region: 'central', majorName: 'Kỹ thuật Phần mềm', majorCode: '7480103', category: 'technology', group: 'A01', referenceCutoff: 26.15, previousCutoffs: '25,85 · 26,2 · 26,0' },
+        { id: 'uit-data', schoolCode: 'QSC', schoolName: 'ĐH Công nghệ Thông tin - TP.HCM', region: 'south', majorName: 'Khoa học Dữ liệu', majorCode: '7480109', category: 'technology', group: 'A01', referenceCutoff: 25.35, previousCutoffs: '25,2 · 25,5 · 25,4' },
+        { id: 'ueh-marketing', schoolCode: 'KSA', schoolName: 'Đại học Kinh tế TP.HCM (UEH)', region: 'south', majorName: 'Marketing Số', majorCode: '7340115', category: 'business', group: 'D01', referenceCutoff: 26.75, previousCutoffs: '26,5 · 26,8 · 26,7' },
+        { id: 'qnu-electronics', schoolCode: 'DQN', schoolName: 'Đại học Quy Nhơn (QNU)', region: 'central', majorName: 'Kỹ thuật Điện tử - Viễn thông', majorCode: '7520207', category: 'engineering', group: 'A00', referenceCutoff: 20, previousCutoffs: '18,0 · 19,0 · 19,5' }
+    ];
 
     function updateEvaluationStep(activeStep) {
+        currentStep = activeStep;
+        admissionViewOpen = false;
+        admissionPanel?.classList.add('hidden');
+        academicProfilePanel?.classList.toggle('hidden', activeStep !== 1);
+        surveyPanel?.classList.toggle('hidden', activeStep !== 2);
+        resultsPanel?.classList.toggle('hidden', activeStep !== 3);
+        academicSummary?.classList.toggle('hidden', activeStep !== 3);
+        nextToSurveyBtn?.classList.toggle('hidden', activeStep !== 1);
+        backStepBtn?.classList.toggle('hidden', activeStep === 1);
+        resetBtn?.classList.remove('hidden');
+        submitBtn?.classList.toggle('hidden', activeStep !== 2);
+        admissionReturnBtn?.classList.add('hidden');
+        stepper?.classList.remove('hidden');
+        if (pageTitle) pageTitle.textContent = originalPageTitle;
+        if (pageSubtitle) pageSubtitle.textContent = originalPageSubtitle;
+        const backLabel = backStepBtn?.querySelector('span');
+        if (backLabel) backLabel.textContent = activeStep === 3 ? 'Quay lại khảo sát' : 'Quay lại hồ sơ';
+
         evaluationSteps.forEach((step) => {
             const stepNumber = Number(step.dataset.evalStep);
             step.classList.toggle('is-current', stepNumber === activeStep);
@@ -58,6 +112,152 @@
             if (stepNumber === activeStep) step.setAttribute('aria-current', 'step');
             else step.removeAttribute('aria-current');
         });
+    }
+
+    function updateAcademicSummary() {
+        const scores = Object.fromEntries(academicScoreInputs.map((input) => [input.name, Number(input.value)]));
+        const blocks = {
+            a01: scores.toan + scores.ly + scores.anh,
+            d01: scores.toan + scores.van + scores.anh,
+            a00: scores.toan + scores.ly + scores.hoa,
+            d07: scores.toan + scores.hoa + scores.anh,
+            c00: scores.van + scores.su + scores.dia
+        };
+        Object.entries(blocks).forEach(([block, score]) => {
+            const target = document.getElementById(`score-block-${block}`);
+            if (target) target.textContent = score.toFixed(1);
+            const admissionTarget = document.getElementById(`admission-score-${block}`);
+            if (admissionTarget) admissionTarget.textContent = score.toFixed(1);
+        });
+        const subjectList = document.getElementById('admission-subject-scores');
+        if (subjectList) {
+            const subjectNames = { toan: 'Toán', van: 'Văn', anh: 'Anh', ly: 'Lý', hoa: 'Hóa', sinh: 'Sinh', su: 'Sử', dia: 'Địa', tin: 'Tin học / GDCD' };
+            subjectList.replaceChildren();
+            academicScoreInputs.forEach((input) => {
+                const subject = makeAdmissionElement('span');
+                subject.append(
+                    document.createTextNode(`${subjectNames[input.name]}: `),
+                    makeAdmissionElement('strong', '', scores[input.name].toFixed(1))
+                );
+                subjectList.appendChild(subject);
+            });
+        }
+        return { scores, blocks };
+    }
+
+    function makeAdmissionElement(tagName, className, text) {
+        const element = document.createElement(tagName);
+        if (className) element.className = className;
+        if (text !== undefined) element.textContent = text;
+        return element;
+    }
+
+    function normalizeSearchText(value) {
+        return String(value).normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/đ/gi, 'd').toLowerCase();
+    }
+
+    function renderAdmissionCards() {
+        if (!admissionCards) return;
+        const { blocks } = updateAcademicSummary();
+        const search = normalizeSearchText(admissionFilters.search?.value || '');
+        const region = admissionFilters.region?.value || 'all';
+        const method = admissionFilters.method?.value || 'all';
+        const category = admissionFilters.category?.value || 'all';
+        const riskFilter = admissionFilters.risk?.value || 'all';
+        const riskDetails = {
+            advantage: { label: 'Cao hơn mốc minh họa', className: 'admission-risk-advantage' },
+            near: { label: 'Gần mốc minh họa', className: 'admission-risk-near' },
+            below: { label: 'Thấp hơn mốc minh họa', className: 'admission-risk-below' }
+        };
+        const filtered = admissionExamples.filter((item) => {
+            const text = normalizeSearchText(`${item.schoolName} ${item.majorName} ${item.majorCode} ${item.group}`);
+            if (search && !text.includes(search)) return false;
+            if (region !== 'all' && item.region !== region) return false;
+            if (method !== 'all' && method !== 'thpt') return false;
+            if (category !== 'all' && item.category !== category) return false;
+            const score = blocks[item.group.toLowerCase()] || 0;
+            const difference = score - item.referenceCutoff;
+            const risk = difference >= 1.5 ? 'advantage' : difference >= -1.5 ? 'near' : 'below';
+            return riskFilter === 'all' || risk === riskFilter;
+        });
+
+        admissionCards.replaceChildren();
+        filtered.forEach((item) => {
+            const score = blocks[item.group.toLowerCase()] || 0;
+            const difference = score - item.referenceCutoff;
+            const risk = difference >= 1.5 ? 'advantage' : difference >= -1.5 ? 'near' : 'below';
+            const card = makeAdmissionElement('article', 'admission-card');
+            const heading = makeAdmissionElement('div', 'admission-card-heading');
+            heading.appendChild(makeAdmissionElement('div', 'admission-school-code', item.schoolCode));
+            const schoolInfo = makeAdmissionElement('div', 'admission-school-info');
+            schoolInfo.append(
+                makeAdmissionElement('p', '', `${item.schoolCode} · CÔNG LẬP · ĐIỂM THI THPT`),
+                makeAdmissionElement('h3', '', item.schoolName)
+            );
+            heading.appendChild(schoolInfo);
+
+            const majorName = makeAdmissionElement('h4', '', item.majorName);
+            const meta = makeAdmissionElement('p', 'admission-card-meta', `Mã: ${item.majorCode} · Khối: ${item.group}`);
+            const scoreBox = makeAdmissionElement('div', 'admission-score-compare');
+            const yourScoreRow = makeAdmissionElement('div');
+            yourScoreRow.append(makeAdmissionElement('span', '', 'Điểm tổ hợp của bạn'), makeAdmissionElement('strong', '', score.toFixed(1)));
+            const referenceRow = makeAdmissionElement('div');
+            referenceRow.append(makeAdmissionElement('span', '', 'Mốc điểm minh họa'), makeAdmissionElement('strong', '', item.referenceCutoff.toFixed(2)));
+            scoreBox.append(yourScoreRow, referenceRow);
+
+            const riskBadge = makeAdmissionElement('span', `admission-risk-label ${riskDetails[risk].className}`, riskDetails[risk].label);
+            const details = makeAdmissionElement('details', 'admission-card-details');
+            details.appendChild(makeAdmissionElement('summary', '', 'Xem mốc điểm minh họa'));
+            details.appendChild(makeAdmissionElement('p', '', `Các mốc lịch sử mẫu: ${item.previousCutoffs}. Số liệu chỉ để minh họa giao diện.`));
+
+            const actions = makeAdmissionElement('div', 'admission-card-actions');
+            const saveButton = makeAdmissionElement('button', '', savedAdmissionChoices.has(item.id) ? 'Đã thêm vào nguyện vọng' : 'Thêm vào nguyện vọng');
+            saveButton.type = 'button';
+            saveButton.setAttribute('aria-pressed', String(savedAdmissionChoices.has(item.id)));
+            saveButton.addEventListener('click', () => {
+                if (savedAdmissionChoices.has(item.id)) savedAdmissionChoices.delete(item.id);
+                else savedAdmissionChoices.add(item.id);
+                renderAdmissionCards();
+            });
+            actions.appendChild(saveButton);
+            card.append(heading, majorName, meta, scoreBox, riskBadge, details, actions);
+            admissionCards.appendChild(card);
+        });
+
+        if (admissionResultCount) admissionResultCount.textContent = `${filtered.length} ngành minh họa · So sánh điểm với mốc tham khảo`;
+        if (admissionEmptyState) admissionEmptyState.classList.toggle('hidden', filtered.length > 0);
+    }
+
+    function openAdmissionPrediction(event) {
+        event?.preventDefault();
+        if (academicProfileForm && !academicProfileForm.reportValidity()) {
+            updateEvaluationStep(1);
+            return;
+        }
+
+        updateAcademicSummary();
+        renderAdmissionCards();
+        admissionViewOpen = true;
+        academicProfilePanel?.classList.add('hidden');
+        surveyPanel?.classList.add('hidden');
+        resultsPanel?.classList.add('hidden');
+        admissionPanel?.classList.remove('hidden');
+        stepper?.classList.add('hidden');
+        if (pageTitle) pageTitle.textContent = 'Dự đoán khả năng trúng tuyển Đại học';
+        if (pageSubtitle) pageSubtitle.textContent = 'Đối chiếu điểm tổ hợp của bạn với các mốc tham khảo minh họa.';
+        resetBtn?.classList.add('hidden');
+        backStepBtn?.classList.add('hidden');
+        nextToSurveyBtn?.classList.add('hidden');
+        submitBtn?.classList.add('hidden');
+        admissionReturnBtn?.classList.remove('hidden');
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+        if (typeof lucide !== 'undefined') lucide.createIcons();
+    }
+
+    function returnFromAdmission() {
+        if (!admissionViewOpen) return;
+        updateEvaluationStep(currentStep);
+        window.scrollTo({ top: 0, behavior: 'smooth' });
     }
 
     function clearExplanation() {
@@ -142,7 +342,7 @@
                     answers.set(q.question_id, s.value);
                     optionsGroup.querySelectorAll('.eval-option').forEach((option) => option.classList.remove('is-selected'));
                     label.classList.add('is-selected');
-                    updateEvaluationStep(1);
+                    updateEvaluationStep(2);
                     updateAnswerProgress();
                 });
 
@@ -178,10 +378,13 @@
         const radios = questionsContainer.querySelectorAll('input[type="radio"]');
         radios.forEach((r) => { r.checked = false; });
         questionsContainer.querySelectorAll('.eval-option').forEach((option) => option.classList.remove('is-selected'));
+        academicScoreInputs.forEach((input) => { input.value = ''; });
+        savedAdmissionChoices.clear();
         updateAnswerProgress();
+        if (academicSummary) academicSummary.classList.add('hidden');
         updateEvaluationStep(1);
-        if (resultsPanel) resultsPanel.classList.add('hidden');
         if (resultsContent) resultsContent.innerHTML = '';
+        window.scrollTo({ top: 0, behavior: 'smooth' });
     }
 
     // --- SECTION 2: SUBMIT & RENDER TOP-3 ---
@@ -224,12 +427,13 @@
         clearExplanation();
         resultsPanel.classList.remove('hidden');
         resultsPanel.scrollIntoView({ behavior: 'smooth' });
+        updateAcademicSummary();
 
         const ml = data?.ml_ranking || {};
         const status = ml.status || 'UNKNOWN';
 
         if (status === 'SUCCESS') {
-            updateEvaluationStep(2);
+            updateEvaluationStep(3);
             const top3 = ml.top3 || [];
             let cardsHtml = '<div class="grid grid-cols-1 md:grid-cols-3 gap-5">';
 
@@ -260,7 +464,7 @@
             if (aiControls) aiControls.classList.remove('hidden');
             if (aiOpen) aiOpen.disabled = !contextToken;
         } else if (status === 'ABSTAIN_FLAT_PROFILE') {
-            updateEvaluationStep(2);
+            updateEvaluationStep(3);
             resultsContent.innerHTML = `
                 <div data-result-status="ABSTAIN_FLAT_PROFILE" class="p-6 rounded-2xl bg-slate-50 border border-slate-200 text-navy" role="status">
                     <h4 class="font-bold text-base mb-2 flex items-center gap-2">
@@ -275,7 +479,7 @@
                 </div>
             `;
         } else if (status === 'TIED_BOUNDARY') {
-            updateEvaluationStep(2);
+            updateEvaluationStep(3);
             resultsContent.innerHTML = `
                 <div data-result-status="TIED_BOUNDARY" class="p-6 rounded-2xl bg-slate-50 border border-slate-200 text-navy" role="status">
                     <h4 class="font-bold text-base mb-2 flex items-center gap-2">
@@ -302,7 +506,7 @@
             'TIMEOUT_ERROR', 'CONCURRENCY_LIMIT', 'PAYLOAD_TOO_LARGE', 'BUFFER_OVERFLOW'
         ]);
         const safeCode = allowedCodes.has(errorCode) ? errorCode : 'RIASEC27_EVALUATION_ERROR';
-        resultsPanel.classList.remove('hidden');
+        updateEvaluationStep(3);
         resultsContent.innerHTML = `
             <div data-error-code="${safeCode}" class="p-5 rounded-2xl bg-red-50 border border-red-200 text-red-900 text-xs" role="alert">
                 <strong>Thông báo:</strong> ${escapeHtml(message)}
@@ -628,13 +832,45 @@
         if (aiClose) aiClose.addEventListener('click', () => {
             if (explanationRequest) explanationRequest.abort();
             aiPanel.classList.add('hidden');
-            updateEvaluationStep(2);
+            updateEvaluationStep(3);
         });
         if (aiConsent) aiConsent.addEventListener('change', () => { aiSend.disabled = !aiConsent.checked || !!explanationRequest; });
         if (aiSend) aiSend.addEventListener('click', requestAIExplanation);
 
         if (resetBtn) resetBtn.addEventListener('click', resetSurvey);
         if (form) form.addEventListener('submit', submitSurvey);
+        if (academicProfileForm) {
+            academicProfileForm.addEventListener('submit', (event) => {
+                event.preventDefault();
+                nextToSurveyBtn?.click();
+            });
+        }
+        if (nextToSurveyBtn) {
+            nextToSurveyBtn.addEventListener('click', () => {
+                if (academicProfileForm && !academicProfileForm.reportValidity()) return;
+                updateAcademicSummary();
+                updateEvaluationStep(2);
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            });
+        }
+        if (backStepBtn) {
+            backStepBtn.addEventListener('click', () => {
+                updateEvaluationStep(currentStep === 3 ? 2 : 1);
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            });
+        }
+        if (admissionLink) admissionLink.addEventListener('click', openAdmissionPrediction);
+        if (admissionReturnBtn) admissionReturnBtn.addEventListener('click', returnFromAdmission);
+        if (editScoresBtn) {
+            editScoresBtn.addEventListener('click', () => {
+                updateEvaluationStep(1);
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            });
+        }
+        Object.values(admissionFilters).forEach((filter) => {
+            if (!filter) return;
+            filter.addEventListener(filter.tagName === 'INPUT' ? 'input' : 'change', renderAdmissionCards);
+        });
 
         // Filter buttons
         filterButtons.forEach(btn => {
