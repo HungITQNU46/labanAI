@@ -38,15 +38,7 @@ async function fetchNewsFromDB() {
                 views: item.views || 0,
                 likes: item.likes || 0,
                 isLiked: false,
-                content: `
-                    ${item.html_str}
-                    <div class="pt-4">
-                        <a href="${item.link}" target="_blank" rel="noopener noreferrer" 
-                           class="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-cyan/10 text-cyan hover:bg-cyan hover:text-white font-bold text-xs transition-all">
-                            Đọc toàn bộ bài viết gốc trên Báo Tuổi Trẻ ↗
-                        </a>
-                    </div>
-                `
+                content: null // sẽ được load khi mở modal
             }));
             updateIndustryCounts();
             handleSearchAndFilter();
@@ -174,7 +166,7 @@ function loadMoreArticles() {
     handleSearchAndFilter();
 }
 
-function openArticleModal(id) {
+async function openArticleModal(id) {
     const article = articlesData.find(a => a.id === id) || articlesData[0];
     if (!article) return;
     currentViewingArticle = article;
@@ -185,8 +177,8 @@ function openArticleModal(id) {
     document.getElementById('modal-date').innerText = article.date;
     document.getElementById('modal-read-time').innerText = article.readTime;
     document.getElementById('modal-image').src = article.image;
-    document.getElementById('modal-content').innerHTML = article.content;
 
+    const modalContentEl = document.getElementById('modal-content');
     const modal = document.getElementById('article-detail-modal');
     modal.classList.remove('hidden');
     modal.classList.add('flex');
@@ -195,7 +187,49 @@ function openArticleModal(id) {
         document.getElementById('article-modal-box').classList.add('scale-100', 'opacity-100');
     }, 10);
     lucide.createIcons();
+
+    // Nếu bài này đã tải nội dung rồi thì hiển thị luôn (không gọi lại API)
+    if (article.content) {
+        modalContentEl.innerHTML = article.content;
+        return;
+    }
+
+    // Hiển thị trạng thái đang tải trong lúc gọi /api/news/:id
+    modalContentEl.innerHTML = `<p class="text-center text-muted py-8">Đang tải nội dung bài viết...</p>`;
+
+    try {
+        const res = await fetch(`/api/news/${encodeURIComponent(article.id)}`);
+        const json = await res.json();
+
+        if (json.success && json.data) {
+            const detailHtml = json.data.html_str || `<p>${article.snippet}</p>`;
+            article.content = `
+                ${detailHtml}
+                <div class="pt-4">
+                    <a href="${article.link}" target="_blank" rel="noopener noreferrer" 
+                       class="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-cyan/10 text-cyan hover:bg-cyan hover:text-white font-bold text-xs transition-all">
+                        Đọc toàn bộ bài viết gốc trên Báo Tuổi Trẻ ↗
+                    </a>
+                </div>
+            `;
+            // Cập nhật lại lượt xem mới tăng từ server
+            if (typeof json.data.views === 'number') {
+                article.views = json.data.views;
+                handleSearchAndFilter();
+            }
+            // Chỉ đổ nội dung nếu người dùng vẫn đang mở đúng bài này
+            if (currentViewingArticle?.id === article.id) {
+                modalContentEl.innerHTML = article.content;
+            }
+        } else {
+            modalContentEl.innerHTML = `<p class="text-red-500">Không thể tải nội dung bài viết.</p>`;
+        }
+    } catch (err) {
+        console.error('Lỗi tải chi tiết bài viết:', err);
+        modalContentEl.innerHTML = `<p class="text-red-500">Có lỗi xảy ra khi tải nội dung.</p>`;
+    }
 }
+
 
 function closeArticleModal() {
     document.getElementById('article-modal-box').classList.remove('scale-100', 'opacity-100');

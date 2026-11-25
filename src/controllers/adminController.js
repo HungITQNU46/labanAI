@@ -75,65 +75,159 @@ function getTimeframeInfo(timeframe, query = {}) {
     return { startDate, endDate, subtitle, isSingleDay };
 }
 
+// ==========================================
+// HÀM TÍNH TỐC ĐỘ TRONG TUẦN (THỨ 2 -> CHỦ NHẬT)
+// ==========================================
+function getCurrentWeekRange() {
+    const now = new Date();
+    const dayOfWeek = now.getDay(); // 0 = CN, 1 = T2, ..., 6 = T7
+    const diffToMonday = dayOfWeek === 0 ? -6 : 1 - dayOfWeek;
+
+    const monday = new Date(now);
+    monday.setDate(now.getDate() + diffToMonday);
+    monday.setHours(0, 0, 0, 0);
+
+    const sunday = new Date(monday);
+    sunday.setDate(monday.getDate() + 6);
+    sunday.setHours(23, 59, 59, 999);
+
+    return { monday, sunday };
+}
+
+async function getWeeklySeries(Model, dateField, monday, sunday) {
+    const records = await Model.aggregate([
+        {
+            $addFields: {
+                _parsedDate: {
+                    $convert: {
+                        input: `$${dateField}`,
+                        to: 'date',
+                        onError: null,
+                        onNull: null
+                    }
+                }
+            }
+        },
+        {
+            $match: {
+                _parsedDate: { $gte: monday, $lte: sunday }
+            }
+        },
+        {
+            $group: {
+                _id: {
+                    $dateToString: {
+                        format: '%d/%m/%Y',
+                        date: '$_parsedDate',
+                        timezone: '+07:00'
+                    }
+                },
+                count: { $sum: 1 }
+            }
+        }
+    ]);
+
+    const series = [];
+    for (let i = 0; i < 7; i++) {
+        const d = new Date(monday);
+        d.setDate(monday.getDate() + i);
+        const key = formatDateVN(d);
+        const found = records.find((r) => r._id === key);
+        series.push(found ? found.count : 0);
+    }
+    return series; // [T2, T3, T4, T5, T6, T7, CN]
+}
+
+async function countRecordsSince(Model, dateField, sinceDate) {
+    const result = await Model.aggregate([
+        {
+            $addFields: {
+                _parsedDate: {
+                    $convert: {
+                        input: `$${dateField}`,
+                        to: 'date',
+                        onError: null,
+                        onNull: null
+                    }
+                }
+            }
+        },
+        { $match: { _parsedDate: { $gt: sinceDate } } },
+        { $count: 'total' }
+    ]);
+    return result[0]?.total || 0;
+}
+
+async function buildWeeklySparklines() {
+    const { monday, sunday } = getCurrentWeekRange();
+    const [users, news, evaluations] = await Promise.all([
+        getWeeklySeries(User, 'createdAt', monday, sunday),
+        getWeeklySeries(TinTuc, 'pubDate', monday, sunday),
+        getWeeklySeries(ChiTietDanhGia, 'thoiGian', monday, sunday)
+    ]);
+
+    return {
+        labels: ['T2', 'T3', 'T4', 'T5', 'T6', 'T7', 'CN'],
+        rangeLabel: `${formatDateVN(monday)} - ${formatDateVN(sunday)}`,
+        users,
+        news,
+        evaluations
+    };
+}
+
 // 1. Render Dashboard
 const getAdminDashboard = async (req, res) => {
     try {
-        const [usersList, totalEvaluations, dbNewsCount] = await Promise.all([
+        const [usersList, totalEvaluations, totalNews, weeklySparklines] = await Promise.all([
             User.find().sort({ _id: -1 }).lean(),
             KetQuaDanhGia.countDocuments(),
-            TinTuc.countDocuments()
+            TinTuc.countDocuments(),
+            buildWeeklySparklines()
         ]);
 
-        const totalUsers = usersList.length; // Số lượng người dùng thật 100%
-        const totalNews = Math.max(dbNewsCount, 5);
+        const totalUsers = usersList.length;
 
-        // Truy vấn dữ liệu thật: ghép cặp song song giữa tên ngành và tỷ lệ phù hợp AI
         const majorAgg = await KetQuaDanhGia.aggregate([
             {
                 $project: {
                     pairs: {
                         $zip: {
                             inputs: [
-                                { $ifNull: ["$nganhHoc", []] },
-                                { $ifNull: ["$tiLe", []] }
+                                { $ifNull: ['$nganhHoc', []] },
+                                { $ifNull: ['$tiLe', []] }
                             ]
                         }
                     }
                 }
             },
-            { $unwind: "$pairs" },
+            { $unwind: '$pairs' },
             {
                 $group: {
-                    _id: { $arrayElemAt: ["$pairs", 0] },
+                    _id: { $arrayElemAt: ['$pairs', 0] },
                     count: { $sum: 1 },
-                    avgMatch: { $avg: { $arrayElemAt: ["$pairs", 1] } }
+                    avgMatch: { $avg: { $arrayElemAt: ['$pairs', 1] } }
                 }
             },
             { $sort: { count: -1, avgMatch: -1 } }
         ]);
 
         const totalHits = majorAgg.reduce((sum, item) => sum + item.count, 0) || 1;
-
-        
-        let popularMajors = [];
-        if (majorAgg.length > 0) {
-            popularMajors = majorAgg.slice(0, 3).map((item, index) => ({
+        const popularMajors = majorAgg.length > 0
+            ? majorAgg.slice(0, 3).map((item, index) => ({
                 rank: `0${index + 1}`,
                 name: item._id,
                 count: item.count,
                 percentage: Math.round((item.count / totalHits) * 100),
                 avgMatch: item.avgMatch ? item.avgMatch.toFixed(1) : '0'
-            }));
-        } else {
-            popularMajors = []; // Để mảng rỗng khi chưa có bài đánh giá nào
-        }
+            }))
+            : [];
 
         const { startDate, endDate, subtitle } = getTimeframeInfo('7days');
         const chartRecords = await ChiTietDanhGia.aggregate([
-            { $match: { thoiGian: { $gte: startDate,$lte: endDate } } },
+            { $match: { thoiGian: { $gte: startDate, $lte: endDate } } },
             {
                 $group: {
-                    _id: { $dateToString: { format: "\%d/\%m/\%Y", date: "$thoiGian", timezone: "+07:00" } },
+                    _id: { $dateToString: { format: '%d/%m/%Y', date: '$thoiGian', timezone: '+07:00' } },
                     count: { $sum: 1 }
                 }
             }
@@ -145,7 +239,7 @@ const getAdminDashboard = async (req, res) => {
             const d = new Date(startDate);
             d.setDate(startDate.getDate() + i);
             const dateStr = formatDateVN(d);
-            const found = chartRecords.find(r => r._id === dateStr);
+            const found = chartRecords.find((r) => r._id === dateStr);
 
             chartData.push({
                 date: dateStr,
@@ -155,13 +249,19 @@ const getAdminDashboard = async (req, res) => {
             });
         }
 
+        const serverNow = new Date().toISOString();
+        const sessionLoginAt = req.session?.user?.loginAt || serverNow;
+
         res.render('pages/admin-dashboard', {
             title: 'Trung tâm điều khiển',
             stats: { totalUsers, totalEvaluations, totalNews },
             popularMajors,
             chartData,
             chartSubtitle: subtitle,
-            users: usersList
+            users: usersList,
+            serverNow,
+            sessionLoginAt,
+            weeklySparklines
         });
     } catch (error) {
         console.error('Lỗi lấy dữ liệu Admin Dashboard:', error);
@@ -177,10 +277,10 @@ const getConsultationStatsAPI = async (req, res) => {
 
         if (isSingleDay) {
             const hourlyRecords = await ChiTietDanhGia.aggregate([
-                { $match: { thoiGian: { $gte: startDate,$lte: endDate } } },
+                { $match: { thoiGian: { $gte: startDate, $lte: endDate } } },
                 {
                     $group: {
-                        _id: { $hour: { date: "$thoiGian", timezone: "+07:00" } },
+                        _id: { $hour: { date: '$thoiGian', timezone: '+07:00' } },
                         count: { $sum: 1 }
                     }
                 }
@@ -189,8 +289,8 @@ const getConsultationStatsAPI = async (req, res) => {
             const chartData = [];
             const dayStr = formatDateVN(startDate);
             for (let h = 0; h < 24; h += 2) {
-                const h1 = hourlyRecords.find(r => r._id === h)?.count || 0;
-                const h2 = hourlyRecords.find(r => r._id === h + 1)?.count || 0;
+                const h1 = hourlyRecords.find((r) => r._id === h)?.count || 0;
+                const h2 = hourlyRecords.find((r) => r._id === h + 1)?.count || 0;
                 const hourLabel = `${String(h).padStart(2, '0')}:00`;
                 chartData.push({
                     label: hourLabel,
@@ -202,10 +302,10 @@ const getConsultationStatsAPI = async (req, res) => {
         }
 
         const dailyRecords = await ChiTietDanhGia.aggregate([
-            { $match: { thoiGian: { $gte: startDate,$lte: endDate } } },
+            { $match: { thoiGian: { $gte: startDate, $lte: endDate } } },
             {
                 $group: {
-                    _id: { $dateToString: { format: "\%d/\%m/\%Y", date: "$thoiGian", timezone: "+07:00" } },
+                    _id: { $dateToString: { format: '%d/%m/%Y', date: '$thoiGian', timezone: '+07:00' } },
                     count: { $sum: 1 }
                 }
             }
@@ -222,7 +322,7 @@ const getConsultationStatsAPI = async (req, res) => {
             if (d > endDate) break;
 
             const dateStr = formatDateVN(d);
-            const found = dailyRecords.find(r => r._id === dateStr);
+            const found = dailyRecords.find((r) => r._id === dateStr);
             const shortDate = `${String(d.getDate()).padStart(2, '0')}/${String(d.getMonth() + 1).padStart(2, '0')}`;
 
             chartData.push({
@@ -239,7 +339,7 @@ const getConsultationStatsAPI = async (req, res) => {
     }
 };
 
-// 3. API lấy TẤT CẢ các ngành AI từng đề xuất (Cho nút "Chi tiết ↗")
+// 3. API lấy TẤT CẢ các ngành AI từng đề xuất
 const getAllRecommendedMajorsAPI = async (req, res) => {
     try {
         const majorAgg = await KetQuaDanhGia.aggregate([
@@ -248,26 +348,25 @@ const getAllRecommendedMajorsAPI = async (req, res) => {
                     pairs: {
                         $zip: {
                             inputs: [
-                                { $ifNull: ["$nganhHoc", []] },
-                                { $ifNull: ["$tiLe", []] }
+                                { $ifNull: ['$nganhHoc', []] },
+                                { $ifNull: ['$tiLe', []] }
                             ]
                         }
                     }
                 }
             },
-            { $unwind: "$pairs" },
+            { $unwind: '$pairs' },
             {
                 $group: {
-                    _id: { $arrayElemAt: ["$pairs", 0] },
+                    _id: { $arrayElemAt: ['$pairs', 0] },
                     count: { $sum: 1 },
-                    avgMatch: { $avg: { $arrayElemAt: ["$pairs", 1] } }
+                    avgMatch: { $avg: { $arrayElemAt: ['$pairs', 1] } }
                 }
             },
             { $sort: { count: -1, avgMatch: -1 } }
         ]);
 
         const totalHits = majorAgg.reduce((sum, item) => sum + item.count, 0) || 1;
-
         const allMajors = majorAgg.map((item, index) => ({
             rank: index + 1 < 10 ? `0${index + 1}` : `${index + 1}`,
             name: item._id,
@@ -297,9 +396,9 @@ const getMajorDetailAPI = async (req, res) => {
         }).limit(6);
 
         const evalStats = await KetQuaDanhGia.aggregate([
-            { $unwind: "$nganhHoc" },
-            { $match: { nganhHoc: {$regex: new RegExp(majorName, 'i') } } },
-            { $count: "totalMatches" }
+            { $unwind: '$nganhHoc' },
+            { $match: { nganhHoc: { $regex: new RegExp(majorName, 'i') } } },
+            { $count: 'totalMatches' }
         ]);
 
         return res.json({
@@ -314,24 +413,35 @@ const getMajorDetailAPI = async (req, res) => {
     }
 };
 
-// ==========================================
-// 5. API REALTIME METRICS (SỐ LIỆU TỰ ĐỘNG & BẢN GHI MỚI)
-// ==========================================
+// 5. API REALTIME METRICS (SỐ TỔNG + SỐ MỚI SAU MỐC 'since' + SÓNG TUẦN T2 -> CN)
 const getRealtimeMetricsAPI = async (req, res) => {
     try {
-        const since = req.query.since ? new Date(req.query.since) : new Date(Date.now() - 24 * 60 * 60 * 1000);
+        const fallbackIso = req.session?.user?.loginAt || new Date().toISOString();
+        const parsed = req.query.since ? new Date(req.query.since) : new Date(fallbackIso);
+        const sinceDate = isNaN(parsed.getTime()) ? new Date(fallbackIso) : parsed;
 
-        const [totalUsers, totalEvaluations, totalNews, newUsers, newEvaluations] = await Promise.all([
+        const [
+            totalUsers,
+            totalEvaluations,
+            totalNews,
+            newUsers,
+            newEvaluations,
+            newNews,
+            weeklySparklines
+        ] = await Promise.all([
             User.countDocuments(),
             KetQuaDanhGia.countDocuments(),
             TinTuc.countDocuments(),
-            User.countDocuments({ createdAt: { $gt: since } }),
-            ChiTietDanhGia.countDocuments({ thoiGian: { $gt: since } })
+            User.countDocuments({ createdAt: { $gt: sinceDate } }),
+            ChiTietDanhGia.countDocuments({ thoiGian: { $gt: sinceDate } }),
+            countRecordsSince(TinTuc, 'pubDate', sinceDate),
+            buildWeeklySparklines()
         ]);
 
         return res.json({
             success: true,
             timestamp: new Date().toISOString(),
+            since: sinceDate.toISOString(),
             totals: {
                 totalUsers,
                 totalEvaluations,
@@ -340,8 +450,9 @@ const getRealtimeMetricsAPI = async (req, res) => {
             newCounts: {
                 newUsers,
                 newEvaluations,
-                newNews: 0 // TinTuc không có trường createdAt nên giữ 0
-            }
+                newNews
+            },
+            weeklySparklines
         });
     } catch (error) {
         console.error('Lỗi API Realtime Metrics:', error);
@@ -349,9 +460,7 @@ const getRealtimeMetricsAPI = async (req, res) => {
     }
 };
 
-// ==========================================
-// 6. API KHÓA / MỞ KHÓA 1 TÀI KHOẢN (LƯU VÀO MONGODB)
-// ==========================================
+// 6. API KHÓA / MỞ KHÓA 1 TÀI KHOẢN
 const toggleUserStatusAPI = async (req, res) => {
     try {
         const { id } = req.params;
@@ -374,9 +483,7 @@ const toggleUserStatusAPI = async (req, res) => {
     }
 };
 
-// ==========================================
-// 7. API XỬ LÝ HÀNG LOẠT (KHÓA / MỞ KHÓA NHIỀU TÀI KHOẢN)
-// ==========================================
+// 7. API XỬ LÝ HÀNG LOẠT
 const batchUpdateUserStatusAPI = async (req, res) => {
     try {
         const { userIds, status } = req.body;
@@ -401,7 +508,6 @@ const batchUpdateUserStatusAPI = async (req, res) => {
         return res.status(500).json({ success: false, message: 'Không thể cập nhật hàng loạt.' });
     }
 };
-
 
 module.exports = {
     getAdminDashboard,
