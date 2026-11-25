@@ -62,6 +62,7 @@ async function main() {
                         await evaluate("document.getElementById('site-menu-toggle').click()");
                         assert.equal(await evaluate("document.getElementById('site-menu-toggle').getAttribute('aria-expanded')"),'true');
                         for(const href of ['/','/evaluation','/news','/guide','/about','/chatbot'])assert.ok(await evaluate(`Boolean(document.querySelector('#site-mobile-menu a[href="${href}"]'))`));
+                        assert.equal(await evaluate("Boolean(document.querySelector('#site-mobile-menu a[href=\"/evaluation/history\"]'))"),false);
                         await evaluate("document.getElementById('site-menu-toggle').click()");
                     }
                 }
@@ -73,11 +74,17 @@ async function main() {
             }
             if(!before && name==='news')assert.ok(await evaluate("Boolean(document.querySelector('[data-news-empty]')) && document.querySelectorAll('[data-article]').length===0"));
             if(!before && name==='evaluation'){
-                assert.equal(await evaluate("document.querySelectorAll('main > section').length"),2);
+                assert.equal(await evaluate("document.querySelectorAll('main > section').length"),3);
+                assert.ok(await evaluate("!document.getElementById('academic-profile-panel').classList.contains('hidden')"));
+                assert.ok(await evaluate("document.getElementById('riasec27-survey-panel').classList.contains('hidden')"));
                 assert.ok(await evaluate("document.getElementById('result-reference-note').textContent.includes('Kết quả mang tính tham khảo, không thay thế tư vấn hướng nghiệp.')"));
             }
             if(!before && name==='chatbot')assert.ok(await evaluate("document.getElementById('chat-demo-note').textContent.includes('minh họa')"));
             console.log('PASS',pathname,before?'before capture':'desktop/tablet/mobile and navigation');
+        }
+        if(!before){
+            await evaluate("window.AUTH_USER = { role: 'user' }; renderLayout('nav-home')");
+            assert.equal(await evaluate("Boolean(document.querySelector('#sidebar a[href=\"/evaluation/history\"]'))"),false);
         }
         assert.deepEqual(cdp.errors, [], 'No JavaScript or console.error on any page');
         console.log(before?'BEFORE_CAPTURE_COMPLETE':'ALL_WEBSITE_UI_BROWSER_TESTS_PASS');

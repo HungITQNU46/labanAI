@@ -2,36 +2,74 @@
 <div id="main-wrapper" class="ui-page evaluation-history-page">
     <main>
         <header class="ui-page-header">
-            <h1>Lịch sử hướng nghiệp</h1>
-            <p>Xem lại các kết quả hướng nghiệp đã được lưu cho tài khoản của bạn.</p>
+            <h1>Lịch sử đánh giá &amp; tư vấn</h1>
+            <p>Xem lại và so sánh các kết quả hướng nghiệp đã được lưu cho tài khoản của bạn.</p>
         </header>
 
+        <section class="history-toolbar" aria-label="Tìm kiếm và lọc lịch sử">
+            <label class="history-search">
+                <i data-lucide="search" aria-hidden="true"></i>
+                <span class="sr-only">Tìm nhanh theo tên ngành</span>
+                <input id="history-search" type="search" placeholder="Tìm nhanh theo tên ngành..." autocomplete="off">
+            </label>
+            <label class="history-filter">
+                <span class="sr-only">Khoảng thời gian</span>
+                <select id="history-period">
+                    <option value="all">Tất cả thời gian</option>
+                    <option value="30">30 ngày qua</option>
+                    <option value="90">90 ngày qua</option>
+                    <option value="365">12 tháng qua</option>
+                </select>
+            </label>
+            <label class="history-sort-label" for="history-sort">Sắp xếp:</label>
+            <label class="history-filter history-sort">
+                <span class="sr-only">Thứ tự kết quả</span>
+                <select id="history-sort">
+                    <option value="newest">Mới nhất → Cũ nhất</option>
+                    <option value="oldest">Cũ nhất → Mới nhất</option>
+                </select>
+            </label>
+            <button type="button" id="history-compare-button" class="history-compare-button">
+                <i data-lucide="copy" aria-hidden="true"></i>
+                <span>So sánh (<span id="history-selected-count">0</span>)</span>
+            </button>
+        </section>
+        <p id="history-status" class="history-status" role="status" aria-live="polite"></p>
+
         <% if (history.length === 0) { %>
-            <section class="ui-card ui-empty" role="status">
+            <section class="ui-card ui-empty history-empty" role="status">
                 <div class="ui-icon"><i data-lucide="clock-3" aria-hidden="true"></i></div>
-                <h2>Chưa có lịch sử hướng nghiệp</h2>
-                <p>Các kết quả khảo sát RIASEC hiện tại chỉ dùng trong phiên và không được lưu. Khi có kết quả đánh giá đã lưu, chúng sẽ xuất hiện tại đây.</p>
+                <h2>Chưa có lịch sử đánh giá</h2>
+                <p>Kết quả khảo sát RIASEC hiện chỉ dùng trong phiên và không được lưu. Các kết quả đã lưu sẽ hiển thị tại đây.</p>
                 <a href="/evaluation" class="ui-button btn-gradient">Bắt đầu đánh giá <i data-lucide="arrow-right" aria-hidden="true"></i></a>
             </section>
         <% } else { %>
-            <div class="ui-history-list">
-                <% history.forEach((item) => { %>
-                    <article class="ui-card ui-history-card">
+            <div id="history-list" class="ui-history-list">
+                <% history.forEach((item) => {
+                    const majors = Array.isArray(item.nganhHoc) ? item.nganhHoc : [];
+                    const parsedDate = item.detail?.thoiGian ? new Date(item.detail.thoiGian) : null;
+                    const historyDate = parsedDate && Number.isFinite(parsedDate.getTime()) ? parsedDate : null;
+                    const searchText = majors.join(' ');
+                %>
+                    <article class="ui-card ui-history-card" data-history-card
+                        data-history-date="<%= historyDate ? historyDate.getTime() : 0 %>"
+                        data-history-search="<%= searchText %>">
                         <div class="ui-history-heading">
-                            <div>
-                                <span class="ui-kicker">Kết quả đã lưu</span>
-                                <h2>Lượt đánh giá hướng nghiệp</h2>
-                            </div>
+                            <label class="history-select">
+                                <input type="checkbox" class="history-select-checkbox" value="<%= item._id %>" aria-label="Chọn lượt đánh giá để so sánh">
+                                <span>Chọn so sánh</span>
+                            </label>
                             <time class="ui-history-date">
-                                <%= item.detail?.thoiGian
-                                    ? new Date(item.detail.thoiGian).toLocaleString('vi-VN', { timeZone: 'Asia/Ho_Chi_Minh' })
+                                <%= historyDate
+                                    ? historyDate.toLocaleString('vi-VN', { timeZone: 'Asia/Ho_Chi_Minh' })
                                     : 'Chưa có thời gian ghi nhận' %>
                             </time>
                         </div>
-                        <% if (Array.isArray(item.nganhHoc) && item.nganhHoc.length > 0) { %>
+                        <h2>Lượt đánh giá hướng nghiệp</h2>
+                        <% if (majors.length > 0) { %>
                             <h3>Ngành học được gợi ý</h3>
                             <ol class="ui-history-majors">
-                                <% item.nganhHoc.forEach((major, index) => { %>
+                                <% majors.forEach((major, index) => { %>
                                     <li>
                                         <span><%= major %></span>
                                         <% if (Array.isArray(item.tiLe) && Number.isFinite(Number(item.tiLe[index]))) { %>
@@ -46,8 +84,43 @@
                     </article>
                 <% }) %>
             </div>
-            <a href="/evaluation" class="ui-button btn-gradient">Làm bài đánh giá mới <i data-lucide="arrow-right" aria-hidden="true"></i></a>
+            <p id="history-no-results" class="history-no-results hidden" role="status">Không tìm thấy lượt đánh giá phù hợp.</p>
         <% } %>
     </main>
 </div>
-<%- include('../partials/footer', { extraScripts: '<script>renderLayout("nav-evaluation-history");</script>' }) %>
+
+<div id="history-compare-modal" class="history-compare-modal hidden" role="dialog" aria-modal="true" aria-labelledby="history-compare-title">
+    <div class="history-compare-dialog">
+        <div class="history-compare-heading">
+            <div>
+                <span class="evaluation-eyebrow">ĐỐI CHIẾU KẾT QUẢ</span>
+                <h2 id="history-compare-title">So sánh các lượt đánh giá</h2>
+            </div>
+            <button type="button" id="history-compare-close" class="history-compare-close" aria-label="Đóng cửa sổ so sánh">
+                <i data-lucide="x" aria-hidden="true"></i>
+            </button>
+        </div>
+        <div id="history-compare-content" class="history-compare-content"></div>
+    </div>
+</div>
+
+<div id="bottom-nav-bar" class="evaluation-action-bar" role="region" aria-label="Điều hướng đánh giá">
+    <div class="evaluation-action-links">
+        <a href="/evaluation" class="evaluation-shortcut evaluation-shortcut-prediction">
+            <i data-lucide="school" aria-hidden="true"></i><span>Dự đoán trúng tuyển ĐH</span>
+        </a>
+        <a href="/chatbot" class="evaluation-shortcut evaluation-shortcut-chat">
+            <i data-lucide="message-square" aria-hidden="true"></i><span>Hỏi ChatBot AI</span>
+        </a>
+        <a href="/evaluation/history" class="evaluation-shortcut" aria-current="page">
+            <i data-lucide="history" aria-hidden="true"></i><span>Lịch sử</span>
+        </a>
+    </div>
+    <div class="evaluation-action-buttons">
+        <a href="/evaluation" class="evaluation-button evaluation-button-return">
+            <i data-lucide="arrow-left" aria-hidden="true"></i><span>Quay lại bài làm</span>
+        </a>
+    </div>
+</div>
+
+<%- include('../partials/footer', { extraScripts: '<script>renderLayout("nav-eval");</script><script src="/js/evaluation-history.js"></script>' }) %>
