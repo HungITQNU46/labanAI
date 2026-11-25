@@ -67,6 +67,25 @@ app.use((req, res, next) => {
 // Sử dụng định tuyến
 app.use('/', webRoutes);
 
+app.use('/api/admin', (req, res) => {
+  res.status(404).json({
+    success: false,
+    message: `Không tìm thấy API quản trị: ${req.method} ${req.path}`
+  });
+});
+
+app.use('/api/admin', (error, req, res, next) => {
+  if (res.headersSent) return next(error);
+  if (error.type === 'entity.parse.failed') {
+    return res.status(400).json({ success: false, message: 'Nội dung yêu cầu không phải JSON hợp lệ.' });
+  }
+  if (error.type === 'entity.too.large') {
+    return res.status(413).json({ success: false, message: 'Dữ liệu gửi lên vượt giới hạn 10 KB.' });
+  }
+  console.error('Lỗi API quản trị:', error);
+  return res.status(500).json({ success: false, message: 'Lỗi máy chủ khi xử lý yêu cầu quản trị.' });
+});
+
 // Keep API validation errors JSON-only and avoid reflecting submitted answers.
 app.use(['/api/ml', '/api/riasec27'], (error, req, res, next) => {
   if (!['entity.parse.failed', 'entity.too.large'].includes(error.type)) return next(error);

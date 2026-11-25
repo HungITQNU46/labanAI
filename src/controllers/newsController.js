@@ -5,6 +5,10 @@ const { syncTuoiTreNews } = require('../services/newsRssService');
 let newsListCache = { data: null, expiresAt: 0 };
 const NEWS_CACHE_TTL_MS = 3 * 60 * 1000;
 
+function invalidateNewsCache() {
+    newsListCache = { data: null, expiresAt: 0 };
+}
+
 function estimateReadTimeFromHtml(html = '') {
     const plainText = String(html).replace(/<[^>]*>?/gm, ' ').replace(/\s+/g, ' ').trim();
     const words = plainText ? plainText.split(' ').length : 0;
@@ -77,8 +81,8 @@ exports.getAllNews = async (req, res) => {
 // GET /api/news/:id -> Chỉ tải nội dung html_str khi người dùng bấm đọc bài + tăng lượt xem
 exports.getNewsDetail = async (req, res) => {
     try {
-        const article = await TinTuc.findByIdAndUpdate(
-            req.params.id,
+        const article = await TinTuc.findOneAndUpdate(
+            { _id: req.params.id, trangThai: true },
             { $inc: { views: 1 } },
             { new: true }
         ).select('title link html_str snippet author pubDate image views likes').lean();
@@ -98,9 +102,12 @@ exports.getNewsDetail = async (req, res) => {
 exports.syncNews = async (req, res) => {
     try {
         const result = await syncTuoiTreNews();
-        newsListCache = { data: null, expiresAt: 0 };
+        invalidateNewsCache();
         return res.json({ success: true, message: 'Đồng bộ tin tức thành công!', result });
     } catch (error) {
+        console.error('Lỗi API đồng bộ tin tức:', error);
         return res.status(500).json({ success: false, message: 'Lỗi đồng bộ RSS' });
     }
 };
+
+exports.invalidateNewsCache = invalidateNewsCache;

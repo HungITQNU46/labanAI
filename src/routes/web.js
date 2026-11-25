@@ -7,6 +7,7 @@ const chatbotController = require('../controllers/chatbotController');
 const evaluationController = require('../controllers/evaluationController');
 const evaluationHistoryController = require('../controllers/evaluationHistoryController');
 const adminController = require('../controllers/adminController');
+const newsAdminController = require('../controllers/newsAdminController');
 const riasec27Controller = require('../controllers/riasec27Controller');
 const { riasec27PreviewGate } = require('../middleware/riasec27PreviewGate');
 
@@ -54,10 +55,17 @@ router.get('/api/admin/all-recommended-majors', adminController.getAllRecommende
 router.get('/api/admin/realtime-metrics', requireAdmin, adminController.getRealtimeMetricsAPI);
 router.patch('/api/admin/users/:id/toggle-status', requireAdmin, adminController.toggleUserStatusAPI);
 router.patch('/api/admin/users/batch-status', requireAdmin, adminController.batchUpdateUserStatusAPI);
+router.get('/api/admin/news', requireAdmin, newsAdminController.listNews);
+router.post('/api/admin/news', requireAdmin, newsAdminController.createNews);
+router.get('/api/admin/news/:id', requireAdmin, newsAdminController.getNews);
+router.patch('/api/admin/news/:id', requireAdmin, newsAdminController.updateNews);
+router.patch('/api/admin/news/:id/status', requireAdmin, newsAdminController.setNewsStatus);
+router.delete('/api/admin/news/:id', requireAdmin, newsAdminController.deleteNews);
+router.post('/api/admin/news/sync', requireAdmin, newsController.syncNews);
 
-module.exports = router;
 router.get('/api/news', newsController.getAllNews);//tintuc
-router.post('/api/news/sync', newsController.syncNews);//tintuc
+router.post('/api/news/sync', requireAdmin, newsController.syncNews);//tintuc
 router.get('/api/news/:id', newsController.getNewsDetail); //tintuc
+
 module.exports = router;
 
