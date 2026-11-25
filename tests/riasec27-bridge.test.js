@@ -1,5 +1,5 @@
 'use strict';
-const { test } = require('node:test');
+const { test, after } = require('node:test');
 const assert = require('node:assert/strict');
 const { EventEmitter } = require('node:events');
 const { PassThrough } = require('node:stream');
@@ -123,4 +123,11 @@ test('hotfix: frontend reads safe API codes without exposing backend diagnostics
     context.renderResults({error:'PRIVATE_PATH<script>',message:'PRIVATE_PATH'});
     assert.ok(resultsContent.innerHTML.includes('RIASEC27_EVALUATION_ERROR'));
     assert.ok(!resultsContent.innerHTML.includes('PRIVATE_PATH'));
+});
+
+after(async () => {
+    const app = require('../server');
+    if (app && typeof app.closeResources === 'function') {
+        await app.closeResources();
+    }
 });

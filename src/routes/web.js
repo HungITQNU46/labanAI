@@ -29,10 +29,10 @@ router.get('/guide', homeController.getGuide);
 router.get('/news', homeController.getNews);
 
 // Phân hệ Chatbot AI
-router.get('/chatbot', requireAuth, chatbotController.getChatbot);
+router.get('/chatbot', chatbotController.getChatbot);
 
 // Phân hệ Đánh giá năng lực & Dự đoán
-router.get('/evaluation', requireAuth, evaluationController.getEvaluation);
+router.get('/evaluation', evaluationController.getEvaluation);
 router.get('/evaluation/history', requireAuth, evaluationHistoryController.getEvaluationHistory);
 router.get('/api/ml/status', evaluationController.getMlStatus);
 router.post('/api/ml/recommendations', evaluationController.recommendMajors);

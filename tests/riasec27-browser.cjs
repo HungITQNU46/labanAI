@@ -307,6 +307,9 @@ async function runBrowserTests() {
         cdp.close();
         browser.kill();
         server.close();
+        if (app && typeof app.closeResources === 'function') {
+            await app.closeResources();
+        }
         try {
             fs.rmSync(profile, { recursive: true, force: true });
         } catch {}

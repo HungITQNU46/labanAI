@@ -19,6 +19,9 @@ before(async () => {
 after(async () => {
     server.closeAllConnections();
     await new Promise((resolve, reject) => server.close((error) => error ? reject(error) : resolve()));
+    if (app && typeof app.closeResources === 'function') {
+        await app.closeResources();
+    }
 });
 
 const payload = () => ({ feature_set: 'F54', answers: Array(54).fill(3), top_k: 5 });

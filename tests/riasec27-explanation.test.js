@@ -244,7 +244,13 @@ test('explanation: incomplete, oversized and invalid provider payloads rejected'
 
 let server,origin;
 before(async()=>{const app=require('../server');server=await new Promise(resolve=>{const s=app.listen(0,'127.0.0.1',()=>resolve(s));});origin=`http://127.0.0.1:${server.address().port}`;});
-after(async()=>{server.closeAllConnections();await new Promise(resolve=>server.close(resolve));});
+after(async()=>{
+    server.closeAllConnections();await new Promise(resolve=>server.close(resolve));
+    const app = require('../server');
+    if (app && typeof app.closeResources === 'function') {
+        await app.closeResources();
+    }
+});
 test('explanation HTTP: same preview gate blocks disabled/production/foreign Host without provider calls',async()=>{
     const old={env:process.env.NODE_ENV,flag:process.env.LABANAI_RIASEC27_PREVIEW};
     try{

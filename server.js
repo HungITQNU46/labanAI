@@ -36,14 +36,23 @@ if (process.env.NODE_ENV === 'production') app.set('trust proxy', 1);
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(express.json({ limit: '10kb' }));
 app.use(express.urlencoded({ extended: false, limit: '10kb' }));
+const sessionStore = MongoStore.create({
+  mongoUrl: mongoUri,
+  collectionName: 'sessions',
+  ttl: 60 * 60 * 24 * 7
+});
+app.sessionStore = sessionStore;
+app.closeResources = async () => {
+  if (sessionStore) {
+    await sessionStore.collectionP.catch(() => {});
+    await sessionStore.close().catch(() => {});
+  }
+};
+
 app.use(session({
   name: 'connect.sid',
   secret: sessionSecret,
-  store: MongoStore.create({
-    mongoUrl: mongoUri,
-    collectionName: 'sessions',
-    ttl: 60 * 60 * 24 * 7
-  }),
+  store: sessionStore,
   resave: false,
   saveUninitialized: false,
   cookie: {

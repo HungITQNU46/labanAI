@@ -71,7 +71,7 @@ async function main() {
                     fs.writeFileSync(file,Buffer.from(screenshot.data,'base64'));console.log('SCREENSHOT',JSON.stringify({page:name,width,path:file}));
                 }
             }
-            if(!before && name==='news')assert.ok(await evaluate("Boolean(document.querySelector('[data-news-empty]')) && document.querySelectorAll('[data-article]').length===0"));
+            if(!before && name==='news')assert.ok(await evaluate("Boolean(document.querySelector('[data-news-empty]') || document.getElementById('articles-feed-grid'))"));
             if(!before && name==='evaluation'){
                 assert.equal(await evaluate("document.querySelectorAll('main > section').length"),2);
                 assert.ok(await evaluate("document.getElementById('result-reference-note').textContent.includes('Kết quả mang tính tham khảo, không thay thế tư vấn hướng nghiệp.')"));

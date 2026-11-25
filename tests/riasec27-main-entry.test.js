@@ -14,6 +14,9 @@ before(async () => {
 });
 after(async () => {
     server.closeAllConnections(); await new Promise(resolve => server.close(resolve));
+    if (app && typeof app.closeResources === 'function') {
+        await app.closeResources();
+    }
     if (old.env === undefined) delete process.env.NODE_ENV; else process.env.NODE_ENV = old.env;
     if (old.flag === undefined) delete process.env.LABANAI_RIASEC27_PREVIEW; else process.env.LABANAI_RIASEC27_PREVIEW = old.flag;
 });

@@ -229,7 +229,7 @@
         const status = ml.status || 'UNKNOWN';
 
         if (status === 'SUCCESS') {
-            updateEvaluationStep(2);
+            if (typeof updateEvaluationStep === 'function') updateEvaluationStep(2);
             const top3 = ml.top3 || [];
             let cardsHtml = '<div class="grid grid-cols-1 md:grid-cols-3 gap-5">';
 
@@ -260,7 +260,7 @@
             if (aiControls) aiControls.classList.remove('hidden');
             if (aiOpen) aiOpen.disabled = !contextToken;
         } else if (status === 'ABSTAIN_FLAT_PROFILE') {
-            updateEvaluationStep(2);
+            if (typeof updateEvaluationStep === 'function') updateEvaluationStep(2);
             resultsContent.innerHTML = `
                 <div data-result-status="ABSTAIN_FLAT_PROFILE" class="p-6 rounded-2xl bg-slate-50 border border-slate-200 text-navy" role="status">
                     <h4 class="font-bold text-base mb-2 flex items-center gap-2">
@@ -275,7 +275,7 @@
                 </div>
             `;
         } else if (status === 'TIED_BOUNDARY') {
-            updateEvaluationStep(2);
+            if (typeof updateEvaluationStep === 'function') updateEvaluationStep(2);
             resultsContent.innerHTML = `
                 <div data-result-status="TIED_BOUNDARY" class="p-6 rounded-2xl bg-slate-50 border border-slate-200 text-navy" role="status">
                     <h4 class="font-bold text-base mb-2 flex items-center gap-2">

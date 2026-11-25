@@ -29,6 +29,9 @@ before(async () => {
 after(async () => {
     server.closeAllConnections();
     await new Promise((resolve, reject) => server.close((err) => (err ? reject(err) : resolve())));
+    if (app && typeof app.closeResources === 'function') {
+        await app.closeResources();
+    }
 });
 
 // Helper for HTTP requests
