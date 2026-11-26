@@ -48,6 +48,19 @@
 </head>
 <body class="bg-background text-navy antialiased overflow-x-hidden selection:bg-cyan selection:text-white flex min-h-screen relative">
 
+    <div id="global-top-glass" class="global-top-glass" aria-hidden="true"></div>
+<script>
+    (function () {
+        const updateTopGlass = () => {
+            const bar = document.getElementById('global-top-glass');
+            if (!bar) return;
+            bar.classList.toggle('is-scrolled', window.scrollY > 12);
+        };
+        window.addEventListener('scroll', updateTopGlass, { passive: true });
+        document.addEventListener('DOMContentLoaded', updateTopGlass);
+    })();
+</script>
+
     <!-- DẢI SÓNG LỤA 3D AURORA MESH GRADIENT CHUẨN HÌNH MẪU -->
     <div class="aurora-stage" aria-hidden="true">
         <div class="aurora-ambient-left"></div>

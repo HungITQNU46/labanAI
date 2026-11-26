@@ -15,11 +15,20 @@
         <!-- PHÂN HỆ 1: FORM -->
         <div id="assessment-container" class="flex-1 flex flex-col w-full">
             <div class="w-full max-w-3xl mx-auto mb-10 mt-2">
-                <div class="flex items-center justify-between relative before:absolute before:top-1/2 before:left-0 before:w-full before:h-1 before:bg-gray-200 before:-z-10 before:-translate-y-1/2">
-                    <div id="progress-line" class="absolute top-1/2 left-0 h-1 bg-cyan -z-10 -translate-y-1/2 transition-all duration-500 w-0"></div>
-                    <div class="step flex flex-col items-center gap-2" id="indicator-step-1"><div class="w-8 h-8 rounded-full bg-cyan text-white flex items-center justify-center font-bold shadow-md">1</div><span class="text-xs font-bold text-navy">Hồ sơ học tập</span></div>
-                    <div class="step flex flex-col items-center gap-2" id="indicator-step-2"><div class="w-8 h-8 rounded-full bg-gray-200 text-gray-400 flex items-center justify-center font-bold shadow-md">2</div><span class="text-xs font-semibold text-gray-400">Trắc nghiệm Holland</span></div>
-                    <div class="step flex flex-col items-center gap-2" id="indicator-step-3"><div class="w-8 h-8 rounded-full bg-gray-200 text-gray-400 flex items-center justify-center font-bold shadow-md">3</div><span class="text-xs font-semibold text-gray-400">Kết quả AI</span></div>
+                <div class="flex items-center justify-between relative before:absolute before:top-4 before:left-0 before:w-full before:h-1 before:bg-slate-200 dark:before:bg-slate-700/80 before:-z-10 before:-translate-y-1/2">
+                    <div id="progress-line" class="absolute top-4 left-0 h-1 bg-cyan -z-10 -translate-y-1/2 transition-all duration-500 w-0"></div>
+                    <div class="step flex flex-col items-center gap-2" id="indicator-step-1">
+                        <div class="w-8 h-8 rounded-full bg-cyan text-white border border-cyan flex items-center justify-center font-bold shadow-md shadow-cyan/30 transition-all">1</div>
+                        <span class="text-xs font-bold text-navy transition-colors">Hồ sơ học tập</span>
+                    </div>
+                    <div class="step flex flex-col items-center gap-2" id="indicator-step-2">
+                        <div class="w-8 h-8 rounded-full bg-slate-200 text-slate-600 border border-slate-300 dark:bg-slate-800 dark:text-slate-100 dark:border-slate-600 flex items-center justify-center font-bold shadow-md transition-all">2</div>
+                        <span class="text-xs font-semibold text-slate-500 dark:text-slate-400 transition-colors">Trắc nghiệm Holland</span>
+                    </div>
+                    <div class="step flex flex-col items-center gap-2" id="indicator-step-3">
+                        <div class="w-8 h-8 rounded-full bg-slate-200 text-slate-600 border border-slate-300 dark:bg-slate-800 dark:text-slate-100 dark:border-slate-600 flex items-center justify-center font-bold shadow-md transition-all">3</div>
+                        <span class="text-xs font-semibold text-slate-500 dark:text-slate-400 transition-colors">Kết quả AI</span>
+                    </div>
                 </div>
             </div>
 

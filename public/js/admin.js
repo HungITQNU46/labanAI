@@ -1,7 +1,9 @@
+// ==========================================
+// 1. BIẾN TOÀN CỤC & TRẠNG THÁI HỆ THỐNG
+// ==========================================
 const ADMIN_SESSION_KEY = 'adminSessionStartTime';
 const ADMIN_LOGIN_KEY = 'adminSessionLoginAt';
 
-// Xóa sạch dấu vết cũ từng lưu trong localStorage
 localStorage.removeItem(ADMIN_SESSION_KEY);
 
 function resolveAdminSessionStartTime() {
@@ -10,7 +12,6 @@ function resolveAdminSessionStartTime() {
     const savedStart = sessionStorage.getItem(ADMIN_SESSION_KEY);
     const savedLoginAt = sessionStorage.getItem(ADMIN_LOGIN_KEY);
 
-    // Giữ nguyên mốc khi F5; tự reset khi đóng tab/trình duyệt hoặc vừa đăng nhập phiên mới
     if (savedStart && (!serverLoginAt || savedLoginAt === serverLoginAt)) {
         return savedStart;
     }
@@ -28,6 +29,10 @@ let userRoleFilter = 'all';
 let userStatusFilter = 'all';
 let userSearchKeyword = '';
 let searchDebounceTimeout = null;
+
+// Cấu hình phân trang: 20 người dùng / trang
+let currentUserPage = 1;
+const USERS_PER_PAGE = 10;
 
 // ==========================================
 // 2. HỆ THỐNG THÔNG BÁO TOAST NỔI (TOAST NOTIFICATION)
@@ -62,7 +67,7 @@ function showAdminToast(message, type = 'success') {
 }
 
 // ==========================================
-// 3. ĐỘNG CƠ REALTIME POLLING (TỰ ĐỘNG ĐỒNG BỘ MỖI 6 GIÂY)
+// 3. ĐỘNG CƠ REALTIME POLLING & SPARKLINES
 // ==========================================
 function formatClockTime(isoStr) {
     const d = new Date(isoStr);
@@ -90,7 +95,6 @@ function buildSmoothSparklinePaths(values) {
         return { x, y, val };
     });
 
-    // Đường cong mượt Cubic Bezier đi qua đúng 7 mốc Thứ 2 -> Chủ nhật
     let lineD = `M${points[0].x} ${points[0].y}`;
     for (let i = 0; i < points.length - 1; i++) {
         const p0 = points[i];
@@ -141,7 +145,7 @@ function renderWeeklySparklines(sparklines) {
 }
 
 async function fetchRealtimeMetrics() {
-    if (document.hidden) return; // Tạm ngưng polling khi đang chuyển sang tab khác
+    if (document.hidden) return;
 
     try {
         const res = await fetch(`/api/admin/realtime-metrics?since=${encodeURIComponent(adminSessionStartTime)}`);
@@ -162,12 +166,10 @@ async function fetchRealtimeMetrics() {
             elEvals.innerText = Number(data.totals.totalEvaluations).toLocaleString('vi-VN');
         }
 
-        // Cập nhật badge "+X mới" kể từ thời điểm phiên hiện tại
         updateNewBadge('badge-new-users', data.newCounts?.newUsers);
         updateNewBadge('badge-new-news', data.newCounts?.newNews);
         updateNewBadge('badge-new-evaluations', data.newCounts?.newEvaluations);
 
-        // Cập nhật 3 sóng tốc độ tuần Thứ 2 -> Chủ nhật
         if (data.weeklySparklines) {
             renderWeeklySparklines(data.weeklySparklines);
         }
@@ -190,17 +192,22 @@ function updateNewBadge(badgeId, count) {
         el.classList.remove('inline-flex');
     }
 }
+
 // ==========================================
-// 4. BỘ LỌC TÌM KIẾM, TABS VAI TRÒ & TRẠNG THÁI
+// 4. BỘ LỌC TÌM KIẾM, TABS VAI TRÒ & PHÂN TRANG (1, 2, 3...)
 // ==========================================
-function filterUserTable() {
-    const rows = document.querySelectorAll('#user-table-tbody tr.user-row');
+function filterUserTable(resetPage = true) {
+    if (resetPage) {
+        currentUserPage = 1;
+    }
+
+    const rows = Array.from(document.querySelectorAll('#user-table-tbody tr.user-row'));
     const noResultsRow = document.getElementById('no-search-results');
-    let visibleCount = 0;
 
     let countAll = 0;
     let countUsers = 0;
     let countAdmins = 0;
+    const matchedRows = [];
 
     rows.forEach(row => {
         const name = row.getAttribute('data-name') || '';
@@ -217,12 +224,10 @@ function filterUserTable() {
         const matchesStatus = (userStatusFilter === 'all') || (status === userStatusFilter);
 
         if (matchesSearch && matchesRole && matchesStatus) {
-            row.classList.remove('hidden');
-            visibleCount++;
+            row.classList.remove('filtered-out');
+            matchedRows.push(row);
         } else {
-            row.classList.add('hidden');
-            const chk = row.querySelector('.user-row-checkbox');
-            if (chk) chk.checked = false;
+            row.classList.add('filtered-out');
         }
     });
 
@@ -233,11 +238,128 @@ function filterUserTable() {
     if (elUser) elUser.innerText = countUsers;
     if (elAdmin) elAdmin.innerText = countAdmins;
 
+    // Tính toán số trang (20 người dùng / trang)
+    const totalItems = matchedRows.length;
+    const totalPages = Math.max(1, Math.ceil(totalItems / USERS_PER_PAGE));
+    if (currentUserPage > totalPages) currentUserPage = totalPages;
+    if (currentUserPage < 1) currentUserPage = 1;
+
+    const startIdx = (currentUserPage - 1) * USERS_PER_PAGE;
+    const endIdx = startIdx + USERS_PER_PAGE;
+    const visiblePageSet = new Set(matchedRows.slice(startIdx, endIdx));
+
+    rows.forEach(row => {
+        if (visiblePageSet.has(row)) {
+            row.classList.remove('hidden');
+        } else {
+            row.classList.add('hidden');
+            const chk = row.querySelector('.user-row-checkbox');
+            if (chk) chk.checked = false;
+        }
+    });
+
     if (noResultsRow) {
-        noResultsRow.classList.toggle('hidden', visibleCount > 0);
+        noResultsRow.classList.toggle('hidden', totalItems > 0);
     }
 
+    renderUserPagination(totalItems, totalPages, startIdx, Math.min(endIdx, totalItems));
     handleUserCheckboxChange();
+}
+
+function getPaginationPages(current, total) {
+    if (total <= 7) {
+        return Array.from({ length: total }, (_, i) => i + 1);
+    }
+    if (current <= 4) {
+        return [1, 2, 3, 4, 5, '...', total];
+    }
+    if (current >= total - 3) {
+        return [1, '...', total - 4, total - 3, total - 2, total - 1, total];
+    }
+    return [1, '...', current - 1, current, current + 1, '...', total];
+}
+
+function renderUserPagination(totalItems, totalPages, startIdx, endItem) {
+    const infoEl = document.getElementById('user-pagination-info');
+    const controlsEl = document.getElementById('user-pagination-controls');
+    if (!infoEl || !controlsEl) return;
+
+    if (totalItems === 0) {
+        infoEl.innerHTML = 'Hiển thị <span class="font-bold text-navy">0</span> tài khoản';
+        controlsEl.innerHTML = '';
+        return;
+    }
+
+    infoEl.innerHTML = `Hiển thị <span class="font-bold text-navy">${startIdx + 1}–${endItem}</span> trên tổng số <span class="font-bold text-navy">${totalItems}</span> tài khoản <span class="text-slate-400">(Trang ${currentUserPage}/${totalPages})</span>`;
+
+    const pages = getPaginationPages(currentUserPage, totalPages);
+    const prevDisabled = currentUserPage <= 1;
+    const nextDisabled = currentUserPage >= totalPages;
+
+    let html = `
+        <button type="button"
+                onclick="goToUserPage(${currentUserPage - 1})"
+                ${prevDisabled ? 'disabled' : ''}
+                class="inline-flex items-center gap-1 rounded-xl border border-slate-200 bg-white px-2.5 py-1.5 text-xs font-bold text-navy transition hover:border-cyan hover:text-cyan disabled:cursor-not-allowed disabled:opacity-40 cursor-pointer">
+            <i data-lucide="chevron-left" class="h-3.5 w-3.5"></i>
+            <span>Trước</span>
+        </button>
+    `;
+
+    pages.forEach(p => {
+        if (p === '...') {
+            html += `<span class="px-2 py-1 text-xs font-bold text-muted select-none">...</span>`;
+        } else if (p === currentUserPage) {
+            html += `
+                <button type="button"
+                        onclick="goToUserPage(${p})"
+                        aria-current="page"
+                        class="min-w-[32px] rounded-xl bg-gradient-to-r from-cyan to-ocean px-2.5 py-1.5 text-xs font-black text-white shadow-sm cursor-pointer">
+                    ${p}
+                </button>
+            `;
+        } else {
+            html += `
+                <button type="button"
+                        onclick="goToUserPage(${p})"
+                        class="min-w-[32px] rounded-xl border border-slate-200 bg-white px-2.5 py-1.5 text-xs font-bold text-navy transition hover:border-cyan hover:text-cyan cursor-pointer">
+                    ${p}
+                </button>
+            `;
+        }
+    });
+
+    html += `
+        <button type="button"
+                onclick="goToUserPage(${currentUserPage + 1})"
+                ${nextDisabled ? 'disabled' : ''}
+                class="inline-flex items-center gap-1 rounded-xl border border-slate-200 bg-white px-2.5 py-1.5 text-xs font-bold text-navy transition hover:border-cyan hover:text-cyan disabled:cursor-not-allowed disabled:opacity-40 cursor-pointer">
+            <span>Sau</span>
+            <i data-lucide="chevron-right" class="h-3.5 w-3.5"></i>
+        </button>
+    `;
+
+    controlsEl.innerHTML = html;
+    if (typeof lucide !== 'undefined') lucide.createIcons();
+}
+
+function goToUserPage(page) {
+    if (page === currentUserPage) return;
+    currentUserPage = page;
+
+    const tableScroll = document.getElementById('accounts-table-scroll');
+    if (tableScroll) {
+        tableScroll.scrollTop = 0;
+    }
+
+    filterUserTable(false);
+
+    const tbody = document.getElementById('user-table-tbody');
+    if (tbody) {
+        tbody.classList.remove('is-page-switching');
+        void tbody.offsetWidth; // Kích hoạt lại animation mượt mỗi lần đổi trang
+        tbody.classList.add('is-page-switching');
+    }
 }
 
 function setUserRoleFilter(role) {
@@ -251,19 +373,19 @@ function setUserRoleFilter(role) {
             btn.className = 'tab-role-btn py-1.5 px-3 rounded-lg text-xs font-bold text-slate-600 hover:text-navy transition';
         }
     });
-    filterUserTable();
+    filterUserTable(true);
 }
 
 function setUserStatusFilter(status) {
     userStatusFilter = status;
-    filterUserTable();
+    filterUserTable(true);
 }
 
 function handleUserSearch(keyword) {
     clearTimeout(searchDebounceTimeout);
     searchDebounceTimeout = setTimeout(() => {
         userSearchKeyword = (keyword || '').trim().toLowerCase();
-        filterUserTable();
+        filterUserTable(true);
     }, 200);
 }
 
@@ -305,6 +427,7 @@ async function toggleUserStatus(button, userId) {
                     button.className = 'toggle-status-btn rounded-xl border border-emerald-200 bg-emerald-50 px-2.5 py-1.5 text-[11px] font-bold text-emerald-700 transition hover:opacity-90';
                 }
             }
+            filterUserTable(false);
             showAdminToast(data.message, 'success');
         } else {
             showAdminToast(data.message || 'Lỗi cập nhật trạng thái', 'error');
@@ -337,8 +460,8 @@ function handleUserCheckboxChange() {
     const masterCheckbox = document.getElementById('check-all-users');
 
     const totalVisible = document.querySelectorAll('#user-table-tbody tr.user-row:not(.hidden) .user-row-checkbox').length;
-    if (masterCheckbox && totalVisible > 0) {
-        masterCheckbox.checked = (selectedCheckboxes.length === totalVisible);
+    if (masterCheckbox) {
+        masterCheckbox.checked = totalVisible > 0 && (selectedCheckboxes.length === totalVisible);
     }
 
     if (selectedCheckboxes.length >= 2) {
@@ -414,6 +537,7 @@ async function executeBatchAction(targetStatus) {
             });
 
             deselectAllUsers();
+            filterUserTable(false);
             showAdminToast(data.message, 'success');
         } else {
             showAdminToast(data.message || 'Lỗi thao tác hàng loạt', 'error');
@@ -486,7 +610,6 @@ function renderChartBars(data) {
         const heightPercent = item.count > 0
             ? Math.max(Math.round((item.count / maxCount) * 92), 12)
             : 6;
-        // Áp dụng class Gradient Neon cho cột biểu đồ
         const color = item.count > 0 ? 'cyber-chart-bar' : 'cyber-chart-bar-empty';
         const maxWidthClass = totalBars <= 8 ? 'max-w-[42px]' : (totalBars <= 16 ? 'max-w-[26px]' : 'max-w-[16px]');
         const radiusClass = totalBars > 20 ? 'rounded-t-sm' : 'rounded-t-md';
@@ -681,7 +804,7 @@ function exportDashboardExcel() {
 
 function exportAccountsExcel() {
     const headers = ['Tên', 'Email', 'Vai trò', 'Trạng thái'];
-    const visibleRows = [...document.querySelectorAll('#user-table-tbody tr.user-row:not(.hidden)')];
+    const visibleRows = [...document.querySelectorAll('#user-table-tbody tr.user-row:not(.filtered-out)')];
 
     if (visibleRows.length === 0) return alert('Không có dữ liệu tài khoản hiển thị để xuất.');
 
@@ -748,6 +871,10 @@ function activateAdminPanel(targetId) {
         navItem.classList.toggle('border-cyan/20', isActive);
         navItem.classList.toggle('text-muted', !isActive);
     });
+
+    if (targetId === 'accounts' && typeof filterUserTable === 'function') {
+        filterUserTable(false);
+    }
 
     if (window.innerWidth < 768) applyAdminSidebarState(true, true);
 }
@@ -981,7 +1108,6 @@ function initAdmin3DCompass() {
     const container = document.getElementById('admin-compass-canvas');
     if (!container) return;
 
-    // Nếu trang chưa nạp thư viện Three.js thì tự động nạp từ CDN rồi vẽ ngay
     if (typeof THREE === 'undefined') {
         if (!document.getElementById('threejs-cdn-script')) {
             const script = document.createElement('script');
@@ -1069,7 +1195,6 @@ function initAdmin3DCompass() {
     needle.scale.set(0.4, 2, 0.4);
     compassGroup.add(needle);
 
-    // Các chấm tròn 3D li ti bay xung quanh la bàn
     const particlesGroup = new THREE.Group();
     const particleColors = [0x00F5D4, 0x38BDF8, 0xC084FC, 0x34D399, 0xFFFFFF];
     const particlesData = [];
@@ -1153,6 +1278,7 @@ function initAdmin3DCompass() {
     }
     animateAdminCompass();
 }
+
 // ==========================================
 // 9. KHỞI CHẠY KHI TẢI TRANG
 // ==========================================
@@ -1161,20 +1287,26 @@ document.addEventListener('DOMContentLoaded', () => {
         window.location.href = '/';
         return;
     }
+
+    // 1. Khởi tạo phân trang (20 người dùng / trang) & thanh số trang 1, 2, 3...
+    filterUserTable(true);
+
+    // 2. Cập nhật thời gian phiên làm việc & biểu đồ Sparklines
     updateAdminTimeDisplay();
     if (window.INITIAL_WEEKLY_SPARKLINES) {
         renderWeeklySparklines(window.INITIAL_WEEKLY_SPARKLINES);
     }
 
+    // 3. Khởi tạo lịch Flatpickr, biểu đồ hoạt động & La bàn 3D
     initVietnameseDatePickers();
     fetchConsultationStats({ timeframe: '7days' });
     initAdmin3DCompass();
 
-    // Kích hoạt Realtime Polling định kỳ mỗi 5 giây
+    // 4. Kích hoạt Realtime Polling định kỳ mỗi 5 giây
     fetchRealtimeMetrics();
     setInterval(fetchRealtimeMetrics, 5000);
 
-    // Khởi tạo icons Lucide
+    // 5. Khởi tạo icons Lucide & trạng thái Sidebar
     if (typeof lucide !== 'undefined') {
         lucide.createIcons();
     }

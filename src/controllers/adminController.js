@@ -391,14 +391,16 @@ const getAllRecommendedMajorsAPI = async (req, res) => {
 const getMajorDetailAPI = async (req, res) => {
     try {
         const majorName = decodeURIComponent(req.params.majorName);
-        const admissions = await Admission.find({
-            tenNganh: { $regex: new RegExp(majorName, 'i') }
-        }).limit(6);
+        const escapedName = majorName.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+        const safeRegex = new RegExp(escapedName, 'i');
 
-        const evalStats = await KetQuaDanhGia.aggregate([
-            { $unwind: '$nganhHoc' },
-            { $match: { nganhHoc: { $regex: new RegExp(majorName, 'i') } } },
-            { $count: 'totalMatches' }
+        const [admissions, evalStats] = await Promise.all([
+            Admission.find({ tenNganh: { $regex: safeRegex } }).limit(6).lean(),
+            KetQuaDanhGia.aggregate([
+                { $unwind: '$nganhHoc' },
+                { $match: { nganhHoc: { $regex: safeRegex } } },
+                { $count: 'totalMatches' }
+            ])
         ]);
 
         return res.json({

@@ -36,15 +36,12 @@ router.post('/api/evaluation/submit', requireAuth, evaluationController.submitEv
 router.get('/admin', requireAdmin, adminController.getAdminDashboard);
 router.get('/api/admin/consultation-stats', requireAdmin, adminController.getConsultationStatsAPI);
 router.get('/api/admin/major-detail/:majorName', requireAdmin, adminController.getMajorDetailAPI);
-router.get('/api/admin/all-recommended-majors', adminController.getAllRecommendedMajorsAPI);
+router.get('/api/admin/all-recommended-majors', requireAdmin, adminController.getAllRecommendedMajorsAPI);
 router.get('/api/admin/realtime-metrics', requireAdmin, adminController.getRealtimeMetricsAPI);
 router.patch('/api/admin/users/:id/toggle-status', requireAdmin, adminController.toggleUserStatusAPI);
 router.patch('/api/admin/users/batch-status', requireAdmin, adminController.batchUpdateUserStatusAPI);
 
-module.exports = router;
-
-
-
+// API Tin tức
 router.get('/api/news', newsController.getAllNews);
 router.get('/api/news/:id', newsController.getNewsDetail);
 router.post('/api/news/sync', newsController.syncNews);
