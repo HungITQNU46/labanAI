@@ -74,7 +74,7 @@ function renderLayout(activeMenuId) {
 
     if (!isLoggedIn) {
         layoutContainer.innerHTML = `
-            <header class="fixed w-full top-0 left-0 z-50 bg-gradient-to-b from-background via-background/90 to-transparent pb-6 transition-all duration-300">
+            <header class="fixed w-full top-0 left-0 z-60 bg-gradient-to-b from-background via-background/90 to-transparent pb-6 transition-all duration-300">
                 <div class="w-full px-6 sm:px-8 pt-3.5 flex justify-between items-center">
                     <div class="flex items-center gap-3 cursor-pointer group select-none" onclick="window.location.href='/'">
                         <div class="w-11 h-11 rounded-[14px] bg-gradient-to-b from-[#00B4D8] to-[#7B2CBF] flex items-center justify-center text-white shadow-md shadow-cyan/20 transform transition-transform duration-300 ease-out group-hover:rotate-45 shrink-0">
@@ -555,63 +555,11 @@ if (new URLSearchParams(window.location.search).get('auth') === 'login') {
 }
 
 // ==========================================
-// NÚT GẠT GIAO DIỆN KÉP (LIGHT LUXURY & DARK CYBER)
+// NÚT CHUYỂN GIAO DIỆN BIẾN HÌNH + PHÍM TẮT ALT + T
 // ==========================================
-function toggleThemeMode() {
-    const html = document.documentElement;
-    const isNowDark = html.classList.toggle('dark');
-    localStorage.setItem('laban_theme', isNowDark ? 'dark' : 'light');
-
-    const switchBtn = document.getElementById('theme-switch-btn');
-    if (switchBtn) {
-        switchBtn.setAttribute('aria-checked', String(isNowDark));
-        switchBtn.setAttribute(
-            'title',
-            isNowDark ? 'Đang dùng Dark Cyber — Nhấn để sang Light Luxury' : 'Đang dùng Light Luxury — Nhấn để sang Dark Cyber'
-        );
-    }
-
-    window.dispatchEvent(new CustomEvent('laban:themechange', {
-        detail: { isDark: isNowDark }
-    }));
+function getThemeTipText(isDark) {
+    return isDark ? 'Chế độ Sáng (Alt + T)' : 'Chế độ Tối (Alt + T)';
 }
-
-function mountThemeToggleSwitch() {
-    // Tự động xóa bỏ nút cũ (#theme-toggle-btn) nếu còn tồn tại trong DOM
-    document.getElementById('theme-toggle-btn')?.remove();
-
-    if (document.getElementById('theme-switch-btn')) return;
-
-    
-
-    const isDark = document.documentElement.classList.contains('dark');
-    const toggleHTML = `
-        <button
-            id="theme-switch-btn"
-            type="button"
-            role="switch"
-            aria-checked="${isDark}"
-            aria-label="Chuyển đổi chế độ Sáng và Tối"
-            title="${isDark ? 'Đang dùng Dark Cyber — Nhấn để sang Light Luxury' : 'Đang dùng Light Luxury — Nhấn để sang Dark Cyber'}"
-            onclick="toggleThemeMode()"
-            class="theme-switch-pill"
-        >
-            <span class="theme-switch-thumb" aria-hidden="true"></span>
-            <span class="theme-switch-icon sun-icon" aria-hidden="true">
-                <i data-lucide="sun" class="w-3.5 h-3.5 stroke-[2.4]"></i>
-            </span>
-            <span class="theme-switch-icon moon-icon" aria-hidden="true">
-                <i data-lucide="moon-star" class="w-3.5 h-3.5 stroke-[2.2]"></i>
-            </span>
-        </button>
-    `;
-
-    document.body.insertAdjacentHTML('beforeend', toggleHTML);
-    if (typeof lucide !== 'undefined') lucide.createIcons();
-}
-
-document.addEventListener('DOMContentLoaded', mountThemeToggleSwitch);
-
 
 function toggleThemeMode() {
     const html = document.documentElement;
@@ -621,10 +569,7 @@ function toggleThemeMode() {
     const switchBtn = document.getElementById('theme-switch-btn');
     if (switchBtn) {
         switchBtn.setAttribute('aria-checked', String(isNowDark));
-        switchBtn.setAttribute(
-            'title',
-            isNowDark ? 'Đang dùng Dark Cyber — Nhấn để sang Light Luxury' : 'Đang dùng Light Luxury — Nhấn để sang Dark Cyber'
-        );
+        switchBtn.setAttribute('data-tip', getThemeTipText(isNowDark));
     }
 
     window.dispatchEvent(new CustomEvent('laban:themechange', {
@@ -633,7 +578,6 @@ function toggleThemeMode() {
 }
 
 function mountThemeToggleSwitch() {
-    // Xóa nút cũ nếu còn tồn tại
     document.getElementById('theme-toggle-btn')?.remove();
     if (document.getElementById('theme-switch-btn')) return;
 
@@ -645,16 +589,15 @@ function mountThemeToggleSwitch() {
             role="switch"
             aria-checked="${isDark}"
             aria-label="Chuyển đổi chế độ Sáng và Tối"
-            title="${isDark ? 'Đang dùng Dark Cyber — Nhấn để sang Light Luxury' : 'Đang dùng Light Luxury — Nhấn để sang Dark Cyber'}"
+            data-tip="${getThemeTipText(isDark)}"
             onclick="toggleThemeMode()"
             class="theme-switch-pill"
         >
-            <span class="theme-switch-thumb" aria-hidden="true"></span>
-            <span class="theme-switch-icon sun-icon" aria-hidden="true">
-                <i data-lucide="sun" class="w-3.5 h-3.5 stroke-[2.4]"></i>
+            <span class="theme-morph-icon sun-icon" aria-hidden="true">
+                <i data-lucide="sun" class="stroke-[2.4]"></i>
             </span>
-            <span class="theme-switch-icon moon-icon" aria-hidden="true">
-                <i data-lucide="moon-star" class="w-3.5 h-3.5 stroke-[2.2]"></i>
+            <span class="theme-morph-icon moon-icon" aria-hidden="true">
+                <i data-lucide="moon-star" class="stroke-[2.2]"></i>
             </span>
         </button>
     `;
@@ -662,5 +605,17 @@ function mountThemeToggleSwitch() {
     document.body.insertAdjacentHTML('beforeend', toggleHTML);
     if (typeof lucide !== 'undefined') lucide.createIcons();
 }
+
+// Phím tắt Alt + T chuyển đổi nhanh Sáng/Tối ở mọi trang
+document.addEventListener('keydown', (e) => {
+    if (e.altKey && e.key.toLowerCase() === 't') {
+        const tag = document.activeElement?.tagName;
+        if (tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT' || document.activeElement?.isContentEditable) {
+            return;
+        }
+        e.preventDefault();
+        toggleThemeMode();
+    }
+});
 
 document.addEventListener('DOMContentLoaded', mountThemeToggleSwitch);

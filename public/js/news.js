@@ -1,21 +1,26 @@
 renderLayout('nav-news');
 
+const NEWS_SESSION_CACHE_KEY = 'laban_news_cache_v2';
+const NEWS_CLIENT_CACHE_TTL = 2 * 60 * 1000;
+
 let articlesData = [];
+const articleDetailCache = new Map();
 let currentCategory = 'all';
 let currentSearchKeyword = '';
 let currentIndustry = 'all';
 let currentSort = 'newest';
 let displayedCount = 6;
 let currentViewingArticle = null;
+let searchDebounceTimer = null;
 
-function escapeNewsHtml(value) {
-    return String(value ?? '').replace(/[&<>"']/g, (character) => ({
+function escapeHtml(text = '') {
+    return String(text ?? '').replace(/[&<>"']/g, (ch) => ({
         '&': '&amp;',
         '<': '&lt;',
         '>': '&gt;',
         '"': '&quot;',
         "'": '&#39;'
-    })[character]);
+    })[ch]);
 }
 
 // Tính thời gian đọc ước lượng từ độ dài nội dung HTML
@@ -26,44 +31,144 @@ function estimateReadTime(html) {
     return `${mins} phút đọc`;
 }
 
-// 1. Gọi API lấy dữ liệu từ MongoDB
+function highlightKeyword(text, keyword) {
+    const safeText = escapeHtml(text);
+    const cleanKey = (keyword || '').trim();
+    if (!cleanKey) return safeText;
+
+    const escapedRegex = cleanKey.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    const regex = new RegExp(`(${escapedRegex})`, 'gi');
+    return safeText.replace(
+        regex,
+        '<mark class="bg-cyan/20 text-cyan font-extrabold px-1 rounded">$1</mark>'
+    );
+}
+
+function formatRelativeTime(timestamp) {
+    if (!timestamp || Number.isNaN(timestamp)) return 'Gần đây';
+    const diffMs = Date.now() - timestamp;
+    const diffMins = Math.floor(diffMs / 60000);
+    const diffHours = Math.floor(diffMs / 3600000);
+    const diffDays = Math.floor(diffMs / 86400000);
+
+    if (diffMins < 1) return 'Vừa đăng';
+    if (diffMins < 60) return `${diffMins} phút trước`;
+    if (diffHours < 24) return `${diffHours} giờ trước`;
+    if (diffDays === 1) return 'Hôm qua';
+    if (diffDays <= 7) return `${diffDays} ngày trước`;
+    return new Date(timestamp).toLocaleDateString('vi-VN');
+}
+
+function smartExcerpt(text = '', maxLen = 135) {
+    const clean = String(text)
+        .replace(/<[^>]*>?/gm, ' ')
+        .replace(/\s+/g, ' ')
+        .trim();
+    if (clean.length <= maxLen) return clean;
+    const cut = clean.slice(0, maxLen);
+    const lastSpace = cut.lastIndexOf(' ');
+    return `${(lastSpace > 75 ? cut.slice(0, lastSpace) : cut).replace(/[.,;:\-–]+$/, '')}…`;
+}
+
+function renderLoadingSkeleton(count = 6) {
+    const grid = document.getElementById('articles-feed-grid');
+    if (!grid) return;
+
+    grid.innerHTML = Array.from({ length: count }).map(() => `
+        <div class="glass-card rounded-3xl overflow-hidden border border-navy/5 animate-pulse flex flex-col">
+            <div class="h-44 w-full bg-slate-200/70 dark:bg-slate-800/70"></div>
+            <div class="p-5 space-y-3 flex-1">
+                <div class="flex gap-2">
+                    <div class="h-3 w-20 rounded bg-slate-200/80 dark:bg-slate-700/70"></div>
+                    <div class="h-3 w-16 rounded bg-slate-200/60 dark:bg-slate-700/50"></div>
+                </div>
+                <div class="h-4 w-full rounded bg-slate-200/90 dark:bg-slate-700/80"></div>
+                <div class="h-4 w-4/5 rounded bg-slate-200/80 dark:bg-slate-700/70"></div>
+                <div class="h-3 w-full rounded bg-slate-200/60 dark:bg-slate-800/70 mt-2"></div>
+                <div class="h-3 w-2/3 rounded bg-slate-200/60 dark:bg-slate-800/70"></div>
+            </div>
+        </div>
+    `).join('');
+}
+
+function mapRawArticles(rawData) {
+    return (rawData || []).map((item) => {
+        const ts = new Date(item.pubDate).getTime();
+        const isFresh = !Number.isNaN(ts) && (Date.now() - ts) < 24 * 60 * 60 * 1000;
+        return {
+            id: item._id,
+            title: item.title || 'Tin tuyển sinh mới',
+            link: item.link || '#',
+            snippet: smartExcerpt(item.snippet || '', 135),
+            category: item.category || 'school',
+            categoryName: item.categoryName || 'Nhịp sống học đường',
+            industry: item.industry || 'all',
+            author: item.author || 'Báo Tuổi Trẻ',
+            timestamp: ts || 0,
+            date: ts ? new Date(ts).toLocaleDateString('vi-VN') : 'Gần đây',
+            relativeTime: formatRelativeTime(ts),
+            isFresh,
+            readTime: item.readTime || '3 phút đọc',
+            image: item.image || '/images/team/dai-hoc-quy-nhon.jpg',
+            views: item.views || 0,
+            likes: item.likes || 0,
+            isLiked: false,
+            html_str: item.html_str || null
+        };
+    });
+}
+
 async function fetchNewsFromDB() {
+    let hasRenderedCache = false;
+    try {
+        const cachedRaw = sessionStorage.getItem(NEWS_SESSION_CACHE_KEY);
+        if (cachedRaw) {
+            const parsed = JSON.parse(cachedRaw);
+            if (Array.isArray(parsed.data) && parsed.data.length > 0) {
+                articlesData = mapRawArticles(parsed.data);
+                updateIndustryCounts();
+                handleSearchAndFilter(true);
+                hasRenderedCache = true;
+                if (Date.now() - parsed.savedAt < NEWS_CLIENT_CACHE_TTL) return;
+            }
+        }
+    } catch (_) {}
+
+    if (!hasRenderedCache) {
+        renderLoadingSkeleton(6);
+    }
+
     try {
         const res = await fetch('/api/news');
         const json = await res.json();
-        if (json.success) {
-            articlesData = json.data.map(item => ({
-                id: item._id,
-                title: item.title,
-                link: item.link,
-                snippet: item.snippet,
-                category: item.category || 'school',
-                categoryName: item.categoryName || 'Nhịp sống học đường',
-                industry: item.industry || 'all',
-                author: item.author || 'Báo Tuổi Trẻ',
-                timestamp: new Date(item.pubDate).getTime(),
-                date: new Date(item.pubDate).toLocaleDateString('vi-VN'),
-                readTime: estimateReadTime(item.html_str),
-                image: item.image,
-                views: item.views || 0,
-                likes: item.likes || 0,
-                isLiked: false,
-                content: null // sẽ được load khi mở modal
-            }));
+        if (json.success && Array.isArray(json.data)) {
+            articlesData = mapRawArticles(json.data);
+            try {
+                sessionStorage.setItem(NEWS_SESSION_CACHE_KEY, JSON.stringify({
+                    savedAt: Date.now(),
+                    data: json.data
+                }));
+            } catch (_) {}
+
             updateIndustryCounts();
-            handleSearchAndFilter();
+            handleSearchAndFilter(true);
         }
     } catch (err) {
         console.error('Lỗi tải tin tức:', err);
+        if (!hasRenderedCache) {
+            const grid = document.getElementById('articles-feed-grid');
+            if (grid) {
+                grid.innerHTML = `<div class="col-span-full p-10 text-center glass-card rounded-3xl"><p class="text-sm font-bold text-navy">Không thể tải tin tức lúc này. Vui lòng thử lại sau.</p></div>`;
+            }
+        }
     }
 }
 
-// Cập nhật số lượng bài viết thật cho Widget 3
 function updateIndustryCounts() {
-    ['tech', 'business', 'medical', 'design'].forEach(ind => {
+    ['tech', 'business', 'medical', 'design'].forEach((ind) => {
         const el = document.getElementById(`count-${ind}`);
         if (el) {
-            const count = articlesData.filter(a => a.industry === ind).length;
+            const count = articlesData.filter((a) => a.industry === ind).length;
             el.innerText = `${count} bài`;
         }
     });
@@ -72,124 +177,248 @@ function updateIndustryCounts() {
 function renderArticlesFeed(items) {
     const grid = document.getElementById('articles-feed-grid');
     const btnLoadMore = document.getElementById('btn-load-more');
-    document.getElementById('news-count').innerText = items.length;
-    grid.innerHTML = '';
+    const countEl = document.getElementById('news-count');
+    if (!grid) return;
+
+    const visibleItems = items.slice(0, displayedCount);
+    if (countEl) {
+        countEl.innerText = items.length > visibleItems.length
+            ? `${visibleItems.length}/${items.length}`
+            : `${items.length}`;
+    }
 
     if (items.length === 0) {
         if (btnLoadMore) btnLoadMore.style.display = 'none';
-        grid.innerHTML = `<div class="col-span-full p-12 text-center bg-white rounded-3xl border border-gray-100 shadow-sm"><h4 class="font-bold text-navy text-base">Không tìm thấy bài viết phù hợp</h4></div>`;
+        const hint = currentSearchKeyword
+            ? `Không có bài viết nào chứa từ khóa "${escapeHtml(currentSearchKeyword)}". Thử từ khóa ngắn hơn như "tuyển sinh", "AI" hoặc "học bổng".`
+            : 'Hãy thử đổi chuyên mục hoặc nhóm ngành khác.';
+        grid.innerHTML = `
+            <div class="col-span-full p-12 text-center glass-card rounded-3xl border border-navy/5 shadow-sm">
+                <h4 class="font-bold text-navy text-base">Không tìm thấy bài viết phù hợp</h4>
+                <p class="text-xs text-muted mt-1.5">${hint}</p>
+            </div>
+        `;
         return;
     }
 
-    items.slice(0, displayedCount).forEach(item => {
-        const card = document.createElement('div');
-        card.className = 'glass-card bg-white/95 rounded-3xl overflow-hidden border border-navy/5 hover:border-cyan/40 hover:shadow-xl transition-all duration-300 flex flex-col justify-between group cursor-pointer';
+    const fragment = document.createDocumentFragment();
+
+    visibleItems.forEach((item, index) => {
+        const card = document.createElement('article');
+        card.className = 'glass-card rounded-3xl overflow-hidden border border-navy/5 hover:border-cyan/40 hover:shadow-xl transition-all duration-300 flex flex-col justify-between group cursor-pointer';
         card.onclick = () => openArticleModal(item.id);
-        const safeArticleId = escapeNewsHtml(JSON.stringify(item.id));
+        const safeArticleId = escapeHtml(JSON.stringify(item.id));
+        const titleHtml = highlightKeyword(item.title, currentSearchKeyword);
+        const snippetHtml = highlightKeyword(item.snippet, currentSearchKeyword);
+        const loadingAttr = index < 2 ? 'eager' : 'lazy';
+
         card.innerHTML = `
             <div>
-                <div class="relative h-44 w-full overflow-hidden">
-                    <img src="${escapeNewsHtml(item.image)}" alt="" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
-                    <span class="absolute top-3 left-3 bg-white/90 text-navy text-[10px] font-black uppercase px-2.5 py-1 rounded-lg">${escapeNewsHtml(item.categoryName)}</span>
+                <div class="relative h-44 w-full overflow-hidden bg-slate-200/60 dark:bg-slate-800/60">
+                    <img
+                        src="${escapeHtml(item.image)}"
+                        alt="${escapeHtml(item.title)}"
+                        loading="${loadingAttr}"
+                        decoding="async"
+                        onerror="this.onerror=null;this.src='/images/team/dai-hoc-quy-nhon.jpg';"
+                        class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                    >
+                    <div class="absolute inset-x-0 top-0 p-3 flex items-center justify-between gap-2 pointer-events-none">
+                        <span class="bg-white/90 dark:bg-slate-900/85 backdrop-blur-md text-navy text-[10px] font-black uppercase tracking-wide px-2.5 py-1 rounded-lg shadow-sm">
+                            ${escapeHtml(item.categoryName)}
+                        </span>
+                        ${item.isFresh ? '<span class="bg-cyan text-white text-[10px] font-black uppercase px-2 py-0.5 rounded-md shadow-sm">Mới</span>' : ''}
+                    </div>
                 </div>
                 <div class="p-5">
-                    <h3 class="font-black text-sm text-navy group-hover:text-cyan line-clamp-2">${escapeNewsHtml(item.title)}</h3>
-                    <p class="text-xs text-muted line-clamp-2 mt-2">${escapeNewsHtml(item.snippet)}</p>
+                    <div class="flex items-center gap-2 text-[11px] font-semibold text-muted mb-2">
+                        <span class="text-cyan font-bold">${escapeHtml(item.relativeTime)}</span>
+                        <span>•</span>
+                        <span>${escapeHtml(item.readTime)}</span>
+                    </div>
+                    <h3 class="font-extrabold text-[15px] text-navy group-hover:text-cyan transition-colors leading-snug line-clamp-2">
+                        ${titleHtml}
+                    </h3>
+                    <p class="text-xs text-muted leading-relaxed line-clamp-2 mt-2">
+                        ${snippetHtml}
+                    </p>
                 </div>
             </div>
-            <div class="px-5 pb-5 pt-3 border-t border-gray-100 flex items-center justify-between text-[11px] text-muted">
+            <div class="px-5 pb-4 pt-3 border-t border-slate-200/60 dark:border-white/10 flex items-center justify-between text-[11px] text-muted">
                 <div class="flex items-center gap-3">
                     <span class="flex items-center gap-1"><i data-lucide="eye" class="w-3.5 h-3.5"></i> ${Number(item.views) || 0}</span>
-                    <button onclick="toggleArticleLike(${safeArticleId}, event)" class="flex items-center gap-1 px-1.5 py-0.5 rounded-md hover:bg-red-50 ${item.isLiked ? 'text-red-500 font-bold' : 'hover:text-red-500'}">
+                    <button onclick="toggleArticleLike(${safeArticleId}, event)" class="flex items-center gap-1 px-1.5 py-0.5 rounded-md hover:bg-red-50 dark:hover:bg-red-500/10 ${item.isLiked ? 'text-red-500 font-bold' : 'hover:text-red-500'}">
                         <i data-lucide="heart" class="w-3.5 h-3.5 ${item.isLiked ? 'fill-red-500 text-red-500' : 'text-red-400'}"></i> <span>${Number(item.likes) || 0}</span>
                     </button>
                 </div>
-                <span class="text-cyan font-bold flex items-center gap-0.5 group-hover:translate-x-1 transition-transform">Đọc tiếp <i data-lucide="arrow-right" class="w-3 h-3"></i></span>
+                <span class="text-cyan font-bold flex items-center gap-1 group-hover:translate-x-0.5 transition-transform">
+                    Đọc tiếp <i data-lucide="arrow-right" class="w-3 h-3"></i>
+                </span>
             </div>
         `;
-        grid.appendChild(card);
+        fragment.appendChild(card);
     });
 
-    // Tự động ẩn/hiện nút "Xem thêm bài viết khác"
+    grid.innerHTML = '';
+    grid.appendChild(fragment);
+
     if (btnLoadMore) {
         btnLoadMore.style.display = displayedCount >= items.length ? 'none' : 'flex';
     }
-    lucide.createIcons();
+    if (typeof lucide !== 'undefined') lucide.createIcons();
 }
 
 function toggleArticleLike(id, event) {
     if (event) event.stopPropagation();
-    const article = articlesData.find(a => a.id === id);
+    const article = articlesData.find((a) => a.id === id);
     if (!article) return;
     article.isLiked = !article.isLiked;
     article.likes += article.isLiked ? 1 : -1;
-    handleSearchAndFilter();
+    handleSearchAndFilter(true);
 }
 
-function handleSearchAndFilter() {
-    currentSearchKeyword = document.getElementById('news-search-input').value.trim().toLowerCase();
-    currentIndustry = document.getElementById('filter-industry').value;
-    currentSort = document.getElementById('news-sort-select').value;
+function handleSearchAndFilter(immediate = false) {
+    const runFilter = () => {
+        const searchEl = document.getElementById('news-search-input');
+        const indEl = document.getElementById('filter-industry');
+        const sortEl = document.getElementById('news-sort-select');
 
-    let filtered = articlesData.filter(item => {
-        const matchKeyword = !currentSearchKeyword ||
-            item.title.toLowerCase().includes(currentSearchKeyword) ||
-            item.snippet.toLowerCase().includes(currentSearchKeyword);
-        return matchKeyword &&
-            (currentCategory === 'all' || item.category === currentCategory) &&
-            (currentIndustry === 'all' || item.industry === currentIndustry);
-    });
+        currentSearchKeyword = (searchEl?.value || '').trim().toLowerCase();
+        currentIndustry = indEl?.value || 'all';
+        currentSort = sortEl?.value || 'newest';
 
-    if (currentSort === 'newest') filtered.sort((a, b) => b.timestamp - a.timestamp);
-    else if (currentSort === 'views') filtered.sort((a, b) => b.views - a.views);
-    else if (currentSort === 'likes') filtered.sort((a, b) => b.likes - a.likes);
+        const filtered = articlesData.filter((item) => {
+            const matchKeyword = !currentSearchKeyword
+                || item.title.toLowerCase().includes(currentSearchKeyword)
+                || item.snippet.toLowerCase().includes(currentSearchKeyword);
+            return matchKeyword
+                && (currentCategory === 'all' || item.category === currentCategory)
+                && (currentIndustry === 'all' || item.industry === currentIndustry);
+        });
 
-    renderArticlesFeed(filtered);
+        if (currentSort === 'newest') filtered.sort((a, b) => b.timestamp - a.timestamp);
+        else if (currentSort === 'views') filtered.sort((a, b) => b.views - a.views);
+        else if (currentSort === 'likes') filtered.sort((a, b) => b.likes - a.likes);
+
+        renderArticlesFeed(filtered);
+    };
+
+    if (immediate) {
+        clearTimeout(searchDebounceTimer);
+        runFilter();
+    } else {
+        clearTimeout(searchDebounceTimer);
+        searchDebounceTimer = setTimeout(runFilter, 180);
+    }
 }
 
 function selectCategory(cat, btn) {
     currentCategory = cat;
     displayedCount = 6;
-    document.querySelectorAll('.cat-pill').forEach(b => {
+    document.querySelectorAll('.cat-pill').forEach((b) => {
         b.className = 'cat-pill px-4 py-2 rounded-xl bg-white border border-gray-200 text-muted hover:text-cyan hover:border-cyan whitespace-nowrap transition-all';
     });
     btn.className = 'cat-pill active px-4 py-2 rounded-xl bg-cyan text-white shadow-sm whitespace-nowrap transition-all font-bold';
-    handleSearchAndFilter();
+    handleSearchAndFilter(true);
 }
 
-// Hàm xử lý khi bấm vào các thẻ #Từ khóa nổi bật
 function searchByTag(tag) {
     const input = document.getElementById('news-search-input');
-    input.value = tag;
+    if (input) {
+        input.value = tag;
+        input.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
     displayedCount = 6;
-    handleSearchAndFilter();
-    input.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    handleSearchAndFilter(true);
 }
 
 function filterByIndustryShortcut(ind) {
-    document.getElementById('filter-industry').value = ind;
+    const el = document.getElementById('filter-industry');
+    if (el) el.value = ind;
     displayedCount = 6;
-    handleSearchAndFilter();
+    handleSearchAndFilter(true);
 }
 
 function loadMoreArticles() {
     displayedCount += 6;
-    handleSearchAndFilter();
+    handleSearchAndFilter(true);
+}
+
+function sanitizeArticleHtml(htmlStr, articleLink) {
+    const wrapper = document.createElement('div');
+    wrapper.innerHTML = htmlStr || '';
+
+    wrapper.querySelectorAll('a').forEach((a) => {
+        const rawHref = (a.getAttribute('href') || '').trim();
+        const text = (a.textContent || '').trim().toLowerCase();
+
+        // 1. Nút "Đọc tiếp" -> mở trang chính của bài báo đó
+        if (text.includes('đọc tiếp')) {
+            a.setAttribute('href', articleLink || '#');
+            a.setAttribute('target', '_blank');
+            a.setAttribute('rel', 'noopener noreferrer');
+            a.className = 'inline-flex items-center gap-1.5 text-cyan font-bold hover:underline mr-4';
+            return;
+        }
+
+        // 2. Nút "Về trang Chủ đề" / "Về trang chủ" -> đóng popup, quay lại trang Tin tức
+        if (text.includes('về trang chủ') || rawHref.includes('nhom-chu-de')) {
+            a.setAttribute('href', '/news');
+            a.removeAttribute('target');
+            a.setAttribute('onclick', 'event.preventDefault(); closeArticleModal();');
+            a.className = 'inline-flex items-center gap-1.5 text-muted hover:text-cyan font-semibold cursor-pointer';
+            return;
+        }
+
+        // 3. Các link tương đối khác từ Tuổi Trẻ (/...) -> ghép tên miền gốc để tránh lỗi Cannot GET
+        if (rawHref.startsWith('/')) {
+            a.setAttribute('href', `https://tuoitre.vn${rawHref}`);
+            a.setAttribute('target', '_blank');
+            a.setAttribute('rel', 'noopener noreferrer');
+        } else if (rawHref.startsWith('http')) {
+            a.setAttribute('target', '_blank');
+            a.setAttribute('rel', 'noopener noreferrer');
+        }
+    });
+
+    // Xử lý luôn ảnh dùng đường dẫn tương đối (nếu có) và bật tải lười
+    wrapper.querySelectorAll('img').forEach((img) => {
+        const src = (img.getAttribute('src') || '').trim();
+        if (src.startsWith('/')) {
+            img.setAttribute('src', `https://tuoitre.vn${src}`);
+        }
+        img.setAttribute('loading', 'lazy');
+    });
+
+    return wrapper.innerHTML;
+}
+
+function buildArticleModalContent(htmlStr, link) {
+    const cleanHtml = sanitizeArticleHtml(htmlStr, link);
+    return `
+        <div class="space-y-4 leading-relaxed">${cleanHtml}</div>
+        <div class="pt-5">
+            <a href="${escapeHtml(link)}" target="_blank" rel="noopener noreferrer"
+               class="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-cyan/10 text-cyan hover:bg-cyan hover:text-white font-bold text-xs transition-all">
+                Đọc toàn bộ bài viết gốc trên Báo Tuổi Trẻ ↗
+            </a>
+        </div>
+    `;
 }
 
 async function openArticleModal(id) {
-    const article = articlesData.find(a => a.id === id) || articlesData[0];
+    const article = articlesData.find((a) => a.id === id) || articlesData[0];
     if (!article) return;
     currentViewingArticle = article;
 
     document.getElementById('modal-category-badge').innerText = article.categoryName;
     document.getElementById('modal-title').innerText = article.title;
     document.getElementById('modal-author').innerText = article.author;
-    document.getElementById('modal-date').innerText = article.date;
+    document.getElementById('modal-date').innerText = `${article.relativeTime} (${article.date})`;
     document.getElementById('modal-read-time').innerText = article.readTime;
     document.getElementById('modal-image').src = article.image;
 
-    const modalContentEl = document.getElementById('modal-content');
+    const contentEl = document.getElementById('modal-content');
     const modal = document.getElementById('article-detail-modal');
     modal.classList.remove('hidden');
     modal.classList.add('flex');
@@ -197,48 +426,56 @@ async function openArticleModal(id) {
         document.getElementById('article-modal-box').classList.remove('scale-95', 'opacity-0');
         document.getElementById('article-modal-box').classList.add('scale-100', 'opacity-100');
     }, 10);
-    lucide.createIcons();
 
-    // Nếu bài này đã tải nội dung rồi thì hiển thị luôn (không gọi lại API)
-    if (article.content) {
-        modalContentEl.innerHTML = article.content;
+    const cachedHtml = articleDetailCache.get(article.id) || article.html_str;
+    if (cachedHtml) {
+        contentEl.innerHTML = buildArticleModalContent(cachedHtml, article.link);
+        if (typeof lucide !== 'undefined') lucide.createIcons();
         return;
     }
 
-    // Hiển thị trạng thái đang tải trong lúc gọi /api/news/:id
-    modalContentEl.innerHTML = `<p class="text-center text-muted py-8">Đang tải nội dung bài viết...</p>`;
+    contentEl.innerHTML = `
+        <p class="text-sm text-navy/85 leading-relaxed mb-4">${escapeHtml(article.snippet)}</p>
+        <div class="flex items-center gap-2 text-xs text-cyan font-semibold py-2">
+            <span class="w-4 h-4 border-2 border-cyan border-t-transparent rounded-full animate-spin inline-block"></span>
+            Đang tải nội dung chi tiết...
+        </div>
+    `;
 
     try {
         const res = await fetch(`/api/news/${encodeURIComponent(article.id)}`);
         const json = await res.json();
 
         if (json.success && json.data) {
-            const detailHtml = json.data.html_str || `<p>${escapeNewsHtml(article.snippet)}</p>`;
-            article.content = `
-                ${detailHtml}
-                <div class="pt-4">
-                    <a href="${escapeNewsHtml(article.link)}" target="_blank" rel="noopener noreferrer" 
-                       class="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-cyan/10 text-cyan hover:bg-cyan hover:text-white font-bold text-xs transition-all">
-                        Đọc bài viết gốc ↗
-                    </a>
-                </div>
-            `;
-            // Cập nhật lại lượt xem mới tăng từ server
+            const detailHtml = json.data.html_str;
+            if (detailHtml) {
+                articleDetailCache.set(article.id, detailHtml);
+                article.html_str = detailHtml;
+            }
+
             if (typeof json.data.views === 'number') {
                 article.views = json.data.views;
-                handleSearchAndFilter();
+                handleSearchAndFilter(true);
             }
-            // Chỉ đổ nội dung nếu người dùng vẫn đang mở đúng bài này
+
             if (currentViewingArticle?.id === article.id) {
-                modalContentEl.innerHTML = article.content;
+                contentEl.innerHTML = buildArticleModalContent(
+                    detailHtml || `<p>${escapeHtml(article.snippet)}</p>`,
+                    article.link
+                );
+                if (typeof lucide !== 'undefined') lucide.createIcons();
             }
         } else {
-            modalContentEl.innerHTML = `<p class="text-red-500">Không thể tải nội dung bài viết.</p>`;
+            contentEl.innerHTML = `<p class="text-red-500">Không thể tải nội dung bài viết.</p>`;
         }
     } catch (err) {
         console.error('Lỗi tải chi tiết bài viết:', err);
-        modalContentEl.innerHTML = `<p class="text-red-500">Có lỗi xảy ra khi tải nội dung.</p>`;
+        if (currentViewingArticle?.id === article.id) {
+            contentEl.innerHTML = `<p class="text-red-500">Có lỗi xảy ra khi tải nội dung.</p>`;
+        }
     }
+
+    if (typeof lucide !== 'undefined') lucide.createIcons();
 }
 
 

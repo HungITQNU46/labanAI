@@ -5,6 +5,7 @@ const session = require('express-session');
 const { MongoStore } = require('connect-mongo');
 const crypto = require('crypto');
 const Admission = require('./src/models/admModel');
+const TinTuc = require('./src/models/newsModel');
 const admissionSeedData = require('./data/admissionSeedData');
 const cron = require('node-cron');
 const { syncTuoiTreNews } = require('./src/services/newsRssService');
@@ -152,19 +153,29 @@ async function startServer() {
       }
     }
   );
-  console.log(' Kết nối MongoDB Atlas thành công!');
-  // Chạy cào tin 1 lần sau khi đã kết nối DB thành công
-  syncTuoiTreNews();
-  // Lên lịch tự động cào lại vào phút thứ 0 mỗi giờ
-  cron.schedule('0 * * * *', () => {
-    syncTuoiTreNews();
-  });
 
+  await TinTuc.collection.createIndex({ trangThai: 1, pubDate: -1 });
+  console.log(' Kết nối MongoDB Atlas thành công!');
   const serverArgs = HOST ? [PORT, HOST] : [PORT];
   app.listen(...serverArgs, () => {
     const displayHost = (HOST === '0.0.0.0' || !HOST) ? 'localhost' : HOST;
     console.log(`🚀 Server La Bàn AI đang chạy tại: http://${displayHost}:${PORT}`);
   });
+
+  // <<<TINTUC---
+  const existingNewsCount = await TinTuc.countDocuments();
+  if (existingNewsCount === 0) {
+    syncTuoiTreNews().catch((err) => console.error('Lỗi đồng bộ RSS lúc khởi động:', err.message));
+  } else {
+    setTimeout(() => {
+      syncTuoiTreNews().catch((err) => console.error('Lỗi đồng bộ RSS chạy ngầm:', err.message));
+    }, 15000);
+  }
+
+  cron.schedule('0 * * * *', () => {
+    syncTuoiTreNews().catch((err) => console.error('Lỗi đồng bộ RSS định kỳ:', err.message));
+  });
+  // ---TINTUC>>>
 }
 
 if (require.main === module) {

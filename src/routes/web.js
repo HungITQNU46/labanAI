@@ -51,7 +51,7 @@ router.post('/api/riasec27/explore', riasec27PreviewGate, riasec27Controller.exp
 router.get('/admin', requireAdmin, adminController.getAdminDashboard);
 router.get('/api/admin/consultation-stats', requireAdmin, adminController.getConsultationStatsAPI);
 router.get('/api/admin/major-detail/:majorName', requireAdmin, adminController.getMajorDetailAPI);
-router.get('/api/admin/all-recommended-majors', adminController.getAllRecommendedMajorsAPI);
+router.get('/api/admin/all-recommended-majors', requireAdmin, adminController.getAllRecommendedMajorsAPI);
 router.get('/api/admin/realtime-metrics', requireAdmin, adminController.getRealtimeMetricsAPI);
 router.patch('/api/admin/users/:id/toggle-status', requireAdmin, adminController.toggleUserStatusAPI);
 router.patch('/api/admin/users/batch-status', requireAdmin, adminController.batchUpdateUserStatusAPI);
@@ -63,9 +63,8 @@ router.patch('/api/admin/news/:id/status', requireAdmin, newsAdminController.set
 router.delete('/api/admin/news/:id', requireAdmin, newsAdminController.deleteNews);
 router.post('/api/admin/news/sync', requireAdmin, newsController.syncNews);
 
-router.get('/api/news', newsController.getAllNews);//tintuc
-router.post('/api/news/sync', requireAdmin, newsController.syncNews);//tintuc
+router.get('/api/news', newsController.getAllNews);
+router.post('/api/news/sync', requireAdmin, newsController.syncNews);
 router.get('/api/news/:id', newsController.getNewsDetail); //tintuc
 
 module.exports = router;
-

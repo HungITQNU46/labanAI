@@ -39,27 +39,26 @@ exports.getAllNews = async (req, res) => {
     try {
         const now = Date.now();
         if (newsListCache.data && now < newsListCache.expiresAt) {
-            res.set('Cache-Control', 'public, max-age=60');
             return res.json({ success: true, cached: true, data: newsListCache.data });
         }
 
         const rawList = await TinTuc.find({ trangThai: true })
             .sort({ pubDate: -1 })
             .limit(50)
-            .select('title link snippet html_str category categoryName industry author pubDate image views likes')
+            .select('title link snippet category categoryName industry author pubDate image views likes')
             .lean();
 
         const lightweightList = rawList.map((item) => ({
             _id: item._id,
             title: item.title,
             link: item.link,
-            snippet: cleanSnippetText(item.snippet, item.html_str),
+            snippet: cleanSnippetText(item.snippet, ''),
             category: item.category || 'school',
             categoryName: item.categoryName || 'Nhịp sống học đường',
             industry: item.industry || 'all',
             author: item.author || 'Báo Tuổi Trẻ',
             pubDate: item.pubDate,
-            readTime: estimateReadTimeFromHtml(item.html_str),
+            readTime: '3 phút đọc',
             image: item.image,
             views: item.views || 0,
             likes: item.likes || 0
@@ -70,7 +69,6 @@ exports.getAllNews = async (req, res) => {
             expiresAt: now + NEWS_CACHE_TTL_MS
         };
 
-        res.set('Cache-Control', 'public, max-age=60');
         return res.json({ success: true, cached: false, data: lightweightList });
     } catch (error) {
         console.error('Lỗi lấy danh sách tin tức:', error);

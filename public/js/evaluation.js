@@ -98,9 +98,15 @@ function updateUI() {
     document.getElementById('progress-line').style.width = currentStep === 1 ? '0%' : currentStep === 2 ? '50%' : '100%';
 
     for (let i = 1; i <= 3; i++) {
-        const stepIcon = document.querySelector(`#indicator-step-${i} div`), stepText = document.querySelector(`#indicator-step-${i} span`);
-        if (i <= currentStep) { stepIcon.classList.replace('bg-gray-200', 'bg-cyan'); stepIcon.classList.replace('text-gray-400', 'text-white'); stepText.classList.replace('text-gray-400', 'text-navy'); } 
-        else { stepIcon.classList.replace('bg-cyan', 'bg-gray-200'); stepIcon.classList.replace('text-white', 'text-gray-400'); stepText.classList.replace('text-navy', 'text-gray-400'); }
+        const stepIcon = document.querySelector(`#indicator-step-${i} div`);
+        const stepText = document.querySelector(`#indicator-step-${i} span`);
+        if (i <= currentStep) {
+            stepIcon.className = 'w-8 h-8 rounded-full bg-cyan text-white border border-cyan flex items-center justify-center font-bold shadow-md shadow-cyan/30 transition-all';
+            stepText.className = 'text-xs font-bold text-navy transition-colors';
+        } else {
+            stepIcon.className = 'w-8 h-8 rounded-full bg-slate-200 text-slate-600 border border-slate-300 dark:bg-slate-800 dark:text-slate-100 dark:border-slate-600 flex items-center justify-center font-bold shadow-md transition-all';
+            stepText.className = 'text-xs font-semibold text-slate-500 dark:text-slate-400 transition-colors';
+        }
     }
     window.scrollTo({ top: 0, behavior: 'smooth' });
 }
