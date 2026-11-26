@@ -25,7 +25,7 @@ async function scrapeArticleHtml(url, fallbackSnippet) {
         if (!contentEl.length) return `<p>${fallbackSnippet}</p>`;
 
         // Xóa các thành phần thừa (quảng cáo, tin liên quan, script)
-        contentEl.find('script, style, .VCSortableInPreviewMode[type="RelatedOneNews"], .VCSortableInPreviewMode[type="RelatedNewsBox"], .kbwscwl-relatedbox').remove();
+        contentEl.find('script, style, .VCSortableInPreviewMode[type="RelatedOneNews"], .VCSortableInPreviewMode[type="RelatedNewsBox"], .kbwscwl-relatedbox, .readmore-body-box').remove();
 
         // Chuẩn hóa ảnh bên trong bài viết (xử lý lazy-load nếu có và thêm class đẹp cho Modal)
         contentEl.find('img').each((_, img) => {
@@ -47,7 +47,7 @@ async function scrapeArticleHtml(url, fallbackSnippet) {
     }
 }
 
-// Tự động phân loại (đã sửa lỗi bắt nhầm chữ "ai" trong "AIS")
+// Tự động phân loại
 function autoClassify(text) {
     const t = text.toLowerCase();
     let category = 'school', categoryName = 'Nhịp sống học đường';
