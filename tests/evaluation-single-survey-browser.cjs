@@ -194,7 +194,7 @@ async function runEvaluationTests() {
         assert.equal(await evaluate("Boolean(document.getElementById('questions-list'))"), false);
         assert.equal(await evaluate("document.getElementById('btn-hero-riasec27').getAttribute('href')"), '/evaluation');
         assert.equal(await evaluate("document.querySelector('main h1').textContent.replace(/\\s+/g,' ').trim()"), 'Khám phá bản thân, định hướng tương lai');
-        assert.equal(await evaluate("document.querySelector('main p').textContent.trim()"), 'LabanAI giúp bạn khám phá sở thích cá nhân, tìm hiểu các ngành đại học và có thêm thông tin tham khảo để lựa chọn hướng đi phù hợp với bản thân.');
+        assert.equal(await evaluate("document.querySelector('main p').textContent.trim()"), 'La bàn AI giúp bạn khám phá sở thích cá nhân, tìm hiểu các ngành đại học và có thêm thông tin tham khảo để lựa chọn hướng đi phù hợp với bản thân.');
         assert.equal(await evaluate("document.querySelectorAll('main a').length"), 1, 'Exactly one hero CTA');
         assert.equal(await evaluate("document.getElementById('btn-hero-riasec27').textContent.trim()"), 'Khám phá ngay');
         assert.equal(await evaluate("/RIASEC|ML Q5|P2|Top-3|RESEARCH_ONLY|TOP3_NOT_VALIDATED|27 câu|mô hình|thuật toán/i.test(document.querySelector('main').innerText)"), false);
