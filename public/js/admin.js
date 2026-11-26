@@ -43,10 +43,8 @@ function showAdminToast(message, type = 'success') {
     const iconColor = isSuccess ? 'text-emerald-400' : 'text-red-400';
 
     toast.className = `pointer-events-auto flex items-center gap-3 px-4 py-3 rounded-2xl border shadow-2xl backdrop-blur-md text-xs font-bold transition-all duration-300 translate-y-2 opacity-0 ${bgClass}`;
-    toast.innerHTML = `
-        <i data-lucide="${iconName}" class="w-4 h-4 ${iconColor} shrink-0"></i>
-        <span>${message}</span>
-    `;
+    toast.innerHTML = `<i data-lucide="${iconName}" class="w-4 h-4 ${iconColor} shrink-0"></i><span></span>`;
+    toast.querySelector('span').textContent = message;
 
     container.appendChild(toast);
     if (typeof lucide !== 'undefined') lucide.createIcons();
@@ -752,22 +750,298 @@ function activateAdminPanel(targetId) {
     if (window.innerWidth < 768) applyAdminSidebarState(true, true);
 }
 
-function toggleNewsVisibility(button) {
-    const card = button.closest('.rounded-2xl');
-    const statusBadge = card.querySelector('span.rounded-full');
-    if (!statusBadge) return;
+let adminNewsPage = 1;
+const adminNewsPageSize = 20;
+let adminNewsSearchTimer;
+const adminNewsCategoryLabels = {
+    admission: 'Tuyển sinh',
+    school: 'Nhịp sống học đường',
+    'study-abroad': 'Du học & Học bổng',
+    'tech-ai': 'Công nghệ & AI',
+    teacher: 'Chân dung nhà giáo'
+};
 
-    if (statusBadge.textContent.trim() === 'Hiện') {
-        statusBadge.textContent = 'Ẩn';
-        statusBadge.className = 'rounded-full bg-red-100 px-2 py-1 text-[10px] font-bold text-red-700';
-        button.textContent = 'Hiện bài viết';
-        button.className = 'rounded-xl border border-emerald-200 bg-emerald-50 px-2.5 py-1.5 text-[11px] font-bold text-emerald-700';
-    } else {
-        statusBadge.textContent = 'Hiện';
-        statusBadge.className = 'rounded-full bg-emerald-100 px-2 py-1 text-[10px] font-bold text-emerald-700';
-        button.textContent = 'Ẩn bài viết';
-        button.className = 'rounded-xl border border-amber-200 bg-amber-50 px-2.5 py-1.5 text-[11px] font-bold text-amber-700';
+function createNewsElement(tagName, className, text) {
+    const element = document.createElement(tagName);
+    if (className) element.className = className;
+    if (text !== undefined) element.textContent = text;
+    return element;
+}
+
+async function requestAdminNews(url, options = {}) {
+    const response = await fetch(url, {
+        ...options,
+        headers: { Accept: 'application/json', 'Content-Type': 'application/json', ...(options.headers || {}) }
+    });
+    const contentType = response.headers.get('content-type') || '';
+    if (!contentType.toLowerCase().includes('application/json')) {
+        if (response.status === 404) {
+            throw new Error('Không tìm thấy API quản lý tin tức. Backend có thể đang chạy phiên bản cũ; hãy khởi động lại server bằng npm start.');
+        }
+        throw new Error(`API trả về phản hồi không phải JSON (HTTP ${response.status}). Hãy kiểm tra phiên đăng nhập hoặc kết nối máy chủ.`);
     }
+    let result;
+    try {
+        result = await response.json();
+    } catch {
+        throw new Error('Máy chủ trả về JSON không hợp lệ. Vui lòng thử tải lại trang.');
+    }
+    if (response.status === 401) {
+        window.location.assign('/?auth=login');
+        throw new Error(result.message || 'Phiên đăng nhập đã hết hạn.');
+    }
+    if (!response.ok || !result.success) {
+        throw new Error(result.message || 'Không thể xử lý yêu cầu tin tức.');
+    }
+    return result;
+}
+
+function renderAdminNews(articles) {
+    const list = document.getElementById('admin-news-list');
+    if (!list) return;
+    list.replaceChildren();
+
+    if (!articles.length) {
+        list.appendChild(createNewsElement('p', 'rounded-2xl border border-dashed border-slate-300 p-8 text-center text-sm text-muted', 'Không tìm thấy bài viết nào.'));
+        return;
+    }
+
+    articles.forEach((article) => {
+        const card = createNewsElement('article', 'rounded-2xl border border-navy/10 bg-slate-50 p-4');
+        const top = createNewsElement('div', 'flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between');
+        const info = createNewsElement('div', 'min-w-0');
+        const metadata = createNewsElement('div', 'mb-2 flex flex-wrap items-center gap-2');
+        const category = createNewsElement('span', 'rounded-full bg-cyan/10 px-2.5 py-1 text-[11px] font-bold text-cyan', article.categoryName || article.category || 'Tin tức');
+        const dateValue = article.pubDate ? new Date(article.pubDate) : null;
+        const dateLabel = dateValue && !Number.isNaN(dateValue.getTime()) ? dateValue.toLocaleDateString('vi-VN') : 'Chưa có ngày';
+        const date = createNewsElement('span', 'text-xs text-muted', dateLabel);
+        const title = createNewsElement('p', 'text-base font-bold leading-relaxed text-navy', article.title || 'Không có tiêu đề');
+        const summary = createNewsElement('p', 'mt-1 line-clamp-2 text-sm text-muted', article.snippet || '');
+        const status = createNewsElement(
+            'span',
+            `w-fit shrink-0 rounded-full px-2.5 py-1 text-[11px] font-bold ${article.trangThai ? 'bg-emerald-100 text-emerald-700' : 'bg-red-100 text-red-700'}`,
+            article.trangThai ? 'Đang hiển thị' : 'Đang ẩn'
+        );
+        metadata.append(category, date);
+        info.append(metadata, title);
+        if (article.snippet) info.appendChild(summary);
+        top.append(info, status);
+
+        const footer = createNewsElement('div', 'mt-4 flex flex-wrap items-center justify-between gap-3');
+        const stats = createNewsElement('span', 'text-xs text-muted', `${Number(article.views || 0).toLocaleString('vi-VN')} lượt xem · ${Number(article.likes || 0).toLocaleString('vi-VN')} lượt thích`);
+        const actions = createNewsElement('div', 'flex flex-wrap justify-end gap-2');
+        const editButton = createNewsElement('button', 'rounded-xl border border-cyan/30 bg-cyan/5 px-3 py-1.5 text-xs font-bold text-cyan', 'Chỉnh sửa');
+        editButton.type = 'button';
+        editButton.dataset.newsAction = 'edit';
+        editButton.dataset.newsId = article._id;
+        const statusButton = createNewsElement(
+            'button',
+            `rounded-xl border px-3 py-1.5 text-xs font-bold ${article.trangThai ? 'border-amber-200 bg-amber-50 text-amber-700' : 'border-emerald-200 bg-emerald-50 text-emerald-700'}`,
+            article.trangThai ? 'Ẩn bài viết' : 'Hiện bài viết'
+        );
+        statusButton.type = 'button';
+        statusButton.dataset.newsAction = 'status';
+        statusButton.dataset.newsId = article._id;
+        statusButton.dataset.newsStatus = String(article.trangThai);
+        const deleteButton = createNewsElement('button', 'rounded-xl border border-red-200 bg-red-50 px-3 py-1.5 text-xs font-bold text-red-600', 'Xóa');
+        deleteButton.type = 'button';
+        deleteButton.dataset.newsAction = 'delete';
+        deleteButton.dataset.newsId = article._id;
+        actions.append(editButton, statusButton, deleteButton);
+        footer.append(stats, actions);
+        card.append(top, footer);
+        list.appendChild(card);
+    });
+}
+
+async function loadAdminNews() {
+    const list = document.getElementById('admin-news-list');
+    const search = document.getElementById('admin-news-search')?.value.trim() || '';
+    const status = document.getElementById('admin-news-status')?.value || 'all';
+    const paginationLabel = document.getElementById('admin-news-pagination-label');
+    if (!list) return;
+    list.replaceChildren(createNewsElement('p', 'py-8 text-center text-sm text-muted', 'Đang tải tin tức...'));
+
+    const query = new URLSearchParams({
+        page: String(adminNewsPage),
+        limit: String(adminNewsPageSize),
+        status
+    });
+    if (search) query.set('search', search);
+
+    try {
+        const result = await requestAdminNews(`/api/admin/news?${query}`);
+        renderAdminNews(result.data || []);
+        const pageInfo = result.pagination || { page: 1, totalPages: 1, total: 0 };
+        if (paginationLabel) {
+            paginationLabel.textContent = `${pageInfo.total.toLocaleString('vi-VN')} bài viết · Trang ${pageInfo.page} / ${Math.max(pageInfo.totalPages, 1)}`;
+        }
+        document.getElementById('admin-news-prev').disabled = pageInfo.page <= 1;
+        document.getElementById('admin-news-next').disabled = pageInfo.page >= pageInfo.totalPages;
+    } catch (error) {
+        list.replaceChildren(createNewsElement('p', 'py-8 text-center text-sm font-semibold text-red-600', error.message || 'Không thể tải danh sách tin tức.'));
+        if (paginationLabel) paginationLabel.textContent = '';
+    }
+}
+
+function showNewsEditor(article = null) {
+    const modal = document.getElementById('news-editor-modal');
+    const form = document.getElementById('news-editor-form');
+    if (!modal || !form) return;
+    form.reset();
+    form.dataset.articleId = article?._id || '';
+    document.getElementById('news-editor-title').textContent = article ? 'Chỉnh sửa bài viết' : 'Tạo bài viết';
+    form.elements.title.value = article?.title || '';
+    form.elements.link.value = article?.link || '';
+    form.elements.category.value = article?.category || 'admission';
+    form.elements.industry.value = article?.industry || 'all';
+    form.elements.categoryName.value = article?.categoryName || adminNewsCategoryLabels[form.elements.category.value];
+    form.elements.author.value = article?.author || '';
+    form.elements.image.value = article?.image || '';
+    form.elements.snippet.value = article?.snippet || '';
+    form.elements.content.value = '';
+    document.getElementById('news-content-hint').textContent = article
+        ? 'Để trống nếu không muốn thay đổi nội dung hiện có. Nội dung nhập mới sẽ được lưu dưới dạng văn bản an toàn.'
+        : 'Nhập nội dung văn bản; nếu để trống, mô tả ngắn sẽ được dùng làm nội dung bài viết.';
+    modal.classList.remove('hidden');
+    modal.classList.add('flex');
+}
+
+function hideNewsEditor() {
+    const modal = document.getElementById('news-editor-modal');
+    if (!modal) return;
+    modal.classList.add('hidden');
+    modal.classList.remove('flex');
+}
+
+async function handleAdminNewsAction(event) {
+    const button = event.target.closest('[data-news-action]');
+    if (!button) return;
+    const { newsAction: action, newsId: id } = button.dataset;
+
+    try {
+        if (action === 'edit') {
+            const result = await requestAdminNews(`/api/admin/news/${encodeURIComponent(id)}`);
+            showNewsEditor(result.data);
+            return;
+        }
+
+        if (action === 'delete') {
+            if (!confirm('Bạn có chắc chắn muốn xóa bài viết này? Thao tác này không thể hoàn tác.')) return;
+            await requestAdminNews(`/api/admin/news/${encodeURIComponent(id)}`, { method: 'DELETE' });
+            showAdminToast('Đã xóa bài viết.');
+        } else if (action === 'status') {
+            const trangThai = button.dataset.newsStatus !== 'true';
+            await requestAdminNews(`/api/admin/news/${encodeURIComponent(id)}/status`, {
+                method: 'PATCH',
+                body: JSON.stringify({ trangThai })
+            });
+            showAdminToast(trangThai ? 'Đã hiển thị bài viết.' : 'Đã ẩn bài viết.');
+        }
+        await loadAdminNews();
+    } catch (error) {
+        showAdminToast(error.message || 'Không thể cập nhật bài viết.', 'error');
+    }
+}
+
+async function saveAdminNews(event) {
+    event.preventDefault();
+    const form = event.currentTarget;
+    const fields = form.elements;
+    const isEditing = Boolean(form.dataset.articleId);
+    const content = fields.content.value.trim();
+    const snippet = fields.snippet.value.trim();
+    if (!isEditing && !content && !snippet) {
+        showAdminToast('Hãy nhập nội dung hoặc mô tả ngắn cho bài viết.', 'error');
+        return;
+    }
+
+    const payload = {
+        title: fields.title.value.trim(),
+        link: fields.link.value.trim(),
+        category: fields.category.value,
+        industry: fields.industry.value,
+        categoryName: fields.categoryName.value.trim() || adminNewsCategoryLabels[fields.category.value],
+        author: fields.author.value.trim(),
+        snippet
+    };
+    if (fields.image.value.trim()) payload.image = fields.image.value.trim();
+    if (content) payload.content = content;
+
+    const saveButton = document.getElementById('save-news-editor');
+    saveButton.disabled = true;
+    try {
+        const id = form.dataset.articleId;
+        await requestAdminNews(
+            isEditing ? `/api/admin/news/${encodeURIComponent(id)}` : '/api/admin/news',
+            { method: isEditing ? 'PATCH' : 'POST', body: JSON.stringify(payload) }
+        );
+        hideNewsEditor();
+        showAdminToast(isEditing ? 'Đã cập nhật bài viết.' : 'Đã tạo bài viết.');
+        adminNewsPage = isEditing ? adminNewsPage : 1;
+        await loadAdminNews();
+    } catch (error) {
+        showAdminToast(error.message || 'Không thể lưu bài viết.', 'error');
+    } finally {
+        saveButton.disabled = false;
+    }
+}
+
+async function syncAdminNews() {
+    const button = document.getElementById('sync-news');
+    button.disabled = true;
+    try {
+        const result = await requestAdminNews('/api/admin/news/sync', { method: 'POST' });
+        showAdminToast(`Đồng bộ hoàn tất: thêm ${result.result?.added || 0} bài viết mới.`);
+        adminNewsPage = 1;
+        await loadAdminNews();
+    } catch (error) {
+        showAdminToast(error.message || 'Không thể đồng bộ tin tức.', 'error');
+    } finally {
+        button.disabled = false;
+    }
+}
+
+function initNewsManagement() {
+    const list = document.getElementById('admin-news-list');
+    if (!list) return;
+    loadAdminNews();
+    list.addEventListener('click', handleAdminNewsAction);
+    document.getElementById('create-news').addEventListener('click', () => showNewsEditor());
+    document.getElementById('sync-news').addEventListener('click', syncAdminNews);
+    document.getElementById('news-editor-form').addEventListener('submit', saveAdminNews);
+    document.getElementById('news-editor-form').elements.category.addEventListener('change', (event) => {
+        const labelInput = document.getElementById('news-editor-form').elements.categoryName;
+        if (!labelInput.value.trim() || Object.values(adminNewsCategoryLabels).includes(labelInput.value.trim())) {
+            labelInput.value = adminNewsCategoryLabels[event.target.value];
+        }
+    });
+    document.getElementById('close-news-editor').addEventListener('click', hideNewsEditor);
+    document.getElementById('cancel-news-editor').addEventListener('click', hideNewsEditor);
+    document.getElementById('news-editor-modal').addEventListener('click', (event) => {
+        if (event.target.id === 'news-editor-modal') hideNewsEditor();
+    });
+    document.getElementById('admin-news-search').addEventListener('input', () => {
+        clearTimeout(adminNewsSearchTimer);
+        adminNewsSearchTimer = setTimeout(() => {
+            adminNewsPage = 1;
+            loadAdminNews();
+        }, 300);
+    });
+    document.getElementById('admin-news-status').addEventListener('change', () => {
+        adminNewsPage = 1;
+        loadAdminNews();
+    });
+    document.getElementById('admin-news-prev').addEventListener('click', () => {
+        if (adminNewsPage > 1) {
+            adminNewsPage--;
+            loadAdminNews();
+        }
+    });
+    document.getElementById('admin-news-next').addEventListener('click', () => {
+        adminNewsPage++;
+        loadAdminNews();
+    });
 }
 
 // Bộ lọc ngày Flatpickr
@@ -1179,6 +1453,8 @@ document.addEventListener('DOMContentLoaded', () => {
         lucide.createIcons();
     }
 
+    initNewsManagement();
+
     const savedSidebarState = localStorage.getItem('sidebarCollapsed');
     const initiallyCollapsed = savedSidebarState === null
         ? window.matchMedia('(max-width: 767px)').matches
@@ -1198,9 +1474,4 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('export-dashboard')?.addEventListener('click', exportDashboardExcel);
     document.getElementById('export-accounts')?.addEventListener('click', exportAccountsExcel);
 
-    document.querySelectorAll('button').forEach((button) => {
-        if (button.textContent.includes('Ẩn bài viết') || button.textContent.includes('Hiện bài viết')) {
-            button.addEventListener('click', () => toggleNewsVisibility(button));
-        }
-    });
 });
