@@ -74,7 +74,7 @@ function renderLayout(activeMenuId) {
 
     if (!isLoggedIn) {
         layoutContainer.innerHTML = `
-            <header class="fixed w-full top-0 left-0 z-60 bg-gradient-to-b from-background via-background/90 to-transparent pb-6 transition-all duration-300">
+            <header class="fixed w-full top-0 left-0 z-[60] bg-gradient-to-b from-background via-background/90 to-transparent pb-6 transition-all duration-300">
                 <div class="w-full px-6 sm:px-8 pt-3.5 flex justify-between items-center">
                     <div class="flex items-center gap-3 cursor-pointer group select-none" onclick="window.location.href='/'">
                         <div class="w-11 h-11 rounded-[14px] bg-gradient-to-b from-[#00B4D8] to-[#7B2CBF] flex items-center justify-center text-white shadow-md shadow-cyan/20 transform transition-transform duration-300 ease-out group-hover:rotate-45 shrink-0">
