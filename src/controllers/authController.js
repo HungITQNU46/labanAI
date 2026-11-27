@@ -73,6 +73,11 @@ const requestPasswordReset = async (req, res) => {
             if (error.message.startsWith('Cấu hình SMTP chưa đầy đủ')) {
                 return res.status(503).json({ message: 'Hệ thống chưa cấu hình dịch vụ gửi email. Vui lòng liên hệ quản trị viên.' });
             }
+            if (error.code === 'EAUTH' || error.responseCode === 535) {
+                return res.status(503).json({
+                    message: 'Gmail từ chối thông tin đăng nhập SMTP. Hãy kiểm tra SMTP_USER và Mật khẩu ứng dụng Google trong cấu hình máy chủ.'
+                });
+            }
             return res.status(503).json({ message: 'Không thể gửi email lúc này. Vui lòng thử lại sau.' });
         }
 

@@ -5,7 +5,10 @@ async function sendPasswordResetCode(email, code) {
     const host = process.env.SMTP_HOST?.trim();
     const port = Number(process.env.SMTP_PORT);
     const user = process.env.SMTP_USER?.trim();
-    const password = process.env.SMTP_PASS;
+    const configuredPassword = process.env.SMTP_PASS?.trim();
+    const password = host?.toLowerCase() === 'smtp.gmail.com'
+        ? configuredPassword?.replace(/\s/g, '')
+        : configuredPassword;
     const from = process.env.SMTP_FROM?.trim();
 
     if (!host || !Number.isInteger(port) || port < 1 || port > 65535 || !user || !password || !from) {
