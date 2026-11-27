@@ -15,7 +15,6 @@
                 Chào bạn! Mình là <span class="brand-welcome-text cursor-pointer font-black text-navy hover:text-cyan transition-colors duration-200">la bàn<span class="text-cyan">.ai</span></span>
             </h1>
             <p class="text-sm text-muted max-w-md mx-auto mb-3 leading-relaxed">Một không gian để bạn thử đặt câu hỏi và tìm hiểu cách trò chuyện về hướng nghiệp.</p>
-            <p id="chat-demo-note" class="text-xs text-slate-600 bg-slate-50 border border-slate-200 rounded-2xl p-3 max-w-lg mb-6" role="note">ChatBot này hiện là bản minh họa với phản hồi có sẵn, chưa kết nối dịch vụ AI trực tuyến. Đây là tính năng riêng, không phải Groq giải thích kết quả khảo sát.</p>
 
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-3.5 w-full text-left">
                 <div onclick="sendSuggestedPrompt(this)" class="p-4 rounded-2xl glass-card bg-white/80 hover:border-cyan hover:shadow-md cursor-pointer transition-all border border-navy/5 group">
@@ -64,7 +63,10 @@
                     <div class="absolute -top-9 left-1/2 -translate-x-1/2 px-2.5 py-1 bg-navy text-white text-[11px] font-medium rounded-lg whitespace-nowrap opacity-0 pointer-events-none group-hover:opacity-100 transition-opacity duration-200 shadow-lg z-50">Lịch sử trò chuyện</div>
                 </div>
                 <div class="relative group shrink-0">
-                    <button onclick="toggleModeMenu(event)" id="btn-mode-toggle" class="h-9 px-2.5 rounded-full bg-slate-100 hover:bg-cyan/10 hover:text-cyan text-slate-600 flex items-center gap-1 text-xs font-bold transition-all duration-200 shadow-sm active:scale-95"><i data-lucide="chevron-up" class="w-3.5 h-3.5 text-cyan group-hover:text-cyan transition-colors"></i></button>
+                    <button onclick="toggleModeMenu(event)" id="btn-mode-toggle" class="h-9 px-3 rounded-full bg-slate-100 hover:bg-cyan/10 hover:text-cyan text-slate-600 flex items-center gap-1.5 text-xs font-bold transition-all duration-200 shadow-sm active:scale-95">
+                        <span id="current-mode-label" class="hidden sm:inline">Tổng quan</span>
+                        <i id="mode-chevron" data-lucide="chevron-up" class="w-3.5 h-3.5 text-cyan transition-transform duration-200"></i>
+                    </button>                    
                     <div class="absolute -top-9 left-1/2 -translate-x-1/2 px-2.5 py-1 bg-navy text-white text-[11px] font-medium rounded-lg whitespace-nowrap opacity-0 pointer-events-none group-hover:opacity-100 transition-opacity duration-200 shadow-lg z-50">Chế độ tư vấn</div>
                     <div id="mode-popup-menu" class="hidden absolute bottom-12 left-0 w-64 glass-card bg-white/95 backdrop-blur-2xl rounded-2xl p-2 shadow-2xl border border-cyan/20 flex-col gap-1 z-50 text-left animate-fade-in">
                         <div class="px-2.5 py-1 text-[10px] font-bold text-muted uppercase tracking-wider">Chế độ AI tư vấn</div>
@@ -74,7 +76,6 @@
                     </div>
                 </div>
                 <textarea id="chat-input" rows="1" placeholder="Nhập câu hỏi về ngành học, trường ĐH hoặc khối thi..." class="flex-1 bg-transparent resize-none outline-none text-sm text-navy max-h-32 py-1.5 px-2 leading-relaxed placeholder:text-slate-400" oninput="autoResizeTextarea(this)" onkeydown="handleInputKeydown(event)"></textarea>
-                <button onclick="toggleVoiceInput()" id="btn-voice" class="w-9 h-9 rounded-full hover:bg-navy/5 text-slate-500 hover:text-cyan flex items-center justify-center shrink-0 transition-colors" title="Nhập bằng giọng nói"><i data-lucide="mic" class="w-4 h-4"></i></button>
                 <button onclick="handleSendMessage()" id="btn-send" class="w-9 h-9 rounded-full btn-gradient text-white shadow-md hover-glow flex items-center justify-center shrink-0 active:scale-90 transition-all" title="Gửi câu hỏi (Enter)"><i data-lucide="arrow-up" class="w-4 h-4 stroke-[2.5]"></i></button>
             </div>
             <div class="flex justify-between items-center px-4 text-[10px] text-muted">

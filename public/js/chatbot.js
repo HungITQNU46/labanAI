@@ -1,12 +1,33 @@
 renderLayout('nav-chat');
 
-let chatSessions = JSON.parse(localStorage.getItem('laban_chat_sessions')) || [
-    { id: 'session-1', title: 'Tư vấn khối A01 & ngành CNTT', timestamp: 'Hôm nay', messages: [] },
-    { id: 'session-2', title: 'So sánh ngành Marketing vs QTKD', timestamp: 'Hôm qua', messages: [] }
-];
-
-let currentSessionId = chatSessions[0] ? chatSessions[0].id : null;
+let chatSessions = [];
+let currentSessionId = null;
 let currentConsultantMode = 'general';
+let isSendingMessage = false;
+
+function mapSessionFromServer(s) {
+    return {
+        id: s._id,
+        title: s.tieuDe,
+        mode: s.cheDo || 'general',
+        timestamp: new Date(s.ngayCapNhat || s.ngayTao).toLocaleDateString('vi-VN'),
+        messages: s.tinNhan || []
+    };
+}
+
+async function loadChatSessionsFromDB() {
+    try {
+        const res = await fetch('/api/chatbot/sessions');
+        const json = await res.json();
+        if (json.success) {
+            chatSessions = json.data.map(mapSessionFromServer);
+            currentSessionId = chatSessions[0] ? chatSessions[0].id : null;
+            renderCurrentMessages();
+        }
+    } catch (err) {
+        console.error('Lỗi tải lịch sử chat:', err);
+    }
+}
 
 let compassScene, compassCamera, compassRenderer, compassGroup;
 let compassAnimId = null;
@@ -241,28 +262,67 @@ function renderDrawerSessions() {
 }
 
 function selectSessionFromDrawer(id) { currentSessionId = id; toggleHistoryDrawer(); renderCurrentMessages(); }
-function startNewChatSession() {
-    const newSession = { id: 'session-' + Date.now(), title: 'Hội thoại mới', timestamp: 'Vừa xong', messages: [] };
-    chatSessions.unshift(newSession); currentSessionId = newSession.id; saveSessions(); renderCurrentMessages(); document.getElementById('chat-input').focus();
-}
-function renameChatSession(id, event) {
-    event.stopPropagation(); const session = chatSessions.find(s => s.id === id); if (!session) return;
-    const newTitle = prompt('Nhập tiêu đề mới cho cuộc trò chuyện:', session.title);
-    if (newTitle && newTitle.trim()) { session.title = newTitle.trim(); saveSessions(); renderDrawerSessions(); renderCurrentMessages(); }
-}
-function deleteChatSession(id, event) {
-    event.stopPropagation();
-    if (confirm('Bạn có chắc chắn muốn xóa cuộc trò chuyện này?')) {
-        chatSessions = chatSessions.filter(s => s.id !== id);
-        if (currentSessionId === id) currentSessionId = chatSessions.length > 0 ? chatSessions[0].id : null;
-        saveSessions(); renderDrawerSessions(); renderCurrentMessages();
+async function startNewChatSession() {
+    try {
+        const res = await fetch('/api/chatbot/sessions', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ cheDo: currentConsultantMode })
+        });
+        const json = await res.json();
+        if (json.success) {
+            const newSession = mapSessionFromServer(json.data);
+            chatSessions.unshift(newSession);
+            currentSessionId = newSession.id;
+            renderCurrentMessages();
+            document.getElementById('chat-input')?.focus();
+        }
+    } catch (err) {
+        console.error('Lỗi tạo phiên mới:', err);
     }
 }
-function clearAllChatSessions() {
-    if (confirm('Xóa sạch toàn bộ lịch sử tư vấn?')) {
-        chatSessions = []; currentSessionId = null; saveSessions();
-        const titleHeader = document.getElementById('current-chat-title'); if (titleHeader) titleHeader.innerText = 'Cuộc trò chuyện mới';
-        renderDrawerSessions(); renderCurrentMessages(); toggleHistoryDrawer();
+
+async function renameChatSession(id, event) {
+    event.stopPropagation();
+    const session = chatSessions.find(s => s.id === id);
+    if (!session) return;
+    const newTitle = prompt('Nhập tiêu đề mới cho cuộc trò chuyện:', session.title);
+    if (!newTitle || !newTitle.trim()) return;
+
+    const res = await fetch(`/api/chatbot/sessions/${id}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ tieuDe: newTitle.trim() })
+    });
+    const json = await res.json();
+    if (json.success) {
+        session.title = json.data.tieuDe;
+        renderDrawerSessions();
+        renderCurrentMessages();
+    }
+}
+
+async function deleteChatSession(id, event) {
+    event.stopPropagation();
+    if (!confirm('Bạn có chắc chắn muốn xóa cuộc trò chuyện này?')) return;
+    const res = await fetch(`/api/chatbot/sessions/${id}`, { method: 'DELETE' });
+    if (res.ok) {
+        chatSessions = chatSessions.filter(s => s.id !== id);
+        if (currentSessionId === id) currentSessionId = chatSessions[0] ? chatSessions[0].id : null;
+        renderDrawerSessions();
+        renderCurrentMessages();
+    }
+}
+
+async function clearAllChatSessions() {
+    if (!confirm('Xóa sạch toàn bộ lịch sử tư vấn?')) return;
+    const res = await fetch('/api/chatbot/sessions', { method: 'DELETE' });
+    if (res.ok) {
+        chatSessions = [];
+        currentSessionId = null;
+        renderDrawerSessions();
+        renderCurrentMessages();
+        toggleHistoryDrawer();
     }
 }
 function saveSessions() { localStorage.setItem('laban_chat_sessions', JSON.stringify(chatSessions)); }
@@ -274,11 +334,22 @@ function toggleModeMenu(event) {
     else { menu.classList.add('hidden'); menu.classList.remove('flex'); chevron?.classList.remove('rotate-180'); }
 }
 
+
+const MODE_SHORT_LABELS = {
+    general: 'Tổng quan',
+    score: 'Điểm chuẩn',
+    holland: 'Holland'
+};
+
 function selectConsultantMode(mode, label) {
     currentConsultantMode = mode;
-    document.getElementById('btn-mode-toggle').title = `Chế độ: ${label}`;
+    const btn = document.getElementById('btn-mode-toggle');
+    const labelEl = document.getElementById('current-mode-label');
+    if (btn) btn.title = `Chế độ: ${label}`;
+    if (labelEl) labelEl.innerText = MODE_SHORT_LABELS[mode] || 'Tổng quan';
     toggleModeMenu();
 }
+
 
 document.addEventListener('click', (e) => {
     const menu = document.getElementById('mode-popup-menu'), btn = document.getElementById('btn-mode-toggle');
@@ -310,10 +381,6 @@ function renderCurrentMessages() {
                     <div class="glass-card bg-white/95 p-5 rounded-2xl rounded-tl-sm border border-navy/5 text-sm leading-relaxed text-navy shadow-sm">${formatAIMessage(msg.content)}</div>
                     <div class="flex items-center gap-3 text-muted text-xs px-2">
                         <button onclick="copyMessageText(this)" class="hover:text-cyan flex items-center gap-1 transition-colors"><i data-lucide="copy" class="w-3.5 h-3.5"></i> Sao chép</button>
-                        <button onclick="regenerateAIResponse(${idx})" class="hover:text-cyan flex items-center gap-1 transition-colors"><i data-lucide="rotate-ccw" class="w-3.5 h-3.5"></i> Tạo lại</button>
-                        <div class="h-3 w-px bg-gray-200"></div>
-                        <button onclick="voteFeedback(this, 'like')" class="hover:text-emerald p-1 transition-colors" title="Hữu ích"><i data-lucide="thumbs-up" class="w-3.5 h-3.5"></i></button>
-                        <button onclick="voteFeedback(this, 'dislike')" class="hover:text-red-500 p-1 transition-colors" title="Chưa hài lòng"><i data-lucide="thumbs-down" class="w-3.5 h-3.5"></i></button>
                     </div>
                 </div>
             `;
@@ -324,80 +391,175 @@ function renderCurrentMessages() {
 }
 
 function formatAIMessage(text) {
-    let formatted = text.replace(/\*\*(.*?)\*\*/g, '<strong class="font-bold text-navy">$1</strong>').replace(/\n\n/g, '<br><br>').replace(/\n- (.*?)/g, '<br>• $1');
-    if (formatted.includes('|')) {
-        const lines = formatted.split('<br>'); let inTable = false, tableHTML = '<div class="overflow-x-auto my-3"><table class="w-full text-xs border-collapse rounded-xl overflow-hidden shadow-sm">';
-        lines.forEach(line => {
-            if (line.includes('|')) {
-                const cols = line.split('|').filter(c => c.trim().length > 0);
-                if (line.includes('---')) return;
-                if (!inTable) {
-                    inTable = true; tableHTML += '<tr class="bg-cyan/10 font-bold text-navy">';
-                    cols.forEach(c => tableHTML += `<th class="p-2.5 text-left border border-cyan/20">${c.trim()}</th>`); tableHTML += '</tr>';
-                } else {
-                    tableHTML += '<tr class="border-b border-gray-100 hover:bg-gray-50">';
-                    cols.forEach(c => tableHTML += `<td class="p-2.5 border border-gray-100">${c.trim()}</td>`); tableHTML += '</tr>';
-                }
+    if (!text) return '';
+
+    // 1. Escape HTML cơ bản để tránh lỗi giao diện
+    let safeText = String(text)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;');
+
+    const lines = safeText.split('\n');
+    let html = '';
+    let inTable = false;
+    let tableRows = [];
+
+    const flushTable = () => {
+        if (!inTable || tableRows.length === 0) return;
+        html += '<div class="overflow-x-auto my-3"><table class="w-full text-xs border-collapse rounded-xl overflow-hidden shadow-sm">';
+        tableRows.forEach((cols, idx) => {
+            if (idx === 0) {
+                html += '<tr class="bg-cyan/10 font-bold text-navy">';
+                cols.forEach(c => { html += `<th class="p-2.5 text-left border border-cyan/20">${formatInlineMarkdown(c)}</th>`; });
+                html += '</tr>';
+            } else {
+                html += '<tr class="border-b border-gray-100 hover:bg-gray-50">';
+                cols.forEach(c => { html += `<td class="p-2.5 border border-gray-100">${formatInlineMarkdown(c)}</td>`; });
+                html += '</tr>';
             }
         });
-        tableHTML += '</table></div>'; formatted = formatted.replace(/\|.*?\|/gs, '') + tableHTML;
-    }
-    return formatted;
+        html += '</table></div>';
+        inTable = false;
+        tableRows = [];
+    };
+
+    lines.forEach((rawLine) => {
+        const line = rawLine.trim();
+
+        // Xử lý bảng Markdown
+        if (line.startsWith('|') && line.endsWith('|')) {
+            const cols = line.slice(1, -1).split('|').map(c => c.trim());
+            // Bỏ qua dòng ngăn cách |---|---|
+            if (cols.every(c => /^:?-{2,}:?$/.test(c))) return;
+            inTable = true;
+            tableRows.push(cols);
+            return;
+        } else if (inTable) {
+            flushTable();
+        }
+
+        // Dòng trống
+        if (!line) {
+            html += '<div class="h-2"></div>';
+            return;
+        }
+
+        // Đường kẻ ngang (--- hoặc ***)
+        if (/^(-{3,}|\*{3,})$/.test(line)) {
+            html += '<hr class="my-3 border-gray-200">';
+            return;
+        }
+
+        // Tiêu đề (###, ##, #)
+        if (line.startsWith('### ')) {
+            html += `<h4 class="font-bold text-navy text-sm mt-3 mb-1">${formatInlineMarkdown(line.slice(4))}</h4>`;
+            return;
+        }
+        if (line.startsWith('## ')) {
+            html += `<h3 class="font-black text-navy text-base mt-3 mb-1">${formatInlineMarkdown(line.slice(3))}</h3>`;
+            return;
+        }
+
+        // Gạch đầu dòng (- hoặc • hoặc *)
+        if (/^[-•*]\s+/.test(line)) {
+            html += `<div class="flex items-start gap-2 my-1"><span class="text-cyan font-bold">•</span><span>${formatInlineMarkdown(line.replace(/^[-•*]\s+/, ''))}</span></div>`;
+            return;
+        }
+
+        // Đoạn văn bình thường
+        html += `<p class="my-1">${formatInlineMarkdown(line)}</p>`;
+    });
+
+    if (inTable) flushTable();
+    return html;
 }
 
-function handleSendMessage() {
-    const input = document.getElementById('chat-input'), text = input.value.trim();
+function formatInlineMarkdown(str) {
+    return str
+        // Link dạng [text](url)
+        .replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" class="text-cyan font-semibold underline hover:text-violet">$1</a>')
+        // Link nội bộ AI hay viết dạng [/evaluation]
+        .replace(/\[(\/[a-zA-Z0-9/_-]+)\]/g, '<a href="$1" class="text-cyan font-semibold underline hover:text-violet">$1</a>')
+        // In đậm **text**
+        .replace(/\*\*(.+?)\*\*/g, '<strong class="font-bold text-navy">$1</strong>')
+        // In nghiêng *text*
+        .replace(/\*(.+?)\*/g, '<em class="italic text-slate-700">$1</em>')
+        // Code inline `text`
+        .replace(/`([^`]+)`/g, '<code class="px-1.5 py-0.5 bg-slate-100 text-navy rounded text-xs font-mono">$1</code>');
+}
+async function handleSendMessage() {
+    if (isSendingMessage) return;
+    const input = document.getElementById('chat-input');
+    const text = input.value.trim();
     if (!text) return;
-    if (!currentSessionId) startNewChatSession();
+
+    isSendingMessage = true;
+    if (!currentSessionId) await startNewChatSession();
 
     const session = chatSessions.find(s => s.id === currentSessionId);
+    if (!session) { isSendingMessage = false; return; }
+
+    // Hiển thị ngay tin nhắn của user
     session.messages.push({ role: 'user', content: text });
-    if (session.messages.length === 1) {
-        session.title = text.length > 25 ? text.substring(0, 25) + '...' : text;
-        const titleHeader = document.getElementById('current-chat-title'); if (titleHeader) titleHeader.innerText = session.title;
-    }
+    input.value = '';
+    autoResizeTextarea(input);
+    renderCurrentMessages();
 
-    input.value = ''; autoResizeTextarea(input); renderCurrentMessages();
-    const typing = document.getElementById('typing-indicator'); typing.classList.remove('hidden'); scrollChatToBottom();
+    const typing = document.getElementById('typing-indicator');
+    typing.classList.remove('hidden');
+    scrollChatToBottom();
 
-    setTimeout(() => {
+    try {
+        const res = await fetch(`/api/chatbot/sessions/${session.id}/messages`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ content: text, cheDo: currentConsultantMode })
+        });
+        const json = await res.json();
         typing.classList.add('hidden');
-        session.messages.push({ role: 'assistant', content: generateSimulatedAIResponse(text) });
-        saveSessions(); renderCurrentMessages();
-    }, 1100);
+
+        if (json.success && json.data) {
+            const updated = mapSessionFromServer(json.data.session);
+            const idx = chatSessions.findIndex(s => s.id === updated.id);
+            if (idx !== -1) chatSessions[idx] = updated;
+        } else {
+            session.messages.push({ role: 'assistant', content: json.message || 'Có lỗi xảy ra khi gọi AI.' });
+        }
+    } catch (err) {
+        typing.classList.add('hidden');
+        session.messages.push({ role: 'assistant', content: 'Không thể kết nối đến máy chủ AI. Vui lòng thử lại.' });
+    } finally {
+        isSendingMessage = false;
+        renderCurrentMessages();
+    }
 }
 
-function generateSimulatedAIResponse(query) {
-    const lower = query.toLowerCase();
-    if (lower.includes('toán') || lower.includes('lý') || lower.includes('khối a')) return `Dựa trên thế mạnh vượt trội về **Toán học và Vật lý** của bạn, hệ thống AI đề xuất các hướng đi nghề nghiệp tối ưu sau:\n- **Công nghệ thông tin & Trí tuệ nhân tạo (AI):** Cần tư duy thuật toán chặt chẽ và logic cao.\n- **Kỹ thuật Điện tử - Viễn thông / Tự động hóa:** Ứng dụng sâu kiến thức vật lý đại cương và mạch điện.\n- **Khoa học Dữ liệu (Data Science):** Giao thoa giữa toán xác suất thống kê và công nghệ phần mềm.\nDưới đây là bảng so sánh nhanh các ngành theo khối xét tuyển:\n\n| Ngành Học | Khối Xét | Điểm Chuẩn Tham Khảo | Cơ Hội Nghề Nghiệp |\n| Công nghệ thông tin | A00, A01 | 23.5 - 27.5 | Kỹ sư phần mềm, AI Engineer |\n| Tự động hóa | A00, A01 | 22.0 - 26.0 | Kỹ sư robot, vận hành hệ thống |\n| Khoa học Dữ liệu | A01, D01 | 24.0 - 26.5 | Chuyên viên phân tích dữ liệu |\n\nBạn có muốn mình so sánh chi tiết điểm chuẩn các trường tại khu vực bạn đang quan tâm không?`;
-    if (lower.includes('so sánh') && (lower.includes('cntt') || lower.includes('khoa học dữ liệu') || lower.includes('it'))) return `Dưới đây là phân tích đối chiếu chuyên sâu giữa **Công nghệ thông tin (CNTT)** và **Khoa học dữ liệu (Data Science)**:\n\n1. **Bản chất ngành:**\n- **CNTT:** Tập trung vào kỹ thuật lập trình, xây dựng ứng dụng web/app, hệ thống mạng và kiến trúc phần mềm.\n- **Khoa học Dữ liệu:** Tập trung vào phân tích, khai phá quy luật từ dữ liệu lớn để hỗ trợ ra quyết định kinh doanh hoặc huấn luyện mô hình AI.\n\n2. **Yêu cầu năng lực:**\n- CNTT đòi hỏi tư duy lập trình và giải quyết bài toán hệ thống tốt.\n- Khoa học Dữ liệu đòi hỏi nền tảng Toán xác suất, thống kê và tư duy phân tích sâu.\n\nBạn thiên về thích tạo ra sản phẩm hoàn chỉnh (App/Web) hay thích nghiên cứu tìm quy luật từ các con số hơn?`;
-    if (lower.includes('marketing')) return `Ngành **Marketing** hiện nay đã phát triển mạnh mẽ theo hướng công nghệ và dữ liệu (Digital & Data-driven Marketing). Ra trường bạn có thể đảm nhận các vị trí:\n\n- **Digital Marketing Specialist:** Lên chiến dịch quảng cáo, tối ưu chuyển đổi số trên Facebook, Google, TikTok.\n- **Content Creator / Copywriter:** Sáng tạo câu chuyện thương hiệu và kịch bản truyền thông.\n- **Brand Manager:** Quản trị và định vị hình ảnh thương hiệu dài hạn cho doanh nghiệp.\n- **Market Research Analyst:** Phân tích nhu cầu khách hàng và xu hướng thị trường.\n\nNgành này đặc biệt phù hợp với các bạn có nhóm tính cách **Artistic (Sáng tạo)** và **Enterprising (Kinh doanh / Thuyết phục)** theo mã Holland.`;
-    return `Cảm ơn câu hỏi của bạn! Với câu hỏi này, **Laban.ai** nhận thấy bạn đang tìm hiểu theo hướng phù hợp với xu thế phát triển hiện nay.\n\nĐể có thể đưa ra phân tích chính xác nhất, bạn có thể chia sẻ thêm:\n- Bạn dự kiến thi các môn thi nào (hoặc điểm số học tập hiện tại)?\n- Bạn đã làm bài đánh giá tính cách Holland RIASEC trên hệ thống chưa?\n\nMình sẽ dựa vào đó để tính toán xác suất trúng tuyển và gợi ý lộ trình đại học tốt nhất cho bạn!`;
-}
+
 
 function sendSuggestedPrompt(card) { document.getElementById('chat-input').value = card.querySelector('.text-navy').innerText.replace(/"/g, ''); handleSendMessage(); }
 function handleInputKeydown(e) { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); handleSendMessage(); } }
 function autoResizeTextarea(textarea) { textarea.style.height = 'auto'; textarea.style.height = Math.min(textarea.scrollHeight, 120) + 'px'; }
 function scrollChatToBottom() { const container = document.getElementById('chat-messages-container'); setTimeout(() => { container.scrollTop = container.scrollHeight; }, 50); }
 
-function copyMessageText(btn) {
-    navigator.clipboard.writeText(btn.closest('.space-y-2.5').querySelector('.glass-card').innerText);
-    btn.innerHTML = `<i data-lucide="check" class="w-3.5 h-3.5 text-emerald"></i> Đã sao chép`; lucide.createIcons();
-    setTimeout(() => { btn.innerHTML = `<i data-lucide="copy" class="w-3.5 h-3.5"></i> Sao chép`; lucide.createIcons(); }, 2000);
-}
-function voteFeedback(btn, type) { if (type === 'like') btn.classList.toggle('text-emerald'); else btn.classList.toggle('text-red-500'); }
-function regenerateAIResponse(index) {
-    const session = chatSessions.find(s => s.id === currentSessionId); if (!session || index <= 0) return;
-    const userQuery = session.messages[index - 1].content, typing = document.getElementById('typing-indicator');
-    typing.classList.remove('hidden'); scrollChatToBottom();
-    setTimeout(() => { typing.classList.add('hidden'); session.messages[index].content = generateSimulatedAIResponse(userQuery); saveSessions(); renderCurrentMessages(); }, 1000);
-}
-function toggleVoiceInput() {
-    const btn = document.getElementById('btn-voice'); btn.classList.toggle('text-red-500'); btn.classList.toggle('animate-pulse');
-    document.getElementById('chat-input').placeholder = btn.classList.contains('text-red-500') ? "Đang lắng nghe giọng nói của bạn..." : "Nhập câu hỏi hoặc băn khoăn về ngành học của bạn...";
+async function copyMessageText(btn) {
+    const messageCard = btn.parentElement?.previousElementSibling;
+    if (!messageCard) return;
+
+    try {
+        await navigator.clipboard.writeText(messageCard.innerText);
+
+        btn.innerHTML = `<i data-lucide="check" class="w-3.5 h-3.5 text-emerald"></i> Đã sao chép`;
+        lucide.createIcons();
+        setTimeout(() => {
+            btn.innerHTML = `<i data-lucide="copy" class="w-3.5 h-3.5"></i> Sao chép`;
+            lucide.createIcons();
+        }, 2000);
+    } catch (err) {
+        console.error('Lỗi sao chép tin nhắn:', err);
+    }
 }
 
 window.addEventListener('DOMContentLoaded', () => {
-    renderCurrentMessages();
+    loadChatSessionsFromDB();
     initWelcomeCompass();
 });

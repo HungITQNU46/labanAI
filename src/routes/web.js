@@ -31,7 +31,12 @@ router.get('/news', homeController.getNews);
 
 // Phân hệ Chatbot AI
 router.get('/chatbot', requireAuth, chatbotController.getChatbot);
-
+router.get('/api/chatbot/sessions', requireAuth, chatbotController.listSessions);
+router.post('/api/chatbot/sessions', requireAuth, chatbotController.createSession);
+router.post('/api/chatbot/sessions/:id/messages', requireAuth, chatbotController.sendMessage);
+router.patch('/api/chatbot/sessions/:id', requireAuth, chatbotController.renameSession);
+router.delete('/api/chatbot/sessions/:id', requireAuth, chatbotController.deleteSession);
+router.delete('/api/chatbot/sessions', requireAuth, chatbotController.clearAllSessions);
 // Phân hệ Đánh giá năng lực & Dự đoán
 router.get('/evaluation', requireAuth, evaluationController.getEvaluation);
 router.get('/evaluation/history', requireAuth, evaluationHistoryController.getEvaluationHistory);
