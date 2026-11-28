@@ -101,6 +101,14 @@
         });
 
         body.appendChild(row);
+        for (const [label, selector] of [['Xác suất Q5 (0–1)', '[data-history-probs]'], ['OOF Z-score', '[data-history-standardized]']]) {
+            const vectorRow = document.createElement('tr');
+            const heading = document.createElement('th'); heading.scope = 'row'; heading.textContent = label; vectorRow.appendChild(heading);
+            selectedCards.forEach(card => {
+                const cell = document.createElement('td'); cell.textContent = card.querySelector(selector)?.textContent || 'Không có dữ liệu RIASEC27 trong lượt này'; vectorRow.appendChild(cell);
+            });
+            body.appendChild(vectorRow);
+        }
         table.append(head, body);
         wrapper.appendChild(table);
         return wrapper;

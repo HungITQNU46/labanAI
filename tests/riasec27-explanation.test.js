@@ -6,9 +6,12 @@ const { createExplanationService, ExplanationError } = service;
 const mlService = require('../src/services/riasec27Service');
 const answers = [5,5,2,5,5,1,1,2,4,2,1,2,5,2,2,4,4,1,3,5,2,2,4,2,4,5,4];
 let ml;
+let owner={userId:"synthetic-A",sessionId:"synthetic-session-A"};
+let sessionCookie;
+const fetch=(url,options={})=>globalThis.fetch(url,{...options,headers:{...(sessionCookie?{Cookie:sessionCookie}:{}),...options.headers}});
 const config = () => ({provider:'groq',apiKey:'gsk_synthetic-test-key',model:'configured-test-model'});
 function outputFor(context) {
-    return {explanations:context.majors.map(m=>({major_id:m.major_id,rank:m.rank,
+    return {explanations:context.majors.map(m=>({major_id:m.major_id,rank:m.rank,evidence_domains:['E','S'],
         reason:'Hồ sơ tham chiếu được đối chiếu với sở thích đã tổng hợp; chưa đủ thông tin để giải thích một nguyên nhân cụ thể.',
         explore:'Bạn có thể tìm hiểu nhiệm vụ của nghề đại diện và trao đổi với người tư vấn.'
     })),limitations:'Kết quả định hướng nghiên cứu, chưa được kiểm chứng và không thay thế tư vấn hướng nghiệp.'};
@@ -23,32 +26,32 @@ before(async()=>{process.env.NODE_ENV='development';process.env.LABANAI_RIASEC27
 
 test('explanation: only actual SUCCESS READY results get an expiring context',()=>{
     const s=createExplanationService();
-    assert.equal(s.mintContext({status:'ABSTAIN_FLAT_PROFILE',top3:[]}),null);
-    assert.equal(s.mintContext({status:'TIED_BOUNDARY',top3:[]}),null);
+    assert.equal(s.mintContext(owner,{status:'ABSTAIN_FLAT_PROFILE',top3:[]}),null);
+    assert.equal(s.mintContext(owner,{status:'TIED_BOUNDARY',top3:[]}),null);
     const invalid=structuredClone(ml);invalid.top3[0].major_id='OUTSIDE_POOL';
-    assert.throws(()=>s.mintContext(invalid),ExplanationError);
-    assert.equal(typeof s.mintContext(ml),'string');
+    assert.throws(()=>s.mintContext(owner,invalid),ExplanationError);
+    assert.equal(typeof s.mintContext(owner,ml),'string');
 });
 test('explanation: no configured key/model returns AI_NOT_CONFIGURED without provider fetch',async()=>{
     const s=createExplanationService({config:()=>({provider:'groq'}),fetchImpl:()=>{throw new Error('Must not call provider');}});
-    await assert.rejects(s.explain({context_token:s.mintContext(ml),consent:true}),e=>e.code==='AI_NOT_CONFIGURED');
+    await assert.rejects(s.explain(owner,{context_token:s.mintContext(owner,ml),consent:true}),e=>e.code==='AI_NOT_CONFIGURED');
 });
 test('explanation: explicit consent required; extra raw answers and arbitrary majors rejected',async()=>{
-    const s=createExplanationService({config,fetchImpl:()=>{throw new Error('Must not call provider');}}),token=s.mintContext(ml);
+    const s=createExplanationService({config,fetchImpl:()=>{throw new Error('Must not call provider');}}),token=s.mintContext(owner,ml);
     for(const body of [{context_token:token,consent:false},{context_token:token},{context_token:token,consent:true,answers},{context_token:token,consent:true,top3:ml.top3}])
-        await assert.rejects(s.explain(body),e=>e.code==='INVALID_EXPLANATION_INPUT');
+        await assert.rejects(s.explain(owner,body),e=>e.code==='INVALID_EXPLANATION_INPUT');
 });
 test('explanation: forged token cannot replace the ranked majors',async()=>{
-    const s=createExplanationService({config,fetchImpl:fakeProvider()}),token=s.mintContext(ml);
+    const s=createExplanationService({config,fetchImpl:fakeProvider()}),token=s.mintContext(owner,ml);
     const [id,sig]=token.split('.');
     const forged=(id[0]==='a'?'b':'a')+id.slice(1)+'.'+sig;
-    await assert.rejects(s.explain({context_token:forged,consent:true}),e=>e.code==='INVALID_CONTEXT');
+    await assert.rejects(s.explain(owner,{context_token:forged,consent:true}),e=>e.code==='INVALID_CONTEXT');
 });
 test('explanation: context expires after ten minutes and cannot survive a signing-key restart',async()=>{
-    let time=1000000;const s=createExplanationService({now:()=>time,config,fetchImpl:fakeProvider()}),token=s.mintContext(ml);
+    let time=1000000;const s=createExplanationService({now:()=>time,config,fetchImpl:fakeProvider()}),token=s.mintContext(owner,ml);
     time+=600001;
-    await assert.rejects(s.explain({context_token:token,consent:true}),e=>e.code==='CONTEXT_EXPIRED');
-    await assert.rejects(createExplanationService({config}).explain({context_token:token,consent:true}),e=>e.code==='INVALID_CONTEXT');
+    await assert.rejects(s.explain(owner,{context_token:token,consent:true}),e=>e.code==='CONTEXT_EXPIRED');
+    await assert.rejects(createExplanationService({config}).explain(owner,{context_token:token,consent:true}),e=>e.code==='INVALID_CONTEXT');
 });
 
 test('grok module: compatibility import resolves to the same singleton',()=>{
@@ -57,39 +60,39 @@ test('grok module: compatibility import resolves to the same singleton',()=>{
 test('grok module: bounded RAM contexts evict oldest, retain no raw answers and are immutable',()=>{
     const {createContextStore}=require('../src/services/grokExplanation/explanationContext');
     const store=createContextStore({maxContexts:2});
-    const first=store.mintContext(ml),second=store.mintContext(ml),third=store.mintContext(ml);
+    const first=store.mintContext(owner,ml),second=store.mintContext(owner,ml),third=store.mintContext(owner,ml);
     assert.deepEqual(store.stats(),{count:2,capacity:2,ttlMs:600000});
-    assert.throws(()=>store.verifyContext(first),e=>e.code==='CONTEXT_EXPIRED');
-    const context=store.verifyContext(second);
+    assert.throws(()=>store.verifyContext(owner,first),e=>e.code==='CONTEXT_EXPIRED');
+    const context=store.verifyContext(owner,second);
     assert.ok(Object.isFrozen(context)&&Object.isFrozen(context.majors[0]));
     assert.ok(!Object.hasOwn(context,'answers'));
     assert.throws(()=>{context.majors[0].rank=9;},TypeError);
-    assert.ok(store.verifyContext(third));store.clear();assert.equal(store.stats().count,0);
+    assert.ok(store.verifyContext(owner,third));store.clear();assert.equal(store.stats().count,0);
 });
 test('grok module: expired contexts are removed by timer without another request',async()=>{
     const {createContextStore}=require('../src/services/grokExplanation/explanationContext');
-    const store=createContextStore({ttlMs:10,now:()=>1000}),token=store.mintContext(ml);
+    const store=createContextStore({ttlMs:10,now:()=>1000}),token=store.mintContext(owner,ml);
     await new Promise(resolve=>setTimeout(resolve,30));
     assert.equal(store.stats().count,0);
-    assert.throws(()=>store.verifyContext(token),e=>e.code==='CONTEXT_EXPIRED');
+    assert.throws(()=>store.verifyContext(owner,token),e=>e.code==='CONTEXT_EXPIRED');
 });
 test('Groq: xAI keys and incomplete configuration are rejected without provider calls',async()=>{
     for(const settings of [{...config(),apiKey:'xai_synthetic'},{...config(),model:''},{...config(),apiKey:'bad key'}]){
         const s=createExplanationService({config:()=>settings,fetchImpl:()=>{throw Error('Must not fetch');}});
-        await assert.rejects(s.explain({context_token:s.mintContext(ml),consent:true}),e=>e.code==='AI_NOT_CONFIGURED');
+        await assert.rejects(s.explain(owner,{context_token:s.mintContext(owner,ml),consent:true}),e=>e.code==='AI_NOT_CONFIGURED');
     }
 });
 test('grok module: changed major id or rank is rejected at its exact array position',async()=>{
     for(const change of [out=>{out.explanations[1].major_id='FAKE';return out;},out=>{out.explanations[1].rank=99;return out;}]){
         const s=createExplanationService({config,fetchImpl:fakeProvider([],change)});
-        await assert.rejects(s.explain({context_token:s.mintContext(ml),consent:true}),e=>e.code==='PROVIDER_RANKING_MISMATCH');
+        await assert.rejects(s.explain(owner,{context_token:s.mintContext(owner,ml),consent:true}),e=>e.code==='PROVIDER_RANKING_MISMATCH');
     }
 });
 test('grok module: schema locks each major id and rank and requires exactly three entries',()=>{
     const {createContextStore}=require('../src/services/grokExplanation/explanationContext');
     const {buildGroqRequest}=require('../src/services/grokExplanation/explanationPrompt');
     const {responseSchema}=require('../src/services/grokExplanation/explanationValidator');
-    const store=createContextStore(),context=store.verifyContext(store.mintContext(ml));
+    const store=createContextStore(),context=store.verifyContext(owner,store.mintContext(owner,ml));
     const schema=responseSchema(context.majors),request=buildGroqRequest(context,'configured-test-model');
     assert.ok(request.messages[0].content.includes(JSON.stringify(schema)));
     const array=schema.properties.explanations;
@@ -100,7 +103,7 @@ test('grok module: schema locks each major id and rank and requires exactly thre
 test('grok module: grade/admission claims or missing research limitation are rejected',async()=>{
     for(const change of [out=>{out.explanations[0].reason='Điểm học tập của bạn đạt 9 và khả năng trúng tuyển rất cao.';return out;},out=>({...out,limitations:'Bạn có thể chọn ngay một trong ba ngành này.'})]){
         const s=createExplanationService({config,fetchImpl:fakeProvider([],change)});
-        await assert.rejects(s.explain({context_token:s.mintContext(ml),consent:true}),e=>['PROVIDER_UNSAFE_RESPONSE','PROVIDER_INVALID_RESPONSE'].includes(e.code));
+        await assert.rejects(s.explain(owner,{context_token:s.mintContext(owner,ml),consent:true}),e=>['PROVIDER_UNSAFE_RESPONSE','PROVIDER_INVALID_RESPONSE'].includes(e.code));
     }
 });
 test('grok module: a context expiring during provider request cannot display a response',async()=>{
@@ -108,60 +111,88 @@ test('grok module: a context expiring during provider request cannot display a r
     const s=createExplanationService({now:()=>time,contextTtlMs:100,config,fetchImpl:async(url,options)=>{
         const context=JSON.parse(JSON.parse(options.body).messages[1].content);time+=101;return responseFor(outputFor(context));
     }});
-    await assert.rejects(s.explain({context_token:s.mintContext(ml),consent:true}),e=>e.code==='CONTEXT_EXPIRED');
+    await assert.rejects(s.explain(owner,{context_token:s.mintContext(owner,ml),consent:true}),e=>e.code==='CONTEXT_EXPIRED');
 });
 test('grok module: direct service access also fails closed outside development preview',async()=>{
     const old=process.env.NODE_ENV;
     try{
         process.env.NODE_ENV='production';
         const s=createExplanationService({config,fetchImpl:()=>{throw Error('Must not fetch');}});
-        await assert.rejects(s.explain({context_token:s.mintContext(ml),consent:true}),e=>e.code==='AI_PREVIEW_DISABLED');
+        await assert.rejects(s.explain(owner,{context_token:s.mintContext(owner,ml),consent:true}),e=>e.code==='AI_PREVIEW_DISABLED');
     }finally{process.env.NODE_ENV=old;}
 });
 test('Groq: sends minimal aggregate context to Chat Completions with JSON mode, no storage or key in body',async()=>{
     const calls=[],s=createExplanationService({config,fetchImpl:fakeProvider(calls)});
-    const result=await s.explain({context_token:s.mintContext(ml),consent:true});
+    const result=await s.explain(owner,{context_token:s.mintContext(owner,ml),consent:true});
     assert.equal(calls.length,1);assert.equal(calls[0].url,'https://api.groq.com/openai/v1/chat/completions');
     assert.equal(calls[0].body.model,'configured-test-model');assert.equal(calls[0].body.store,false);
     assert.equal(calls[0].body.response_format.type,'json_object');assert.equal(calls[0].options.redirect,'error');
     assert.equal(calls[0].options.headers.Authorization,'Bearer gsk_synthetic-test-key');
     assert.equal(calls[0].body.stream,false);assert.equal(calls[0].body.n,1);assert.equal(result.provider,'groq');
     assert.ok(!JSON.stringify(calls[0].body).includes(config().apiKey));
-    assert.deepEqual(Object.keys(calls[0].context).sort(),['highest_standardized_domains','majors','p2_standardized_profile','research_status']);
+    assert.deepEqual(Object.keys(calls[0].context).sort(),['domain_names_vi','highest_standardized_domains','majors','p2_standardized_profile','research_status','survey_domain_means']);
     assert.deepEqual(calls[0].context.p2_standardized_profile,ml.standardized_vector);
+    assert.deepEqual(calls[0].context.survey_domain_means,ml.domain_means);
     assert.equal(calls[0].context.majors.length,3);
     for(const key of ['answers','participant_id','email','phone','ml_probabilities','user','safety_identifier'])assert.ok(!Object.hasOwn(calls[0].context,key)&&!Object.hasOwn(calls[0].body,key));
     assert.deepEqual(result.explanations.map(m=>m.major_id),ml.top3.map(m=>m.major_id));
     assert.ok(!JSON.stringify(result).includes('synthetic-test-key'));
 });
+
+test('explanation: readable explanation retains actual survey aggregates, occupation identity and Pearson',async()=>{
+    const s=createExplanationService({config,fetchImpl:fakeProvider()});const result=await s.explain(owner,{context_token:s.mintContext(owner,ml),consent:true});
+    for(const [i,item] of result.explanations.entries()){
+        for(const d of ['E','S'])assert.ok(item.reason.includes(ml.domain_means[d].toFixed(2)+'/5'));
+        assert.ok(item.reason.includes(ml.top3[i].pearson_r.toFixed(2)));
+        assert.ok(item.reason.includes(ml.top3[i].soc_code));assert.ok(item.reason.includes(ml.top3[i].moet_code));
+        assert.ok(!Object.hasOwn(item,'evidence_domains'));
+    }
+    for(const domains of [['E','E'],['X','S'],['E'],['R','I','A','S']]){
+        const bad=createExplanationService({config,fetchImpl:fakeProvider([],out=>{out.explanations[0].evidence_domains=domains;return out;})});
+        await assert.rejects(bad.explain(owner,{context_token:bad.mintContext(owner,ml),consent:true}),e=>e.code==='PROVIDER_INVALID_RESPONSE');
+    }
+});
+
+test('explanation: three relevant dimensions are allowed, arbitrary suitability bands are rejected',async()=>{
+    const good=createExplanationService({config,fetchImpl:fakeProvider([],out=>{out.explanations[0].evidence_domains=['A','C','S'];return out;})});
+    const result=await good.explain(owner,{context_token:good.mintContext(owner,ml),consent:true});
+    for(const d of ['A','C','S'])assert.ok(result.explanations[0].reason.includes(ml.domain_means[d].toFixed(2)+'/5'));
+    const bad=createExplanationService({config,fetchImpl:fakeProvider([],out=>{out.explanations[0].reason='Pearson cho thấy mức độ phù hợp trung bình với ngành này.';return out;})});
+    await assert.rejects(bad.explain(owner,{context_token:bad.mintContext(owner,ml),consent:true}),e=>e.code==='PROVIDER_UNSAFE_RESPONSE');
+});
+
+test('explanation: an interest survey cannot be used to assert management ability',async()=>{
+    const s=createExplanationService({config,fetchImpl:fakeProvider([],out=>{out.explanations[0].reason='Hồ sơ phù hợp với năng lực quản lý, phân tích và lãnh đạo.';return out;})});
+    await assert.rejects(s.explain(owner,{context_token:s.mintContext(owner,ml),consent:true}),e=>e.code==='PROVIDER_UNSAFE_RESPONSE');
+});
 test('explanation: reversed provider ranking is rejected rather than silently reordered',async()=>{
     const s=createExplanationService({config,fetchImpl:fakeProvider([],out=>({...out,explanations:out.explanations.reverse()}))});
-    await assert.rejects(s.explain({context_token:s.mintContext(ml),consent:true}),e=>e.code==='PROVIDER_RANKING_MISMATCH');
+    await assert.rejects(s.explain(owner,{context_token:s.mintContext(owner,ml),consent:true}),e=>e.code==='PROVIDER_RANKING_MISMATCH');
 });
 test('explanation: additional fourth major and ranking fields rejected',async()=>{
     for(const change of [out=>({...out,explanations:[...out.explanations,{major_id:'FOURTH_MAJOR',rank:4,reason:'invalid',explore:'invalid'}]}),out=>({...out,ranking:[]})]){
         const s=createExplanationService({config,fetchImpl:fakeProvider([],change)});
-        await assert.rejects(s.explain({context_token:s.mintContext(ml),consent:true}),e=>e.code==='PROVIDER_INVALID_RESPONSE');
+        await assert.rejects(s.explain(owner,{context_token:s.mintContext(owner,ml),consent:true}),e=>e.code==='PROVIDER_INVALID_RESPONSE');
     }
 });
 test('explanation: unsafe HTML, percentage claims and invented abilities rejected',async()=>{
     for(const text of ['<script>alert(1)</script>','Mức phù hợp 90% với ngành này.','Bạn có năng lực đặc biệt và chắc chắn phù hợp.']){
         const s=createExplanationService({config,fetchImpl:fakeProvider([],out=>{out.explanations[0].reason=text;return out;})});
-        await assert.rejects(s.explain({context_token:s.mintContext(ml),consent:true}),e=>e.code==='PROVIDER_UNSAFE_RESPONSE');
+        await assert.rejects(s.explain(owner,{context_token:s.mintContext(owner,ml),consent:true}),e=>e.code==='PROVIDER_UNSAFE_RESPONSE');
     }
 });
 test('explanation: unknown provider is not configured and does not create an arbitrary external endpoint',async()=>{
     const s=createExplanationService({config:()=>({provider:'arbitrary',apiKey:'test',model:'test'}),fetchImpl:()=>{throw Error('No fetch');}});
-    await assert.rejects(s.explain({context_token:s.mintContext(ml),consent:true}),e=>e.code==='AI_NOT_CONFIGURED');
+    await assert.rejects(s.explain(owner,{context_token:s.mintContext(owner,ml),consent:true}),e=>e.code==='AI_NOT_CONFIGURED');
 });
 test('explanation: an upstream response cannot expose the API key even as escaped JSON text',async()=>{
     const s=createExplanationService({config,fetchImpl:fakeProvider([],out=>{out.limitations='Do not expose gsk_synthetic-test-key in any response.';return out;})});
-    await assert.rejects(s.explain({context_token:s.mintContext(ml),consent:true}),e=>e.code==='PROVIDER_UNSAFE_RESPONSE'&&!e.message.includes(config().apiKey));
+    await assert.rejects(s.explain(owner,{context_token:s.mintContext(owner,ml),consent:true}),e=>e.code==='PROVIDER_UNSAFE_RESPONSE'&&!e.message.includes(config().apiKey));
 });
 test('explanation: provider errors/quota are safe and never expose upstream contents',async()=>{
     for(const status of [400,401,403,404,429,500]){
         const s=createExplanationService({config,fetchImpl:async()=>new Response('PRIVATE_PROVIDER_CONTENT',{status})});
-        await assert.rejects(s.explain({context_token:s.mintContext(ml),consent:true}),e=>!e.message.includes('PRIVATE')&&e.code.startsWith('PROVIDER_'));
+        await assert.rejects(s.explain(owner,{context_token:s.mintContext(owner,ml),consent:true}),e=>!e.message.includes('PRIVATE')&&e.code.startsWith('PROVIDER_'));
     }
 });
 test('Groq: Retry-After seconds/date/default suppress requests without automatic retries',async()=>{
@@ -171,32 +202,34 @@ test('Groq: Retry-After seconds/date/default suppress requests without automatic
             calls++;
             if(calls===1)return new Response('PRIVATE_QUOTA_DETAIL',{status:429,headers:header===null?{}:{'Retry-After':header}});
             return responseFor(outputFor(JSON.parse(JSON.parse(options.body).messages[1].content)));
-        }}),body={context_token:s.mintContext(ml),consent:true};
-        await assert.rejects(s.explain(body),e=>e.code==='PROVIDER_QUOTA_OR_RATE_LIMIT'&&e.status===429&&e.retryAfterSeconds===delay/1000);
+        }}),body={context_token:s.mintContext(owner,ml),consent:true};
+        await assert.rejects(s.explain(owner,body),e=>e.code==='PROVIDER_QUOTA_OR_RATE_LIMIT'&&e.status===429&&e.retryAfterSeconds===delay/1000);
         time+=delay-1;
-        await assert.rejects(s.explain(body),e=>e.code==='PROVIDER_QUOTA_OR_RATE_LIMIT');
+        await assert.rejects(s.explain(owner,body),e=>e.code==='PROVIDER_QUOTA_OR_RATE_LIMIT');
         assert.equal(calls,1,'No early call, retry loop, key rotation or provider fallback');
-        time+=2;assert.equal((await s.explain(body)).status,'SUCCESS');assert.equal(calls,2);
+        time+=2;assert.equal((await s.explain(owner,body)).status,'SUCCESS');assert.equal(calls,2);
     }
 });
-test('Groq: environment uses GROQ key and requested/default model; never falls back to XAI',async()=>{
+test('Groq: environment requires GROQ key and explicit model; never falls back to XAI or a retired default',async()=>{
     const names=['AI_EXPLANATION_PROVIDER','GROQ_API_KEY','GROQ_MODEL','XAI_API_KEY'],old=Object.fromEntries(names.map(n=>[n,process.env[n]]));
     try{
         process.env.AI_EXPLANATION_PROVIDER='groq';process.env.XAI_API_KEY='xai_synthetic-not-used';
         delete process.env.GROQ_API_KEY;delete process.env.GROQ_MODEL;
         const missing=createExplanationService({fetchImpl:()=>{throw Error('Must not fetch using XAI');}});
-        await assert.rejects(missing.explain({context_token:missing.mintContext(ml),consent:true}),e=>e.code==='AI_NOT_CONFIGURED');
+        await assert.rejects(missing.explain(owner,{context_token:missing.mintContext(owner,ml),consent:true}),e=>e.code==='AI_NOT_CONFIGURED');
         process.env.GROQ_API_KEY='gsk_synthetic-env-key';
-        for(const model of [undefined,'org/configured-model']){
+        const noModel=createExplanationService({fetchImpl:()=>{throw Error('No implicit model');}});
+        await assert.rejects(noModel.explain(owner,{context_token:noModel.mintContext(owner,ml),consent:true}),e=>e.code==='AI_NOT_CONFIGURED');
+        for(const model of ['org/configured-model']){
             if(model===undefined)delete process.env.GROQ_MODEL;else process.env.GROQ_MODEL=model;
             const calls=[],s=createExplanationService({fetchImpl:fakeProvider(calls)});
-            assert.equal((await s.explain({context_token:s.mintContext(ml),consent:true})).provider,'groq');
-            assert.equal(calls[0].body.model,model||'llama-3.3-70b-versatile');
+            assert.equal((await s.explain(owner,{context_token:s.mintContext(owner,ml),consent:true})).provider,'groq');
+            assert.equal(calls[0].body.model,model);
             assert.equal(calls[0].options.headers.Authorization,'Bearer gsk_synthetic-env-key');
         }
         process.env.AI_EXPLANATION_PROVIDER='xai';
         const unsupported=createExplanationService({fetchImpl:()=>{throw Error('Must not switch providers');}});
-        await assert.rejects(unsupported.explain({context_token:unsupported.mintContext(ml),consent:true}),e=>e.code==='AI_NOT_CONFIGURED');
+        await assert.rejects(unsupported.explain(owner,{context_token:unsupported.mintContext(owner,ml),consent:true}),e=>e.code==='AI_NOT_CONFIGURED');
     }finally{for(const name of names)if(old[name]===undefined)delete process.env[name];else process.env[name]=old[name];}
 });
 test('Groq: rejects truncated, multi-choice, tool/refusal, Responses API and malformed content',async()=>{
@@ -213,37 +246,71 @@ test('Groq: rejects truncated, multi-choice, tool/refusal, Responses API and mal
     ];
     for(const data of cases){
         const s=createExplanationService({config,fetchImpl:async()=>new Response(JSON.stringify(data))});
-        await assert.rejects(s.explain({context_token:s.mintContext(ml),consent:true}),e=>e.code.startsWith('PROVIDER_'));
+        await assert.rejects(s.explain(owner,{context_token:s.mintContext(owner,ml),consent:true}),e=>e.code.startsWith('PROVIDER_'));
     }
 });
 test('explanation: provider timeout is bounded',async()=>{
     const s=createExplanationService({config,timeoutMs:20,fetchImpl:(_,options)=>new Promise((resolve,reject)=>options.signal.addEventListener('abort',()=>reject(Error('aborted'))))});
-    await assert.rejects(s.explain({context_token:s.mintContext(ml),consent:true}),e=>e.code==='PROVIDER_TIMEOUT');
+    await assert.rejects(s.explain(owner,{context_token:s.mintContext(owner,ml),consent:true}),e=>e.code==='PROVIDER_TIMEOUT');
 });
 test('explanation: rate limit enforced before provider request',async()=>{
-    const calls=[],s=createExplanationService({config,maxCallsPerMinute:1,fetchImpl:fakeProvider(calls)}),body={context_token:s.mintContext(ml),consent:true};
-    await s.explain(body);
-    await assert.rejects(s.explain(body),e=>e.status===429);assert.equal(calls.length,1);
+    const calls=[],s=createExplanationService({config,maxCallsPerMinute:1,fetchImpl:fakeProvider(calls)}),body={context_token:s.mintContext(owner,ml),consent:true};
+    await s.explain(owner,body);
+    await assert.rejects(s.explain(owner,{...body,context_token:s.mintContext(owner,ml)}),e=>e.status===429);assert.equal(calls.length,1);
+});
+
+test('explanation: context is bound to both the account and session and binding never leaves the server',async()=>{
+    const calls=[],s=createExplanationService({config,fetchImpl:fakeProvider(calls)}),token=s.mintContext(owner,ml);
+    for(const other of [{...owner,userId:'synthetic-B'},{...owner,sessionId:'different-session'}])
+        await assert.rejects(s.explain(other,{context_token:token,consent:true}),e=>e.code==='INVALID_CONTEXT');
+    await assert.rejects(s.explain(null,{context_token:token,consent:true}),e=>e.code==='EXPLANATION_AUTH_REQUIRED');
+    assert.equal(calls.length,0);
+    await s.explain(owner,{context_token:token,consent:true});
+    for(const value of Object.values(owner))assert.ok(!JSON.stringify(calls[0].body).includes(value));
+});
+
+test('explanation: successful duplicate calls reuse RAM result without another provider charge or mutation',async()=>{
+    const calls=[],s=createExplanationService({config,fetchImpl:fakeProvider(calls)}),body={context_token:s.mintContext(owner,ml),consent:true};
+    const first=await s.explain(owner,body);first.explanations[0].rank=999;
+    const next=await s.explain(owner,body);assert.equal(calls.length,1);assert.equal(next.explanations[0].rank,ml.top3[0].rank);
+});
+
+test('explanation: at most three failed attempts per context and no automatic retries',async()=>{
+    let calls=0;const s=createExplanationService({config,fetchImpl:async()=>{calls++;return new Response('',{status:500});}}),body={context_token:s.mintContext(owner,ml),consent:true};
+    for(let i=0;i<3;i++)await assert.rejects(s.explain(owner,body),e=>e.code==='PROVIDER_UNAVAILABLE');
+    await assert.rejects(s.explain(owner,body),e=>e.code==='CONTEXT_CALL_LIMIT');assert.equal(calls,3);
 });
 test('explanation: concurrent provider requests are bounded',async()=>{
     let release,entered;
     const ready=new Promise(resolve=>{entered=resolve;});
     const s=createExplanationService({config,fetchImpl:async(url,options)=>{const context=JSON.parse(JSON.parse(options.body).messages[1].content);entered();return new Promise(resolve=>{release=()=>resolve(responseFor(outputFor(context)));});}});
-    const body={context_token:s.mintContext(ml),consent:true},first=s.explain(body);
+    const body={context_token:s.mintContext(owner,ml),consent:true},first=s.explain(owner,body);
     await ready;
-    try { await assert.rejects(s.explain(body),e=>e.code==='EXPLANATION_RATE_LIMIT'); }
+    try { await assert.rejects(s.explain(owner,body),e=>e.code==='EXPLANATION_RATE_LIMIT'); }
     finally { release(); }
     assert.equal((await first).status,'SUCCESS');
 });
 test('explanation: incomplete, oversized and invalid provider payloads rejected',async()=>{
     for(const response of [()=>new Response(JSON.stringify({status:'incomplete',output:[]})),()=>new Response('x'.repeat(33000)),()=>new Response('{broken}')]){
         const s=createExplanationService({config,fetchImpl:async()=>response()});
-        await assert.rejects(s.explain({context_token:s.mintContext(ml),consent:true}),e=>e.code.startsWith('PROVIDER_'));
+        await assert.rejects(s.explain(owner,{context_token:s.mintContext(owner,ml),consent:true}),e=>e.code.startsWith('PROVIDER_'));
     }
 });
 
 let server,origin;
-before(async()=>{const app=require('../server');server=await new Promise(resolve=>{const s=app.listen(0,'127.0.0.1',()=>resolve(s));});origin=`http://127.0.0.1:${server.address().port}`;});
+before(async()=>{
+    const express=require('express'),session=require('express-session'),app=express();
+    const controller=require('../src/controllers/riasec27Controller');
+    const gate=require('../src/middleware/riasec27PreviewGate').riasec27PreviewGate;
+    app.use(express.json({limit:'10kb'}));
+    app.use(session({secret:'synthetic-groq-session-test-secret',resave:false,saveUninitialized:false}));
+    app.get('/test/login',(req,res)=>{req.session.user={id:'synthetic-A'};owner={userId:req.session.user.id,sessionId:req.sessionID};res.json({ok:true});});
+    app.post('/api/riasec27/evaluate',gate,controller.evaluateAnswers);
+    app.post('/api/riasec27/explain',gate,controller.explainResult);
+    app.use((error,req,res,next)=>res.status(error.type==='entity.too.large'?413:400).json({error:'INVALID_INPUT'}));
+    server=await new Promise(resolve=>{const s=app.listen(0,'127.0.0.1',()=>resolve(s));});origin=`http://127.0.0.1:${server.address().port}`;
+    const response=await fetch(origin+'/test/login');sessionCookie=response.headers.get('set-cookie').split(';')[0];
+});
 after(async()=>{server.closeAllConnections();await new Promise(resolve=>server.close(resolve));});
 test('explanation HTTP: same preview gate blocks disabled/production/foreign Host without provider calls',async()=>{
     const old={env:process.env.NODE_ENV,flag:process.env.LABANAI_RIASEC27_PREVIEW};
@@ -264,7 +331,7 @@ test('explanation HTTP: binds a real P2 result, requires consent, preserves Top-
     t.mock.method(service,'mintContext',s.mintContext);t.mock.method(service,'explain',s.explain);
     const spy=t.mock.method(mlService,'evaluateProfile',mlService.evaluateProfile);
     const post=(route,body)=>fetch(origin+route,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});
-    const evaluated=await(await post('/api/riasec27/evaluate',{answers})).json();
+    const evaluated=await(await post('/api/riasec27/evaluate',{answers,history:{requestId:require('node:crypto').randomUUID(),includeAnswers:false}})).json();
     assert.equal(evaluated.ml_ranking.status,'SUCCESS');assert.equal(typeof evaluated.explanation_context_token,'string');
     const before=JSON.stringify(evaluated.ml_ranking.top3);
     assert.equal((await post('/api/riasec27/explain',{context_token:evaluated.explanation_context_token,consent:false})).status,400);
@@ -288,10 +355,11 @@ test('Groq HTTP: quota yields safe 429 and Retry-After cooldown prevents another
     let calls=0;
     const s=createExplanationService({config,fetchImpl:async()=>{calls++;return new Response('PRIVATE_QUOTA_DETAIL',{status:429,headers:{'Retry-After':'5'}});}});
     t.mock.method(service,'explain',s.explain);
-    const body={context_token:s.mintContext(ml),consent:true};
+    const body={context_token:s.mintContext(owner,ml),consent:true};
     for(let i=0;i<2;i++){
         const response=await fetch(origin+'/api/riasec27/explain',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});
         assert.equal(response.status,429);
+        assert.equal(response.headers.get('retry-after'),'5');
         const data=await response.json();assert.equal(data.error,'PROVIDER_QUOTA_OR_RATE_LIMIT');
         assert.ok(!JSON.stringify(data).includes('PRIVATE_QUOTA_DETAIL'));
     }

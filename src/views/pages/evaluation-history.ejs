@@ -36,11 +36,13 @@
         </section>
         <p id="history-status" class="history-status" role="status" aria-live="polite"></p>
 
-        <% if (history.length === 0) { %>
+        <% if (locals.historyError) { %>
+            <section class="ui-card ui-empty history-empty" role="alert"><h2>Chưa tải được lịch sử</h2><p>Vui lòng thử lại sau. Hệ thống chưa thể xác nhận các kết quả đã lưu của bạn.</p></section>
+        <% } else if (history.length === 0) { %>
             <section class="ui-card ui-empty history-empty" role="status">
                 <div class="ui-icon"><i data-lucide="clock-3" aria-hidden="true"></i></div>
                 <h2>Chưa có lịch sử đánh giá</h2>
-                <p>Kết quả khảo sát RIASEC hiện chỉ dùng trong phiên và không được lưu. Các kết quả đã lưu sẽ hiển thị tại đây.</p>
+                <p>Hoàn thành khảo sát và chọn đồng ý lưu kết quả để xem lại các lần đánh giá tại đây.</p>
                 <a href="/evaluation" class="ui-button btn-gradient">Bắt đầu đánh giá <i data-lucide="arrow-right" aria-hidden="true"></i></a>
             </section>
         <% } else { %>
@@ -50,6 +52,7 @@
                     const parsedDate = item.detail?.thoiGian ? new Date(item.detail.thoiGian) : null;
                     const historyDate = parsedDate && Number.isFinite(parsedDate.getTime()) ? parsedDate : null;
                     const searchText = majors.join(' ');
+                    const snapshot = item.instrument === 'RIASEC27' ? item.riasec27 : null;
                 %>
                     <article class="ui-card ui-history-card" data-history-card
                         data-history-date="<%= historyDate ? historyDate.getTime() : 0 %>"
@@ -72,7 +75,9 @@
                                 <% majors.forEach((major, index) => { %>
                                     <li>
                                         <span><%= major %></span>
-                                        <% if (Array.isArray(item.tiLe) && Number.isFinite(Number(item.tiLe[index]))) { %>
+                                        <% if (snapshot) { %>
+                                            <strong>Pearson r: <%= Number.isFinite(snapshot.ml?.top3?.[index]?.pearson_r) ? snapshot.ml.top3[index].pearson_r.toFixed(2) : 'Chưa có dữ liệu' %></strong>
+                                        <% } else if (Array.isArray(item.tiLe) && Number.isFinite(Number(item.tiLe[index]))) { %>
                                             <strong><%= Number(item.tiLe[index]).toLocaleString('vi-VN') %>%</strong>
                                         <% } %>
                                     </li>
@@ -80,6 +85,24 @@
                             </ol>
                         <% } else { %>
                             <p>Không có thông tin ngành học trong lượt đánh giá này.</p>
+                        <% } %>
+                        <% if (snapshot) { %>
+                            <details class="ui-note">
+                                <summary>Xem chi tiết kết quả</summary>
+                                <p data-history-probs>Xác suất Q5 (0–1): <%= ['R','I','A','S','E','C'].map(d => d + ': ' + (Number.isFinite(snapshot.ml?.ml_probabilities?.[d]) ? snapshot.ml.ml_probabilities[d].toFixed(4) : 'Chưa có dữ liệu')).join(' · ') %></p>
+                                <p data-history-standardized>OOF Z-score: <%= ['R','I','A','S','E','C'].map(d => d + ': ' + (Number.isFinite(snapshot.ml?.standardized_vector?.[d]) ? snapshot.ml.standardized_vector[d].toFixed(4) : 'Chưa có dữ liệu')).join(' · ') %></p>
+                                <ol>
+                                    <% (snapshot.ml?.top3 || []).forEach(major => { %>
+                                        <li>Top <%= major.rank %> — <%= major.major_name_vi %> · Mã ngành: <%= major.moet_code || major.major_code || 'Chưa có dữ liệu' %><br>
+                                            Nghề đại diện: <%= major.occupation_title_en %> · O*NET-SOC: <%= major.soc_code %> · Pearson r: <%= Number.isFinite(major.pearson_r) ? major.pearson_r.toFixed(2) : 'Chưa có dữ liệu' %>
+                                        </li>
+                                    <% }) %>
+                                </ol>
+                                <% if (Array.isArray(snapshot.answers)) { %>
+                                    <p>Đáp án đã đồng ý lưu: <%= snapshot.answers.map((v,i) => (snapshot.questionOrder?.[i] || ('Câu ' + (i+1))) + ': ' + v).join(' · ') %></p>
+                                <% } %>
+                                <p>Kết quả được giữ nguyên tại thời điểm khảo sát, không dự đoán lại khi xem lịch sử. Pearson r không phải phần trăm phù hợp ngành.</p>
+                            </details>
                         <% } %>
                     </article>
                 <% }) %>

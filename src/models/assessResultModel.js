@@ -13,6 +13,10 @@ const ketQuaDanhGiaSchema = new mongoose.Schema({
         ref: 'User',
         trim: true
     },
+    instrument: { type: String, enum: ['RIASEC27'], default: undefined },
+    thoiGian: { type: Date, default: undefined },
+    inputDigest: { type: String, default: undefined, select: false },
+    riasec27: { type: mongoose.Schema.Types.Mixed, default: undefined },
     nganhHoc: {
         type: [{
             type: String,

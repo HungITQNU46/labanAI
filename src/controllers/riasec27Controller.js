@@ -9,6 +9,7 @@
 
 const riasec27Service = require('../services/riasec27Service');
 const explanationService = require('../services/grokExplanation');
+const historyService = require('../services/riasec27HistoryService');
 
 const jsonForHtml = (value) => JSON.stringify(value).replace(/[<>&]/g, (character) => ({
     '<': '\\u003c', '>': '\\u003e', '&': '\\u0026'
@@ -43,14 +44,22 @@ const evaluateAnswers = async (req, res) => {
             });
         }
         const answers = req.body.answers;
+        const historyOptions = historyService.parseOptions(req.body, req.session?.user);
         const result = await riasec27Service.evaluateProfile(answers);
+        const saved = await historyService.save(req.session?.user, historyOptions, answers, result.ml_ranking);
+        // A replay returns the immutable saved snapshot, even after a model update.
+        if (saved.snapshot) result.ml_ranking = saved.snapshot;
+        result.history = {status:saved.status, ...(saved.id ? {id:saved.id} : {}), ...(saved.code ? {code:saved.code} : {})};
         // Additive metadata only; P2 output and the Python bridge contract remain intact.
         if (result.ml_ranking?.status === 'SUCCESS') {
-            try { result.explanation_context_token = explanationService.mintContext(result.ml_ranking); }
+            try { result.explanation_context_token = explanationService.mintContext({userId:req.session?.user?.id,sessionId:req.sessionID}, result.ml_ranking); }
             catch { result.explanation_context_token = null; } // AI must never break an ML result.
         }
         res.json(result);
     } catch (err) {
+        if (err instanceof historyService.HistoryInputError) {
+            return res.status(err.message === 'HISTORY_AUTH_REQUIRED' ? 401 : 400).json({error:err.message,message:'Không thể lưu lịch sử với yêu cầu này. Vui lòng kiểm tra đăng nhập và lựa chọn lưu.'});
+        }
         if (err instanceof riasec27Service.Riasec27InputError) {
             return res.status(400).json({
                 error: 'INVALID_RIASEC27_INPUT',
@@ -117,9 +126,10 @@ const exploreTier2 = async (req, res) => {
 const explainResult = async (req, res) => {
     res.set('Cache-Control', 'no-store');
     try {
-        res.json(await explanationService.explain(req.body));
+        res.json(await explanationService.explain({userId:req.session?.user?.id,sessionId:req.sessionID}, req.body));
     } catch (error) {
         const known = error instanceof explanationService.ExplanationError;
+        if (known && Number.isSafeInteger(error.retryAfterSeconds)) res.set('Retry-After', String(error.retryAfterSeconds));
         res.status(known ? error.status : 503).json({
             status: 'ERROR', error: known ? error.code : 'EXPLANATION_UNAVAILABLE',
             message: explanationService.UNAVAILABLE, research_status: 'RESEARCH_ONLY — TOP3_NOT_VALIDATED'

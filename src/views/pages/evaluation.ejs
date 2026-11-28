@@ -3,7 +3,7 @@
         .status-badge-ready { background-color: #ECFDF5; color: #065F46; border: 1px solid #A7F3D0; }
         .status-badge-conditional { background-color: #FFFBEB; color: #92400E; border: 1px solid #FDE68A; }
         .status-badge-unresolved { background-color: #FEF2F2; color: #991B1B; border: 1px solid #FECACA; }
-    </style><link rel="stylesheet" href="/css/evaluation.css">`
+    </style><link rel="stylesheet" href="/css/evaluation.css"><link rel="stylesheet" href="/css/riasec27-validation.css">`
 }) %>
 
 <% if (typeof isAllowedPreview !== 'undefined' && isAllowedPreview) { %>
@@ -85,7 +85,14 @@
                 <div>
                     <span class="evaluation-eyebrow">BÀI TRẮC NGHIỆM</span>
                     <h2>Khảo sát Holland RIASEC</h2>
-                    <p>Chọn mức độ đồng ý phù hợp nhất với bạn cho từng nhận định. Thang điểm: 1 = Hoàn toàn không đồng ý · 3 = Trung lập · 5 = Hoàn toàn đồng ý.</p>
+                    <p>Chọn mức độ đồng ý phù hợp nhất với bạn cho từng nhận định.</p>
+                    <ul aria-label="Hướng dẫn thang điểm Likert" class="flex flex-wrap gap-x-4 gap-y-1 mt-3 text-sm text-muted leading-relaxed">
+                        <li><strong>1</strong> = Hoàn toàn không đồng ý</li>
+                        <li><strong>2</strong> = Không đồng ý</li>
+                        <li><strong>3</strong> = Trung lập</li>
+                        <li><strong>4</strong> = Đồng ý</li>
+                        <li><strong>5</strong> = Hoàn toàn đồng ý</li>
+                    </ul>
                 </div>
                 <div class="evaluation-counter" id="riasec27-counter" role="status" aria-live="polite">
                     <span id="answered-count">0</span><span> / 27 câu</span>
@@ -96,6 +103,7 @@
             </div>
 
             <form id="riasec27-form" novalidate>
+                <%- include('../partials/riasec27HistoryConsent') %>
                 <div id="questions-list" class="evaluation-questions">
                     <!-- Danh sách 27 câu sẽ được render động từ JSON codebook -->
                 </div>
@@ -254,7 +262,7 @@
                 <button type="button" id="btn-next-to-survey" class="evaluation-button evaluation-button-primary">
                     Tiếp theo <i data-lucide="arrow-right" aria-hidden="true"></i>
                 </button>
-                <button type="submit" id="btn-submit-riasec" form="riasec27-form" disabled class="evaluation-button evaluation-button-primary hidden">
+                <button type="submit" id="btn-submit-riasec" form="riasec27-form" class="evaluation-button evaluation-button-primary hidden">
                     Xem kết quả <i data-lucide="arrow-right" aria-hidden="true"></i>
                 </button>
                 <button type="button" id="btn-return-from-admission" class="evaluation-button evaluation-button-return hidden">

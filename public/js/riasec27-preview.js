@@ -75,6 +75,12 @@
     let explanationRequest = null;
     let revision = 0;
     let evaluationPending = false;
+    let historyRequestId = null;
+    const historyStatus = document.createElement('p');
+    historyStatus.id = 'history-save-status'; historyStatus.className = 'ui-note';
+    historyStatus.setAttribute('role','status'); historyStatus.setAttribute('aria-live','polite');
+    resultsContent?.after(historyStatus);
+    let showMissingAnswers = false;
     let currentStep = 1;
     let admissionViewOpen = false;
     const savedAdmissionChoices = new Set();
@@ -303,6 +309,8 @@
         questions.forEach((q, idx) => {
             const card = document.createElement('div');
             card.className = 'eval-question-card';
+            card.id = `riasec-question-${q.question_id}`;
+            card.tabIndex = -1;
 
             const header = document.createElement('div');
             header.className = 'eval-question-meta';
@@ -336,10 +344,11 @@
                 radio.setAttribute('aria-label', `${s.value}: ${s.label_vi}`);
 
                 radio.addEventListener('change', () => {
+                    historyRequestId = null;
+                    historyStatus.textContent = '';
                     revision++;
                     clearExplanation();
                     if (resultsPanel) resultsPanel.classList.add('hidden');
-                    answers.set(q.question_id, s.value);
                     optionsGroup.querySelectorAll('.eval-option').forEach((option) => option.classList.remove('is-selected'));
                     label.classList.add('is-selected');
                     updateEvaluationStep(2);
@@ -362,16 +371,64 @@
     }
 
     function updateAnswerProgress() {
+        // Read actual checked inputs, never defaults or truthy placeholder values.
+        answers.clear();
+        questions.forEach(q => {
+            const checked = document.getElementById(`riasec-question-${q.question_id}`)?.querySelector('input[type="radio"]:checked');
+            if (checked && /^[1-5]$/.test(checked.value)) answers.set(q.question_id, Number(checked.value));
+        });
         const count = answers.size;
         if (answeredCountEl) answeredCountEl.textContent = count;
         if (progressBar) progressBar.style.width = `${(count / TOTAL_QUESTIONS) * 100}%`;
         if (progressTrack) progressTrack.setAttribute('aria-valuenow', String(count));
         if (submitBtn) {
-            submitBtn.disabled = count !== TOTAL_QUESTIONS || evaluationPending;
+            submitBtn.disabled = evaluationPending;
         }
+        updateMissingAnswers();
+    }
+
+    function updateMissingAnswers() {
+        const missing = questions.map((q, index) => answers.has(q.question_id) ? null : index).filter(index => index !== null);
+        let alert = document.getElementById('riasec27-incomplete-alert');
+        if (!alert && form) {
+            alert = document.createElement('div');
+            alert.id = 'riasec27-incomplete-alert';
+            alert.className = 'riasec-validation-alert';
+            alert.hidden = true;
+            alert.setAttribute('role', 'status');
+            alert.setAttribute('aria-live', 'polite');
+            const message = document.createElement('p');
+            message.textContent = 'Bạn chưa hoàn thành khảo sát. Vui lòng trả lời đầy đủ 27 câu hỏi trước khi xem kết quả.';
+            const count = document.createElement('p'); count.id = 'riasec27-validation-count';
+            const list = document.createElement('p'); list.id = 'riasec27-missing-list';
+            const jump = document.createElement('button'); jump.type = 'button'; jump.id = 'riasec27-jump-missing';
+            jump.textContent = 'Đi đến câu chưa trả lời';
+            jump.addEventListener('click', () => {
+                const first = questions.find(q => !answers.has(q.question_id));
+                const card = first && document.getElementById(`riasec-question-${first.question_id}`);
+                if (card) { card.scrollIntoView({behavior: 'smooth', block: 'center'}); card.focus({preventScroll: true}); }
+            });
+            alert.append(message, count, list, jump);
+            questionsContainer.after(alert);
+        }
+        questions.forEach((q, index) => {
+            const card = document.getElementById(`riasec-question-${q.question_id}`);
+            const invalid = showMissingAnswers && missing.includes(index);
+            card?.classList.toggle('riasec-question-missing', invalid);
+            const group = card?.querySelector('[role="radiogroup"]');
+            if (invalid) group?.setAttribute('aria-invalid', 'true');
+            else group?.removeAttribute('aria-invalid');
+        });
+        if (!alert) return;
+        alert.hidden = !showMissingAnswers || missing.length === 0;
+        document.getElementById('riasec27-validation-count').textContent = `Đã trả lời ${answers.size}/27 câu · Còn thiếu ${missing.length} câu`;
+        document.getElementById('riasec27-missing-list').textContent = missing.map(index => `Câu ${index + 1}`).join(', ');
     }
 
     function resetSurvey() {
+        historyRequestId = null;
+        historyStatus.textContent = '';
+        showMissingAnswers = false;
         revision++;
         clearExplanation();
         answers.clear();
@@ -390,7 +447,15 @@
     // --- SECTION 2: SUBMIT & RENDER TOP-3 ---
     async function submitSurvey(e) {
         e.preventDefault();
-        if (answers.size !== TOTAL_QUESTIONS || evaluationPending) return;
+        if (evaluationPending) return;
+        updateAnswerProgress();
+        if (answers.size !== TOTAL_QUESTIONS) {
+            showMissingAnswers = true;
+            updateEvaluationStep(2);
+            updateMissingAnswers();
+            document.getElementById('riasec27-incomplete-alert')?.scrollIntoView({behavior: 'smooth', block: 'center'});
+            return;
+        }
 
         evaluationPending = true;
         const submittedRevision = revision;
@@ -398,6 +463,9 @@
 
         submitBtn.disabled = true;
         submitBtn.textContent = 'Đang tạo gợi ý...';
+        // The results panel is hidden during submission; keep save progress visible.
+        form?.append(historyStatus);
+        historyStatus.textContent = 'Đang tạo kết quả và chờ xác nhận tự động lưu lịch sử. Vui lòng chưa rời trang.';
 
         const payloadAnswers = {};
         for (const [k, v] of answers.entries()) {
@@ -405,15 +473,33 @@
         }
 
         try {
+            historyRequestId ||= crypto.randomUUID();
+            const requestBody = {answers:payloadAnswers,history:{requestId:historyRequestId}};
             const resp = await fetch('/api/riasec27/evaluate', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ answers: payloadAnswers })
+                body: JSON.stringify(requestBody)
             });
 
             const data = await resp.json();
-            if (submittedRevision === revision) renderResults(data);
+            if (submittedRevision === revision) {
+                resultsContent?.after(historyStatus);
+                renderResults(data);
+                const messages = {SAVED:'Đã tự động lưu kết quả vào lịch sử tài khoản.',FAILED:'Kết quả đã được tạo nhưng lịch sử chưa lưu thành công. Bạn có thể gửi lại để thử lưu, không tạo bản ghi trùng.',CONFLICT:'Mã lượt khảo sát đã được sử dụng với dữ liệu khác; lịch sử chưa được lưu cho kết quả này.',NOT_SAVED:'Không có kết quả hợp lệ để lưu lịch sử.'};
+                historyStatus.textContent = messages[data.history?.status] || (requestBody.history ? 'Lịch sử chưa được lưu. Vui lòng kiểm tra đăng nhập và thử lại.' : '');
+                const safeCodes = ['HISTORY_DB_UNAVAILABLE','HISTORY_DB_ACCESS_DENIED','HISTORY_VALIDATION_FAILED','HISTORY_WRITE_UNCONFIRMED','HISTORY_WRITE_FAILED'];
+                if (data.history?.status === 'FAILED' && safeCodes.includes(data.history.code)) {
+                    historyStatus.textContent += ` Mã lỗi: ${data.history.code}.`;
+                }
+                if (!resp.ok && requestBody.history) {
+                    historyStatus.textContent = data.error === 'HISTORY_AUTH_REQUIRED'
+                        ? 'Lịch sử chưa được lưu. Phiên đăng nhập không hợp lệ; vui lòng đăng nhập lại.'
+                        : 'Yêu cầu chưa thành công; lịch sử chưa được xác nhận lưu. Vui lòng thử lại.';
+                }
+            }
         } catch (err) {
+            resultsContent?.after(historyStatus);
+            historyStatus.textContent = 'Chưa xác nhận lưu lịch sử. Bạn có thể thử lại với cùng lượt khảo sát.';
             if (submittedRevision === revision) renderError('Không thể kết nối đến máy chủ phân tích hoặc tiến trình xử lý gặp sự cố.', 'NETWORK_ERROR');
         } finally {
             evaluationPending = false;
@@ -452,6 +538,7 @@
                                 <div data-result-field="soc_code" class="font-semibold text-slate-800">O*NET: ${escapeHtml(item.soc_code || 'N/A')}</div>
                                 <div data-result-field="occupation_title" class="mt-1 text-[11px] text-slate-500">${escapeHtml(item.occupation_title_en || '')}</div>
                             </div>
+                            <p data-result-field="pearson_r" class="text-xs text-slate-600">Pearson r: ${typeof item.pearson_r === 'number' && Number.isFinite(item.pearson_r) && Math.abs(item.pearson_r) <= 1 ? item.pearson_r.toFixed(2) : 'Chưa có dữ liệu'}</p>
                         </div>
                     </div>
                 `;
@@ -540,8 +627,6 @@
                 const explore = document.createElement('p'); explore.className = 'mt-2 text-xs leading-relaxed'; explore.textContent = displayText(item.explore);
                 box.append(heading, reason, explore); aiContent.appendChild(box);
             });
-            const limits = document.createElement('p'); limits.className = 'text-xs text-slate-600'; limits.textContent = displayText(data.limitations);
-            aiContent.appendChild(limits);
             aiStatus.textContent = 'Lời giải thích do AI tạo; thứ hạng ngành được giữ nguyên.';
         } catch {
             if (requestRevision === revision && explanationRequest === request) aiStatus.textContent = 'Chưa thể tạo lời giải thích bằng AI lúc này';

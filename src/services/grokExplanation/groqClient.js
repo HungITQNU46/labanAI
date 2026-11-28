@@ -2,13 +2,11 @@
 const { ExplanationError } = require('./constants');
 const { buildGroqRequest } = require('./explanationPrompt');
 
-const DEFAULT_GROQ_MODEL = 'llama-3.3-70b-versatile';
-
 function readSettings(config) {
     const settings = config();
     if (settings?.provider !== 'groq' || typeof settings.apiKey !== 'string' ||
         !/^gsk_[A-Za-z0-9_-]+$/.test(settings.apiKey)) throw new ExplanationError('AI_NOT_CONFIGURED');
-    const model = settings.model === undefined ? DEFAULT_GROQ_MODEL : settings.model;
+    const model = settings.model;
     if (typeof model !== 'string' || !model || model.length > 160 || !/^[A-Za-z0-9._:/-]+$/.test(model)) throw new ExplanationError('AI_NOT_CONFIGURED');
     return { provider: 'groq', apiKey: settings.apiKey, model };
 }
@@ -64,7 +62,7 @@ function createGroqClient({ fetchImpl = (...args) => fetch(...args), timeoutMs =
             const choice = data.choices[0], message = choice?.message;
             if (choice?.finish_reason !== 'stop') throw new ExplanationError('PROVIDER_INCOMPLETE_RESPONSE');
             if (choice.index !== 0 || message?.role !== 'assistant' || message.refusal || message.tool_calls || message.function_call ||
-                typeof message.content !== 'string' || message.content.length > 4000) throw new ExplanationError('PROVIDER_INVALID_RESPONSE');
+                typeof message.content !== 'string' || message.content.length > 5000) throw new ExplanationError('PROVIDER_INVALID_RESPONSE');
             let output;
             try { output = JSON.parse(message.content); } catch { throw new ExplanationError('PROVIDER_INVALID_RESPONSE'); }
             if (JSON.stringify(output)?.includes(settings.apiKey)) throw new ExplanationError('PROVIDER_UNSAFE_RESPONSE');
@@ -78,4 +76,4 @@ function createGroqClient({ fetchImpl = (...args) => fetch(...args), timeoutMs =
     return { request };
 }
 
-module.exports = { createGroqClient, readSettings, DEFAULT_GROQ_MODEL };
+module.exports = { createGroqClient, readSettings };

@@ -11,22 +11,51 @@ const { test, before, after, describe } = require('node:test');
 const assert = require('node:assert/strict');
 const path = require('node:path');
 const fs = require('node:fs');
-const app = require('../server');
+const { randomUUID } = require('node:crypto');
+const session = require('express-session');
+const { MongoStore } = require('connect-mongo');
+const dotenv = require('dotenv');
+// Import the real app with RAM sessions and no production configuration or startup.
+const originalStoreCreate = MongoStore.create, originalEnvConfig = dotenv.config;
+process.env.MONGO_URI = 'mongodb://127.0.0.1:27017/unused_riasec27_test';
+process.env.SESSION_SECRET = 'synthetic-riasec27-contract-session-secret';
+process.env.NODE_ENV = 'development';
+MongoStore.create = () => new session.MemoryStore();
+dotenv.config = () => ({parsed:{}});
+let app;
+try { app = require('../server'); }
+finally { MongoStore.create = originalStoreCreate; dotenv.config = originalEnvConfig; }
 const riasec27Service = require('../src/services/riasec27Service');
 const questionnaire = require('../src/models/riasec27Questionnaire');
+const history = require('../src/services/riasec27HistoryService');
+const originalHistorySave = history.save;
+const savedRows = new Map();
+const testHistory = history.createHistoryService({db:{readyState:1},findOneAndUpdate(filter,update,options){
+    assert.equal(options.upsert,true);assert.equal(options.writeConcern.w,'majority');
+    assert.equal(update.$setOnInsert.id_nguoiDung,'synthetic-contract-user');
+    assert.ok(!Object.hasOwn(update.$setOnInsert.riasec27,'answers'));
+    if(!savedRows.has(filter._id))savedRows.set(filter._id,structuredClone(update.$setOnInsert));
+    return {select(){return this;},async lean(){return structuredClone(savedRows.get(filter._id));}};
+}});
 
 let server;
 let origin;
+let sessionCookie;
+app.get('/__test/riasec27/session',(req,res)=>{req.session.user={id:'synthetic-contract-user',role:'user'};res.json({ok:true});});
 
 // Set up server on localhost for HTTP tests
 before(async () => {
+    history.save = testHistory.save;
     server = await new Promise((resolve) => {
         const listener = app.listen(0, '127.0.0.1', () => resolve(listener));
     });
     origin = `http://127.0.0.1:${server.address().port}`;
+    const response=await fetch(origin+'/__test/riasec27/session');
+    sessionCookie=response.headers.get('set-cookie').split(';')[0];
 });
 
 after(async () => {
+    history.save = originalHistorySave;
     server.closeAllConnections();
     await new Promise((resolve, reject) => server.close((err) => (err ? reject(err) : resolve())));
 });
@@ -35,8 +64,8 @@ after(async () => {
 const get = (urlPath, headers = {}) => fetch(`${origin}${urlPath}`, { headers });
 const post = (urlPath, body, headers = {}) => fetch(`${origin}${urlPath}`, {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json', ...headers },
-    body: typeof body === 'string' ? body : JSON.stringify(body)
+    headers: { 'Content-Type': 'application/json', Cookie:sessionCookie, ...headers },
+    body: typeof body === 'string' ? body : JSON.stringify(urlPath==='/api/riasec27/evaluate' ? {...body,history:{requestId:randomUUID()}} : body)
 });
 
 // Differentiated 27 answers: High R/I, Low others
@@ -188,6 +217,24 @@ describe('Direction B Inference Contract, ML Top-3 & Invariants (Criteria 6-12)'
         process.env.NODE_ENV = 'development';
     });
 
+    test('anonymous evaluation is rejected before ML or persistence', async t => {
+        const inference=t.mock.method(riasec27Service,'evaluateProfile',riasec27Service.evaluateProfile);
+        const count=savedRows.size;
+        const response=await fetch(origin+'/api/riasec27/evaluate',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({answers:validDifferentiatedAnswers,history:{requestId:randomUUID()}})});
+        assert.equal(response.status,401);assert.equal((await response.json()).error,'HISTORY_AUTH_REQUIRED');
+        assert.equal(savedRows.size,count);
+        assert.equal(inference.mock.callCount(),0);
+    });
+
+    test('authenticated evaluation requires a valid history requestId before ML', async t => {
+        const inference=t.mock.method(riasec27Service,'evaluateProfile',riasec27Service.evaluateProfile);
+        for(const body of [{answers:validDifferentiatedAnswers},{answers:validDifferentiatedAnswers,history:{requestId:'invalid'}}]){
+            const response=await fetch(origin+'/api/riasec27/evaluate',{method:'POST',headers:{'Content-Type':'application/json',Cookie:sessionCookie},body:JSON.stringify(body)});
+            assert.equal(response.status,400);assert.equal((await response.json()).error,'INVALID_HISTORY_INPUT');
+        }
+        assert.equal(inference.mock.callCount(),0);
+    });
+
     test('6. Valid 27 answers return HTTP 200 and SUCCESS status', async () => {
         const res = await post('/api/riasec27/evaluate', { answers: validDifferentiatedAnswers });
         assert.equal(res.status, 200);
@@ -195,6 +242,7 @@ describe('Direction B Inference Contract, ML Top-3 & Invariants (Criteria 6-12)'
         assert.equal(data.research_status, 'RESEARCH_ONLY — TOP3_NOT_VALIDATED');
         assert.equal(data.ml_ranking.status, 'SUCCESS');
         assert.equal(data.ml_ranking.top3.length, 3);
+        assert.equal(data.history.status,'SAVED');
     });
 
     test('7. Invalid inputs (wrong length, types, out-of-bound) return HTTP 400', async () => {
@@ -327,6 +375,7 @@ describe('Catalog 33, Tier 2 Qualitative Exploration & Operational Safety (Crite
 
     test('15. Invariant: Tier 2 answers NEVER alter ML Top-3', async () => {
         const mlBefore = await post('/api/riasec27/evaluate', { answers: validDifferentiatedAnswers });
+        assert.equal(mlBefore.status,200);
         const dataBefore = await mlBefore.json();
 
         // User answers Tier 2
@@ -342,6 +391,7 @@ describe('Catalog 33, Tier 2 Qualitative Exploration & Operational Safety (Crite
 
         // Re-check ML Top-3
         const mlAfter = await post('/api/riasec27/evaluate', { answers: validDifferentiatedAnswers });
+        assert.equal(mlAfter.status,200);
         const dataAfter = await mlAfter.json();
 
         assert.deepEqual(
@@ -421,12 +471,18 @@ describe('Catalog 33, Tier 2 Qualitative Exploration & Operational Safety (Crite
         assert.ok(!evalHtml.includes('id="input-toan"'));
     });
 
-    test('21. Zero persistence: No answers, personal probabilities or Top-3 saved to disk/DB', async () => {
+    test('21. Python adapter stays storage-free; history service saves summaries without raw answers', async () => {
         // Verified by architecture: service contains no fs.writeFile or db calls for answers
         const serviceContent = fs.readFileSync(path.join(__dirname, '../src/services/riasec27Service.js'), 'utf8');
         assert.ok(!serviceContent.includes('mongoose'));
         assert.ok(!serviceContent.includes('mongodb'));
         assert.ok(!serviceContent.includes('fs.writeFile'));
+        assert.ok(savedRows.size>0);
+        for(const row of savedRows.values()){
+            assert.equal(row.riasec27.summaryStorage.mode,'automatic');
+            assert.ok(!Object.hasOwn(row.riasec27,'answers'));
+            assert.equal(row.id_nguoiDung,'synthetic-contract-user');
+        }
     });
 
     test('22. Preview UI has a concise reference note while backend research status remains unchanged', async () => {

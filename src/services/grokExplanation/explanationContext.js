@@ -2,6 +2,7 @@
 const { randomBytes, createHmac, timingSafeEqual } = require('node:crypto');
 const { READY, DOMAINS, RESEARCH_STATUS, ExplanationError } = require('./constants');
 const { sameKeys } = require('./explanationValidator');
+const questionnaire = require('../../models/riasec27Questionnaire');
 
 function buildContext(ml) {
     if (ml?.status !== 'SUCCESS') return null;
@@ -22,7 +23,10 @@ function buildContext(ml) {
     });
     const profile = ml.standardized_vector;
     if (!sameKeys(profile, DOMAINS) || DOMAINS.some(d => !Number.isFinite(profile[d]))) throw new ExplanationError('INVALID_ML_CONTEXT');
+    if (!sameKeys(ml.domain_means, DOMAINS) || DOMAINS.some(d => !Number.isFinite(ml.domain_means[d]) || ml.domain_means[d]<1 || ml.domain_means[d]>5)) throw new ExplanationError('INVALID_ML_CONTEXT');
     return { majors, p2_standardized_profile: Object.fromEntries(DOMAINS.map(d => [d, profile[d]])),
+        survey_domain_means: Object.fromEntries(DOMAINS.map(d => [d, ml.domain_means[d]])),
+        domain_names_vi: Object.fromEntries(DOMAINS.map(d => [d, questionnaire.domain_names[d].vi])),
         highest_standardized_domains: DOMAINS.filter(d => profile[d] === Math.max(...DOMAINS.map(k => profile[k]))), research_status: RESEARCH_STATUS };
 }
 
@@ -42,17 +46,23 @@ function createContextStore({ now = Date.now, ttlMs = 600000, maxContexts = 100 
     function purge() {
         for (const [id, entry] of contexts) if (entry.expires <= now()) remove(id);
     }
-    function mintContext(ml) {
+    function ownerSignature(owner) {
+        if (!sameKeys(owner, ['userId', 'sessionId']) || typeof owner.userId !== 'string' || !owner.userId || typeof owner.sessionId !== 'string' || !owner.sessionId) throw new ExplanationError('EXPLANATION_AUTH_REQUIRED', 401);
+        return createHmac('sha256', secret).update(JSON.stringify([owner.userId, owner.sessionId])).digest('hex');
+    }
+    function mintContext(owner, ml) {
         const data = buildContext(ml);
         if (!data) return null;
+        const binding = ownerSignature(owner);
         purge();
         while (contexts.size >= maxContexts) remove(contexts.keys().next().value);
         const id = randomBytes(32).toString('base64url');
         const timer = setTimeout(() => remove(id), ttlMs); timer.unref();
-        contexts.set(id, { data: freezeDeep(data), expires: now()+ttlMs, timer });
+        contexts.set(id, { data: freezeDeep(data), binding, expires: now()+ttlMs, timer });
         return id + '.' + createHmac('sha256', secret).update(id).digest('base64url');
     }
-    function verifyContext(token) {
+    function verifyContext(owner, token) {
+        const binding = ownerSignature(owner);
         if (typeof token !== 'string' || !/^[A-Za-z0-9_-]{43}\.[A-Za-z0-9_-]{43}$/.test(token)) throw new ExplanationError('INVALID_CONTEXT', 400);
         const [id, signature] = token.split('.');
         const expected = createHmac('sha256', secret).update(id).digest();
@@ -61,6 +71,7 @@ function createContextStore({ now = Date.now, ttlMs = 600000, maxContexts = 100 
         purge();
         const entry = contexts.get(id);
         if (!entry) throw new ExplanationError('CONTEXT_EXPIRED', 400); // Expired or evicted; never recompute ML here.
+        if (entry.binding !== binding) throw new ExplanationError('INVALID_CONTEXT', 400);
         return entry.data;
     }
     return { mintContext, verifyContext, stats() { purge(); return { count: contexts.size, capacity: maxContexts, ttlMs }; }, clear() { for (const id of contexts.keys()) remove(id); } };

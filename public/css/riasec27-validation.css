@@ -1,0 +1,6 @@
+.riasec-validation-alert { padding: 16px; margin-top: 24px; margin-bottom: 24px; border: 1px solid #edcf91; border-radius: 16px; background: #fffbf2; color: #704b19; font-size: .875rem; line-height: 1.7; overflow-wrap: anywhere; }
+.riasec-validation-alert[hidden] { display: none; }
+.riasec-validation-alert p + p { margin-top: 8px; }
+.riasec-validation-alert button { margin-top: 12px; padding: 10px 14px; min-height: 44px; border: 1px solid #d5b16b; border-radius: 12px; background: #fff; font-weight: 600; }
+.eval-question-card.riasec-question-missing { border-color: #d7b374; box-shadow: 0 0 0 1px #edcf91; }
+.eval-question-card { scroll-margin-top: 100px; }

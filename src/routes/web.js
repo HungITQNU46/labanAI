@@ -40,6 +40,7 @@ router.delete('/api/chatbot/sessions', requireAuth, chatbotController.clearAllSe
 // Phân hệ Đánh giá năng lực & Dự đoán
 router.get('/evaluation', requireAuth, evaluationController.getEvaluation);
 router.get('/evaluation/history', requireAuth, evaluationHistoryController.getEvaluationHistory);
+router.get('/api/riasec27/history/:id', evaluationHistoryController.getHistoryResult);
 router.get('/api/ml/status', evaluationController.getMlStatus);
 router.post('/api/ml/recommendations', evaluationController.recommendMajors);
 

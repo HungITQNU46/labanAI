@@ -94,17 +94,33 @@ test('hotfix: UTF-8 characters split across stdout chunks decode without replace
 });
 
 test('hotfix: HTTP route reports a bridge failure as 503 with a safe diagnostic code', async t => {
-    const app = require('../server');
+    const { randomUUID } = require('node:crypto');
+    const session = require('express-session'), { MongoStore } = require('connect-mongo'), dotenv = require('dotenv');
+    const originalStoreCreate=MongoStore.create,originalConfig=dotenv.config;
+    process.env.MONGO_URI='mongodb://127.0.0.1:27017/unused_bridge_test';
+    process.env.SESSION_SECRET='synthetic-bridge-test-session-secret';
+    process.env.NODE_ENV='development';
+    MongoStore.create=()=>new session.MemoryStore();dotenv.config=()=>({parsed:{}});
+    let app;
+    try{app=require('../server');}finally{MongoStore.create=originalStoreCreate;dotenv.config=originalConfig;}
+    app.get('/__test/bridge/session',(req,res)=>{req.session.user={id:'synthetic-bridge-user'};res.json({ok:true});});
     const previous = { env: process.env.NODE_ENV, flag: process.env.LABANAI_RIASEC27_PREVIEW };
     process.env.NODE_ENV='development'; process.env.LABANAI_RIASEC27_PREVIEW='true';
-    t.mock.method(service, 'evaluateProfile', async () => { throw new service.Riasec27ServiceError('PRIVATE_PATH', 'PYTHON_INTERNAL_ERROR'); });
+    const inference=t.mock.method(service, 'evaluateProfile', async () => { throw new service.Riasec27ServiceError('PRIVATE_PATH', 'PYTHON_INTERNAL_ERROR'); });
+    const persistence=t.mock.method(require('../src/services/riasec27HistoryService'),'save',async()=>{throw Error('Must not save failed inference');});
     const server = await new Promise(resolve => {const s=app.listen(0,'127.0.0.1',()=>resolve(s));});
     try {
-        const response=await fetch(`http://127.0.0.1:${server.address().port}/api/riasec27/evaluate`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({answers})});
+        const origin=`http://127.0.0.1:${server.address().port}`;
+        const login=await fetch(origin+'/__test/bridge/session'),cookie=login.headers.get('set-cookie').split(';')[0];
+        const payload={answers,history:{requestId:randomUUID()}};
+        const anonymous=await fetch(origin+'/api/riasec27/evaluate',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});
+        assert.equal(anonymous.status,401);assert.equal((await anonymous.json()).error,'HISTORY_AUTH_REQUIRED');assert.equal(inference.mock.callCount(),0);
+        const response=await fetch(origin+'/api/riasec27/evaluate',{method:'POST',headers:{'Content-Type':'application/json',Cookie:cookie},body:JSON.stringify(payload)});
         const result=await response.json();
         assert.equal(response.status,503);assert.equal(result.error,'PYTHON_INTERNAL_ERROR');
         assert.ok(!JSON.stringify(result).includes('PRIVATE_PATH'));
         assert.equal(result.answers,undefined);assert.equal(result.stack,undefined);
+        assert.equal(inference.mock.callCount(),1);assert.equal(persistence.mock.callCount(),0);
     } finally {
         server.closeAllConnections();await new Promise(resolve=>server.close(resolve));t.mock.restoreAll();
         if(previous.env===undefined)delete process.env.NODE_ENV;else process.env.NODE_ENV=previous.env;
